@@ -808,10 +808,7 @@ Quiz
 </div>
 </nav>
 
-
-<!-- =====================================================
-     PAGE ACCUEIL
-===================================================== -->
+<!-- ACCUEIL -->
 
 <main id="homePage" class="page active">
 
@@ -890,10 +887,7 @@ onclick="openUsernameChange()">
 
 </main>
 
-
-<!-- =====================================================
-     PAGE PROFIL
-===================================================== -->
+<!-- PROFIL -->
 
 <main id="profilePage" class="page">
 
@@ -915,9 +909,7 @@ style="max-width:600px;margin:auto">
 
 <p style="color:#8199b2">
 Nom actuel :
-<strong id="currentUsernameDisplay">
--
-</strong>
+<strong id="currentUsernameDisplay">-</strong>
 </p>
 
 <button
@@ -926,19 +918,13 @@ onclick="openUsernameChange()">
 ✏️ Modifier mon nom
 </button>
 
-<p
-id="profileStatus"
-class="name-status">
-</p>
+<p id="profileStatus" class="name-status"></p>
 
 </div>
 
 </main>
 
-
-<!-- =====================================================
-     PAGE CARTE
-===================================================== -->
+<!-- CARTE -->
 
 <main id="mapPage" class="page">
 
@@ -978,7 +964,6 @@ Autre pays
 <div class="map-controls">
 
 <button onclick="changeMapZoom(1)">+</button>
-
 <button onclick="changeMapZoom(-1)">−</button>
 
 </div>
@@ -989,10 +974,7 @@ Autre pays
 
 </main>
 
-
-<!-- =====================================================
-     PAGE PAYS
-===================================================== -->
+<!-- PAYS -->
 
 <main id="countriesPage" class="page">
 
@@ -1016,10 +998,7 @@ placeholder="🔎 Rechercher un pays..."
 
 </main>
 
-
-<!-- =====================================================
-     PAGE QUIZ
-===================================================== -->
+<!-- QUIZ -->
 
 <main id="quizPage" class="page">
 
@@ -1038,90 +1017,62 @@ Les niveaux difficiles rapportent beaucoup plus.
 
 <div class="quiz-modes">
 
-<div class="mode difficulty-easy"
-onclick="startQuiz('easy')">
-
+<div class="mode difficulty-easy" onclick="startQuiz('easy')">
 <div class="icon">🟢</div>
 <h3>Facile</h3>
 <p>Questions simples pour commencer.</p>
-
 </div>
 
-<div class="mode difficulty-medium"
-onclick="startQuiz('medium')">
-
+<div class="mode difficulty-medium" onclick="startQuiz('medium')">
 <div class="icon">🟡</div>
 <h3>Moyen</h3>
 <p>Questions intermédiaires.</p>
-
 </div>
 
-<div class="mode difficulty-hard"
-onclick="startQuiz('hard')">
-
+<div class="mode difficulty-hard" onclick="startQuiz('hard')">
 <div class="icon">🔴</div>
 <h3>Difficile</h3>
 <p>Questions plus complexes.</p>
-
 </div>
 
-<div class="mode difficulty-expert"
-onclick="startQuiz('expert')">
-
+<div class="mode difficulty-expert" onclick="startQuiz('expert')">
 <div class="icon">💀</div>
 <h3>Expert</h3>
 <p>Le niveau le plus difficile.</p>
-
 </div>
 
-<div class="mode"
-onclick="startQuiz('classic')">
-
+<div class="mode" onclick="startQuiz('classic')">
 <div class="icon">🌎</div>
 <h3>Classique</h3>
 <p>Un mélange de difficultés.</p>
-
 </div>
 
-<div class="mode"
-onclick="startQuiz('capitals')">
-
+<div class="mode" onclick="startQuiz('capitals')">
 <div class="icon">🏛️</div>
 <h3>Capitales</h3>
 <p>Retrouve le pays correspondant à une capitale.</p>
-
 </div>
 
-<div class="mode"
-onclick="startQuiz('countries')">
-
+<div class="mode" onclick="startQuiz('countries')">
 <div class="icon">🌍</div>
 <h3>Pays</h3>
 <p>Identifie le pays à partir de sa capitale.</p>
-
 </div>
 
-<div class="mode"
-onclick="startQuiz('challenge')">
-
+<div class="mode" onclick="startQuiz('challenge')">
 <div class="icon">🔥</div>
 <h3>Challenge</h3>
 <p>Un mélange plus corsé.</p>
-
 </div>
 
-<div class="mode"
-onclick="startMapQuiz()">
-
+<div class="mode" onclick="startMapQuiz()">
 <div class="icon">🗺️</div>
 <h3>Carte Quiz</h3>
 <p>Colorie les pays anglophones.</p>
-
 </div>
 
 </div>
 </div>
-
 
 <div id="quizGame" style="display:none">
 
@@ -1130,15 +1081,12 @@ onclick="startMapQuiz()">
 <div class="quiz-header">
 
 <span id="questionNumber" class="quiz-pill"></span>
-
 <span id="difficultyText" class="quiz-pill"></span>
 
 </div>
 
 <div class="progress">
-
 <div id="progressFill" class="progress-fill"></div>
-
 </div>
 
 <div class="question-card">
@@ -1148,14 +1096,10 @@ onclick="startMapQuiz()">
 <h2 id="questionText"></h2>
 
 <div class="timer">
-
 <div id="timerFill" class="timer-fill"></div>
-
 </div>
 
-<div id="timerText" class="timer-text">
-15s
-</div>
+<div id="timerText" class="timer-text">15s</div>
 
 <div id="answers" class="answers"></div>
 
@@ -1173,31 +1117,23 @@ Question suivante →
 
 </div>
 
-
 <div id="victory" class="victory">
 
-<div style="font-size:55px">
-🏆
-</div>
+<div style="font-size:55px">🏆</div>
 
 <h2>Quiz terminé !</h2>
 
 <p>Ton score :</p>
 
-<div id="finalQuizScore" class="final-number">
-0
-</div>
+<div id="finalQuizScore" class="final-number">0</div>
 
 <p id="resultMessage" style="color:#8fa8bf"></p>
 
-<button
-class="big-btn"
-onclick="backToQuizMenu()">
+<button class="big-btn" onclick="backToQuizMenu()">
 ↩️ Retour aux quiz
 </button>
 
 </div>
-
 
 <div id="mapQuizArea" style="display:none">
 
@@ -1261,23 +1197,15 @@ onclick="validateMapQuiz()">
 
 <div id="mapQuizResult" class="victory">
 
-<div style="font-size:55px">
-🗺️
-</div>
+<div style="font-size:55px">🗺️</div>
 
-<h2 id="mapQuizTitle">
-Carte terminée
-</h2>
+<h2 id="mapQuizTitle">Carte terminée</h2>
 
-<div id="mapQuizScore" class="final-number">
-0
-</div>
+<div id="mapQuizScore" class="final-number">0</div>
 
 <p id="mapQuizMessage"></p>
 
-<button
-class="big-btn"
-onclick="backToQuizMenu()">
+<button class="big-btn" onclick="backToQuizMenu()">
 🎯 Retour aux quiz
 </button>
 
@@ -1289,27 +1217,25 @@ onclick="backToQuizMenu()">
 
 </main>
 
-
 <!-- =====================================================
-     PAGE PROFESSEUR
+     PROFESSEUR POINTS
 ===================================================== -->
 
-<main id="professorPage" class="page">
+<main id="professorPointsPage" class="page">
 
 <div class="professor">
 
 <div class="title">
 
-<h2>👨‍🏫 Espace professeur</h2>
+<h2>👨‍🏫 Gestion des points</h2>
 
 <p>
-Gestion des points et des résultats.
+Ajoute uniquement des points aux élèves.
 </p>
 
 </div>
 
-
-<div id="pointsPanel" class="prof-panel">
+<div class="prof-panel">
 
 <h3>➕ Ajouter des points</h3>
 
@@ -1334,10 +1260,31 @@ Ajouter
 
 </div>
 
-<p id="pointsStatus" style="color:#7892ae"></p>
+<p id="pointsStatus" class="name-status"></p>
 
 </div>
 
+</div>
+
+</main>
+
+<!-- =====================================================
+     PROFESSEUR NOTES
+===================================================== -->
+
+<main id="professorResultsPage" class="page">
+
+<div class="professor">
+
+<div class="title">
+
+<h2>👨‍🏫 Gestion des notes</h2>
+
+<p>
+Consulte uniquement les résultats des quiz.
+</p>
+
+</div>
 
 <div class="prof-panel">
 
@@ -1365,7 +1312,6 @@ class="name-status">
 </div>
 
 </div>
-
 
 <div class="prof-panel">
 
@@ -1405,14 +1351,9 @@ onclick="loadProfessorResults()">
 
 </main>
 
+<!-- NOM PREMIÈRE CONNEXION -->
 
-<!-- =====================================================
-     MODAL NOM PREMIÈRE CONNEXION
-===================================================== -->
-
-<div
-id="usernameModal"
-class="modal">
+<div id="usernameModal" class="modal">
 
 <div class="modal-card">
 
@@ -1439,14 +1380,9 @@ Continuer
 
 </div>
 
+<!-- CHANGEMENT NOM -->
 
-<!-- =====================================================
-     MODAL CHANGEMENT DE NOM
-===================================================== -->
-
-<div
-id="changeUsernameModal"
-class="modal">
+<div id="changeUsernameModal" class="modal">
 
 <div class="modal-card">
 
@@ -1464,9 +1400,7 @@ onkeydown="if(event.key==='Enter')changeUsername()"
 
 <div class="modal-actions">
 
-<button
-class="big-btn"
-onclick="changeUsername()">
+<button class="big-btn" onclick="changeUsername()">
 💾 Enregistrer
 </button>
 
@@ -1483,14 +1417,9 @@ Annuler
 
 </div>
 
+<!-- CODE PROF -->
 
-<!-- =====================================================
-     MODAL PROF
-===================================================== -->
-
-<div
-id="profCodeModal"
-class="modal">
+<div id="profCodeModal" class="modal">
 
 <div class="modal-card">
 
@@ -1509,9 +1438,7 @@ onkeydown="if(event.key==='Enter')checkProfessorCode()"
 
 <div class="modal-actions">
 
-<button
-class="big-btn"
-onclick="checkProfessorCode()">
+<button class="big-btn" onclick="checkProfessorCode()">
 Entrer
 </button>
 
@@ -1528,10 +1455,7 @@ Annuler
 
 </div>
 
-
-<!-- =====================================================
-     FIREBASE
-===================================================== -->
+<!-- FIREBASE -->
 
 <script type="module">
 
@@ -1565,7 +1489,6 @@ updateDoc
 );
 
 const app=initializeApp(firebaseConfig);
-
 const db=getFirestore(app);
 
 window.firebaseDB=db;
@@ -1582,7 +1505,6 @@ return db;
 })();
 
 </script>
-
 
 <script>
 
@@ -1790,30 +1712,14 @@ const rawCountries=`
 `;
 
 const countries=rawCountries.trim().split("\n").map(line=>{
-
 const [id,code,name,capital,continent,type]=line.split("|");
-
-return{
-id,
-code,
-name,
-capital,
-continent,
-type
-};
-
+return{id,code,name,capital,continent,type};
 });
 
+/* VARIABLES */
 
-/* =====================================================
-   VARIABLES
-===================================================== */
-
-let username=
-localStorage.getItem("wexUsername")||"";
-
-let namesHidden=
-localStorage.getItem("wexHideNames")==="true";
+let username=localStorage.getItem("wexUsername")||"";
+let namesHidden=localStorage.getItem("wexHideNames")==="true";
 
 let mapLoaded=false;
 let mapZoomBehavior=null;
@@ -1837,61 +1743,37 @@ let quizMapLoaded=false;
 let quizMapColor="primary";
 let mapQuizColors={};
 
-
-/* =====================================================
-   PAYS
-===================================================== */
-
 const primaryIDs=new Set(
-countries
-.filter(c=>c.type==="primary")
-.map(c=>c.id)
+countries.filter(c=>c.type==="primary").map(c=>c.id)
 );
 
 const secondaryIDs=new Set(
-countries
-.filter(c=>c.type==="secondary")
-.map(c=>c.id)
+countries.filter(c=>c.type==="secondary").map(c=>c.id)
 );
 
-const byId=new Map(
-countries.map(c=>[c.id,c])
-);
+const byId=new Map(countries.map(c=>[c.id,c]));
 
 function flag(code){
-
-return [...code]
-.map(c=>
-String.fromCodePoint(
-127397+c.charCodeAt(0)
-))
-.join("");
-
+return [...code].map(c=>
+String.fromCodePoint(127397+c.charCodeAt(0))
+).join("");
 }
 
-countries.forEach(c=>{
-c.flag=flag(c.code);
-});
+countries.forEach(c=>c.flag=flag(c.code));
 
-document.getElementById("countryCount")
-.textContent=countries.length;
+document.getElementById("countryCount").textContent=countries.length;
 
-
-/* =====================================================
-   NAVIGATION
-===================================================== */
+/* NAVIGATION */
 
 function goPage(pageId){
 
 clearInterval(timerInterval);
 
-document.querySelectorAll(".page")
-.forEach(page=>{
+document.querySelectorAll(".page").forEach(page=>{
 page.classList.remove("active");
 });
 
 const page=document.getElementById(pageId);
-
 if(!page)return;
 
 page.classList.add("active");
@@ -1916,30 +1798,25 @@ if(pageId==="profilePage"){
 updateProfileDisplay();
 }
 
+if(pageId==="professorResultsPage"){
+updateNamesButton();
 }
 
+}
 
-/* =====================================================
-   PROF
-===================================================== */
+/* PROFESSEUR */
 
 function openProfessor(){
 
 document.getElementById("profCodeInput").value="";
-
-document.getElementById("profCodeModal")
-.style.display="flex";
+document.getElementById("profCodeModal").style.display="flex";
 
 }
 
-
 function updateNamesButton(){
 
-const button=
-document.getElementById("toggleNamesBtn");
-
-const status=
-document.getElementById("nameVisibilityStatus");
+const button=document.getElementById("toggleNamesBtn");
+const status=document.getElementById("nameVisibilityStatus");
 
 if(!button)return;
 
@@ -1948,8 +1825,7 @@ if(namesHidden){
 button.textContent="👁️ Afficher les noms";
 
 if(status){
-status.textContent=
-"Les noms sont actuellement masqués.";
+status.textContent="Les noms sont actuellement masqués.";
 }
 
 }else{
@@ -1957,14 +1833,12 @@ status.textContent=
 button.textContent="🙈 Masquer tous les noms";
 
 if(status){
-status.textContent=
-"Les noms sont actuellement visibles.";
+status.textContent="Les noms sont actuellement visibles.";
 }
 
 }
 
 }
-
 
 function toggleNamesVisibility(){
 
@@ -1976,15 +1850,11 @@ namesHidden
 );
 
 updateNamesButton();
-
 loadProfessorResults();
 
 }
 
-
-/* =====================================================
-   PAYS
-===================================================== */
+/* PAYS */
 
 function renderCountries(list){
 
@@ -2022,9 +1892,7 @@ c.type==="primary"
 
 d.innerHTML=`
 
-<div class="flag">
-${c.flag}
-</div>
+<div class="flag">${c.flag}</div>
 
 <h3>${c.name}</h3>
 
@@ -2039,7 +1907,6 @@ ${c.continent}
 <span class="country-tag ${tag}">
 ${label}
 </span>
-
 `;
 
 grid.appendChild(d);
@@ -2048,14 +1915,10 @@ grid.appendChild(d);
 
 }
 
-
 document.getElementById("countrySearch")
 .addEventListener("input",e=>{
 
-const value=
-e.target.value
-.toLowerCase()
-.trim();
+const value=e.target.value.toLowerCase().trim();
 
 renderCountries(
 countries.filter(c=>
@@ -2067,18 +1930,13 @@ c.continent.toLowerCase().includes(value)
 
 });
 
-
-/* =====================================================
-   CARTE NORMALE
-===================================================== */
+/* CARTE */
 
 function drawMap(){
 
 if(mapLoaded)return;
 
-const container=
-document.getElementById("worldMap");
-
+const container=document.getElementById("worldMap");
 const width=container.clientWidth;
 const height=container.clientHeight;
 
@@ -2086,26 +1944,15 @@ if(width<100)return;
 
 const svg=d3.select("#worldMap");
 
-svg.attr(
-"viewBox",
-`0 0 ${width} ${height}`
-);
-
+svg.attr("viewBox",`0 0 ${width} ${height}`);
 svg.selectAll("*").remove();
 
-const projection=
-d3.geoNaturalEarth1()
-.fitSize(
-[width,height],
-{type:"Sphere"}
-);
+const projection=d3.geoNaturalEarth1()
+.fitSize([width,height],{type:"Sphere"});
 
-const path=
-d3.geoPath()
-.projection(projection);
+const path=d3.geoPath().projection(projection);
 
-const content=
-svg.append("g")
+const content=svg.append("g")
 .attr("class","map-content");
 
 content.append("path")
@@ -2120,14 +1967,12 @@ d3.json(
 )
 .then(world=>{
 
-const land=
-topojson.feature(
+const land=topojson.feature(
 world,
 world.objects.countries
 );
 
-const tooltip=
-document.getElementById("mapTooltip");
+const tooltip=document.getElementById("mapTooltip");
 
 content
 .selectAll(".country-path")
@@ -2138,48 +1983,28 @@ content
 .attr("d",path)
 .attr("fill",d=>{
 
-const id=
-String(d.id)
-.padStart(3,"0");
+const id=String(d.id).padStart(3,"0");
 
-if(primaryIDs.has(id))
-return "#ff3154";
-
-if(secondaryIDs.has(id))
-return "#1683ff";
+if(primaryIDs.has(id))return "#ff3154";
+if(secondaryIDs.has(id))return "#1683ff";
 
 return "#173049";
 
 })
-
-.attr("stroke","#0a2038")
-.attr("stroke-width",".6")
-
 .on("click",(event,d)=>{
 
 event.stopPropagation();
 
-content
-.selectAll(".country-path")
-.classed(
-"selected-country",
-false
-);
+content.selectAll(".country-path")
+.classed("selected-country",false);
 
 d3.select(event.currentTarget)
-.classed(
-"selected-country",
-true
-);
+.classed("selected-country",true);
 
 })
-
 .on("mousemove",(event,d)=>{
 
-const id=
-String(d.id)
-.padStart(3,"0");
-
+const id=String(d.id).padStart(3,"0");
 const c=byId.get(id);
 
 if(!c)return;
@@ -2187,16 +2012,10 @@ if(!c)return;
 tooltip.style.display="block";
 
 tooltip.innerHTML=`
-
-<strong>
-${c.flag} ${c.name}
-</strong>
-
+<strong>${c.flag} ${c.name}</strong>
 <br>
 Capitale : ${c.capital}
-
 <br>
-
 ${
 c.type==="primary"
 ?"🔴 Anglais principal"
@@ -2204,59 +2023,41 @@ c.type==="primary"
 ?"🔵 Anglais seconde langue / officiel"
 :"⚫ Autre pays"
 }
-
 `;
 
-tooltip.style.left=
-(event.clientX+15)+"px";
-
-tooltip.style.top=
-(event.clientY+15)+"px";
+tooltip.style.left=(event.clientX+15)+"px";
+tooltip.style.top=(event.clientY+15)+"px";
 
 })
-
 .on("mouseleave",()=>{
 tooltip.style.display="none";
 });
 
-
-mapZoomBehavior=
-d3.zoom()
+mapZoomBehavior=d3.zoom()
 .scaleExtent([1,8])
 .on("zoom",event=>{
-content.attr(
-"transform",
-event.transform
-);
+content.attr("transform",event.transform);
 });
 
 svg.call(mapZoomBehavior);
-
-svg.on(
-"dblclick.zoom",
-null
-);
+svg.on("dblclick.zoom",null);
 
 mapZoomLevel=1;
-
 mapLoaded=true;
 
 });
 
 }
 
-
 function changeMapZoom(direction){
 
 if(!mapLoaded)return;
 
-mapZoomLevel=
-Math.max(
+mapZoomLevel=Math.max(
 1,
 Math.min(
 8,
-mapZoomLevel*
-(direction>0?1.35:1/1.35)
+mapZoomLevel*(direction>0?1.35:1/1.35)
 )
 );
 
@@ -2270,10 +2071,7 @@ mapZoomLevel
 
 }
 
-
-/* =====================================================
-   QUESTIONS
-===================================================== */
+/* QUESTIONS */
 
 const questionPools={
 
@@ -2402,13 +2200,9 @@ challenge:[
 ["Quel pays a Bridgetown pour capitale ?","Barbade",["Barbade","Bahamas","Jamaïque","Belize"],3],
 ["Quel pays a Port-Louis pour capitale ?","Maurice",["Maurice","Seychelles","Comores","Maldives"],3]
 ]
-
 };
 
-
-/* =====================================================
-   MÉLANGE
-===================================================== */
+/* MÉLANGE */
 
 function shuffle(array){
 
@@ -2416,12 +2210,9 @@ const arr=[...array];
 
 for(let i=arr.length-1;i>0;i--){
 
-const j=Math.floor(
-Math.random()*(i+1)
-);
+const j=Math.floor(Math.random()*(i+1));
 
-[arr[i],arr[j]]=
-[arr[j],arr[i]];
+[arr[i],arr[j]]=[arr[j],arr[i]];
 
 }
 
@@ -2429,15 +2220,11 @@ return arr;
 
 }
 
-
-/* =====================================================
-   BARÈME
-===================================================== */
+/* BARÈME */
 
 function levelData(level){
 
 if(level===1){
-
 return{
 name:"FACILE",
 icon:"🟢",
@@ -2445,11 +2232,9 @@ time:15,
 base:40,
 cls:"easy"
 };
-
 }
 
 if(level===2){
-
 return{
 name:"MOYEN",
 icon:"🟡",
@@ -2457,11 +2242,9 @@ time:12,
 base:100,
 cls:"medium"
 };
-
 }
 
 if(level===3){
-
 return{
 name:"DIFFICILE",
 icon:"🔴",
@@ -2469,7 +2252,6 @@ time:10,
 base:250,
 cls:"hard"
 };
-
 }
 
 return{
@@ -2482,10 +2264,7 @@ cls:"expert"
 
 }
 
-
-/* =====================================================
-   MULTIPLICATEUR
-===================================================== */
+/* MULTIPLICATEUR */
 
 function getMultiplier(){
 
@@ -2498,10 +2277,7 @@ return 1;
 
 }
 
-
-/* =====================================================
-   START QUIZ
-===================================================== */
+/* START QUIZ */
 
 function startQuiz(mode){
 
@@ -2516,9 +2292,7 @@ correctAnswers=0;
 currentQuestion=0;
 
 quizQuestions=
-shuffle(
-questionPools[mode]||questionPools.classic
-)
+shuffle(questionPools[mode]||questionPools.classic)
 .slice(0,10)
 .map(x=>({
 q:x[0],
@@ -2527,26 +2301,16 @@ options:x[2],
 level:x[3]
 }));
 
-document.getElementById("quizStart")
-.style.display="none";
-
-document.getElementById("quizGame")
-.style.display="block";
-
-document.getElementById("mapQuizArea")
-.style.display="none";
-
-document.getElementById("victory")
-.style.display="none";
+document.getElementById("quizStart").style.display="none";
+document.getElementById("quizGame").style.display="block";
+document.getElementById("mapQuizArea").style.display="none";
+document.getElementById("victory").style.display="none";
 
 loadQuestion();
 
 }
 
-
-/* =====================================================
-   QUESTION
-===================================================== */
+/* QUESTION */
 
 function loadQuestion(){
 
@@ -2554,64 +2318,42 @@ clearInterval(timerInterval);
 
 answered=false;
 
-const q=
-quizQuestions[currentQuestion];
-
-const d=
-levelData(q.level);
+const q=quizQuestions[currentQuestion];
+const d=levelData(q.level);
 
 maxTime=d.time;
 timeLeft=maxTime;
 
 document.getElementById("questionNumber")
-.textContent=
-`Question ${currentQuestion+1}/${quizQuestions.length}`;
+.textContent=`Question ${currentQuestion+1}/${quizQuestions.length}`;
 
 document.getElementById("difficultyText")
 .textContent=d.name;
 
-const badge=
-document.getElementById("levelBadge");
+const badge=document.getElementById("levelBadge");
 
-badge.textContent=
-`${d.icon} ${d.name}`;
+badge.textContent=`${d.icon} ${d.name}`;
+badge.className=`level ${d.cls}`;
 
-badge.className=
-`level ${d.cls}`;
+document.getElementById("questionText").textContent=q.q;
+document.getElementById("feedback").innerHTML="";
+document.getElementById("nextBtn").style.display="none";
 
-document.getElementById("questionText")
-.textContent=q.q;
-
-document.getElementById("feedback")
-.innerHTML="";
-
-document.getElementById("nextBtn")
-.style.display="none";
-
-document.getElementById("progressFill")
-.style.width=
+document.getElementById("progressFill").style.width=
 `${currentQuestion/quizQuestions.length*100}%`;
 
-const box=
-document.getElementById("answers");
-
+const box=document.getElementById("answers");
 box.innerHTML="";
 
-shuffle(q.options)
-.forEach(option=>{
+shuffle(q.options).forEach(option=>{
 
-const button=
-document.createElement("button");
+const button=document.createElement("button");
 
 button.className="answer";
-
 button.textContent=option;
 
 button.onclick=()=>{
-answerQuestion(
-option,
-button
-);
+answerQuestion(option,button);
 };
 
 box.appendChild(button);
@@ -2620,20 +2362,15 @@ box.appendChild(button);
 
 updateTimer();
 
-timerInterval=
-setInterval(()=>{
+timerInterval=setInterval(()=>{
 
-timeLeft=Math.max(
-0,
-timeLeft-.1
-);
+timeLeft=Math.max(0,timeLeft-.1);
 
 updateTimer();
 
 if(timeLeft<=0){
 
 clearInterval(timerInterval);
-
 timeoutQuestion();
 
 }
@@ -2642,28 +2379,17 @@ timeoutQuestion();
 
 }
 
-
-/* =====================================================
-   TIMER
-===================================================== */
+/* TIMER */
 
 function updateTimer(){
 
-const p=
-timeLeft/maxTime*100;
+const p=timeLeft/maxTime*100;
 
-document.getElementById("timerFill")
-.style.width=p+"%";
+document.getElementById("timerFill").style.width=p+"%";
+document.getElementById("timerText").textContent=Math.ceil(timeLeft)+"s";
 
-document.getElementById("timerText")
-.textContent=
-Math.ceil(timeLeft)+"s";
-
-const fill=
-document.getElementById("timerFill");
-
-const text=
-document.getElementById("timerText");
+const fill=document.getElementById("timerFill");
+const text=document.getElementById("timerText");
 
 if(p<=30){
 
@@ -2684,10 +2410,7 @@ text.style.color="#59baff";
 
 }
 
-
-/* =====================================================
-   RÉPONSE
-===================================================== */
+/* RÉPONSE */
 
 function answerQuestion(selected,button){
 
@@ -2697,11 +2420,9 @@ answered=true;
 
 clearInterval(timerInterval);
 
-const q=
-quizQuestions[currentQuestion];
+const q=quizQuestions[currentQuestion];
 
-document.querySelectorAll(".answer")
-.forEach(b=>{
+document.querySelectorAll(".answer").forEach(b=>{
 
 b.disabled=true;
 
@@ -2715,32 +2436,20 @@ if(selected===q.a){
 button.classList.add("correct");
 
 correctAnswers++;
-
 combo++;
 
-maxCombo=
-Math.max(maxCombo,combo);
+maxCombo=Math.max(maxCombo,combo);
 
-const d=
-levelData(q.level);
+const d=levelData(q.level);
+const mult=getMultiplier();
 
-const mult=
-getMultiplier();
+const timeBonus=Math.round(timeLeft/maxTime*20);
 
-const timeBonus=
-Math.round(
-timeLeft/maxTime*20
-);
-
-const points=
-Math.round(
-d.base*mult
-)+timeBonus;
+const points=Math.round(d.base*mult)+timeBonus;
 
 score+=points;
 
-document.getElementById("feedback")
-.innerHTML=
+document.getElementById("feedback").innerHTML=
 "✅ Correct !";
 
 }else{
@@ -2749,31 +2458,25 @@ button.classList.add("wrong");
 
 combo=0;
 
-document.getElementById("feedback")
-.innerHTML=
+document.getElementById("feedback").innerHTML=
 `❌ Raté ! La bonne réponse était <strong>${q.a}</strong>`;
 
 }
 
-document.getElementById("nextBtn")
-.style.display="inline-block";
+document.getElementById("nextBtn").style.display="inline-block";
 
 }
-
 
 function timeoutQuestion(){
 
 if(answered)return;
 
 answered=true;
-
 combo=0;
 
-const q=
-quizQuestions[currentQuestion];
+const q=quizQuestions[currentQuestion];
 
-document.querySelectorAll(".answer")
-.forEach(b=>{
+document.querySelectorAll(".answer").forEach(b=>{
 
 b.disabled=true;
 
@@ -2782,22 +2485,16 @@ b.classList.add("correct");
 
 });
 
-document.getElementById("feedback")
-.innerHTML=
+document.getElementById("feedback").innerHTML=
 `⏰ Temps écoulé ! La réponse était <strong>${q.a}</strong>`;
 
-document.getElementById("nextBtn")
-.style.display="inline-block";
+document.getElementById("nextBtn").style.display="inline-block";
 
 }
 
+/* SUIVANT */
 
-/* =====================================================
-   SUIVANT
-===================================================== */
-
-document.getElementById("nextBtn")
-.onclick=()=>{
+document.getElementById("nextBtn").onclick=()=>{
 
 currentQuestion++;
 
@@ -2813,26 +2510,18 @@ loadQuestion();
 
 };
 
-
-/* =====================================================
-   FIN QUIZ
-===================================================== */
+/* FIN QUIZ */
 
 async function finishQuiz(){
 
 clearInterval(timerInterval);
 
-document.getElementById("quizGame")
-.style.display="none";
+document.getElementById("quizGame").style.display="none";
+document.getElementById("victory").style.display="block";
 
-document.getElementById("victory")
-.style.display="block";
+document.getElementById("finalQuizScore").textContent=score;
 
-document.getElementById("finalQuizScore")
-.textContent=score;
-
-document.getElementById("resultMessage")
-.textContent=
+document.getElementById("resultMessage").textContent=
 `${correctAnswers}/${quizQuestions.length} bonnes réponses`;
 
 if(username){
@@ -2850,17 +2539,13 @@ window.firebaseDB,
 username,
 mode:currentMode,
 score,
-timestamp:
-window.firebaseServerTimestamp()
+timestamp:window.firebaseServerTimestamp()
 }
 );
 
 }catch(error){
 
-console.error(
-"Firebase résultat:",
-error
-);
+console.error("Firebase résultat:",error);
 
 }
 
@@ -2870,33 +2555,20 @@ await refreshStudentDashboard();
 
 }
 
-
-/* =====================================================
-   RETOUR QUIZ
-===================================================== */
+/* RETOUR */
 
 function backToQuizMenu(){
 
 clearInterval(timerInterval);
 
-document.getElementById("quizGame")
-.style.display="none";
-
-document.getElementById("victory")
-.style.display="none";
-
-document.getElementById("mapQuizArea")
-.style.display="none";
-
-document.getElementById("quizStart")
-.style.display="block";
+document.getElementById("quizGame").style.display="none";
+document.getElementById("victory").style.display="none";
+document.getElementById("mapQuizArea").style.display="none";
+document.getElementById("quizStart").style.display="block";
 
 }
 
-
-/* =====================================================
-   CARTE QUIZ
-===================================================== */
+/* CARTE QUIZ */
 
 function startMapQuiz(){
 
@@ -2904,78 +2576,44 @@ clearInterval(timerInterval);
 
 mapQuizColors={};
 
-document.getElementById("quizStart")
-.style.display="none";
+document.getElementById("quizStart").style.display="none";
+document.getElementById("quizGame").style.display="none";
+document.getElementById("victory").style.display="none";
+document.getElementById("mapQuizArea").style.display="block";
 
-document.getElementById("quizGame")
-.style.display="none";
-
-document.getElementById("victory")
-.style.display="none";
-
-document.getElementById("mapQuizArea")
-.style.display="block";
-
-setTimeout(
-drawQuizMap,
-50
-);
+setTimeout(drawQuizMap,50);
 
 }
-
 
 function selectMapColor(color){
 
 quizMapColor=color;
 
 document.getElementById("redTool")
-.classList.toggle(
-"active",
-color==="primary"
-);
+.classList.toggle("active",color==="primary");
 
 document.getElementById("blueTool")
-.classList.toggle(
-"active",
-color==="secondary"
-);
+.classList.toggle("active",color==="secondary");
 
 }
 
-
 function drawQuizMap(){
 
-const svg=
-d3.select("#quizMap");
+const svg=d3.select("#quizMap");
+const element=document.getElementById("quizMap");
 
-const element=
-document.getElementById("quizMap");
-
-const width=
-element.clientWidth;
-
-const height=
-element.clientHeight;
+const width=element.clientWidth;
+const height=element.clientHeight;
 
 if(width<100)return;
 
-svg.attr(
-"viewBox",
-`0 0 ${width} ${height}`
-);
-
+svg.attr("viewBox",`0 0 ${width} ${height}`);
 svg.selectAll("*").remove();
 
-const projection=
-d3.geoNaturalEarth1()
-.fitSize(
-[width,height],
-{type:"Sphere"}
-);
+const projection=d3.geoNaturalEarth1()
+.fitSize([width,height],{type:"Sphere"});
 
-const path=
-d3.geoPath()
-.projection(projection);
+const path=d3.geoPath().projection(projection);
 
 svg.append("path")
 .datum({type:"Sphere"})
@@ -2988,8 +2626,7 @@ d3.json(
 )
 .then(world=>{
 
-const land=
-topojson.feature(
+const land=topojson.feature(
 world,
 world.objects.countries
 );
@@ -3002,9 +2639,7 @@ svg.selectAll(".quiz-map-country")
 .attr("d",path)
 .attr("fill",d=>{
 
-const id=
-String(d.id)
-.padStart(3,"0");
+const id=String(d.id).padStart(3,"0");
 
 if(mapQuizColors[id]==="primary")
 return "#ff3154";
@@ -3015,15 +2650,11 @@ return "#1683ff";
 return "#173049";
 
 })
-
 .on("click",(event,d)=>{
 
-const id=
-String(d.id)
-.padStart(3,"0");
+const id=String(d.id).padStart(3,"0");
 
-mapQuizColors[id]=
-quizMapColor;
+mapQuizColors[id]=quizMapColor;
 
 d3.select(event.currentTarget)
 .attr(
@@ -3041,7 +2672,6 @@ quizMapLoaded=true;
 
 }
 
-
 function resetMapQuiz(){
 
 mapQuizColors={};
@@ -3053,10 +2683,7 @@ drawQuizMap();
 
 }
 
-
-/* =====================================================
-   VALIDATION CARTE
-===================================================== */
+/* VALIDATION CARTE */
 
 async function validateMapQuiz(){
 
@@ -3065,12 +2692,10 @@ let correct=0;
 
 countries.forEach(c=>{
 
-const selected=
-mapQuizColors[c.id]||null;
+const selected=mapQuizColors[c.id]||null;
 
 const expected=
-c.type==="primary"||
-c.type==="secondary"
+(c.type==="primary"||c.type==="secondary")
 ?c.type
 :null;
 
@@ -3086,26 +2711,19 @@ errors++;
 
 });
 
-const perfect=
-errors===0;
+const perfect=errors===0;
+const earned=perfect?1500:0;
 
-const earned=
-perfect?1500:0;
+document.getElementById("mapQuizResult").style.display="block";
 
-document.getElementById("mapQuizResult")
-.style.display="block";
+document.getElementById("mapQuizScore").textContent=earned;
 
-document.getElementById("mapQuizScore")
-.textContent=earned;
-
-document.getElementById("mapQuizTitle")
-.textContent=
+document.getElementById("mapQuizTitle").textContent=
 perfect
 ?"🎉 Carte parfaite !"
 :"🗺️ Carte terminée";
 
-document.getElementById("mapQuizMessage")
-.textContent=
+document.getElementById("mapQuizMessage").textContent=
 perfect
 ?"Tous les pays ont été correctement coloriés."
 :`${correct}/${countries.length} pays correctement coloriés.`;
@@ -3118,10 +2736,7 @@ await saveMapQuizResult();
 
 }
 
-
-/* =====================================================
-   SAVE CARTE QUIZ
-===================================================== */
+/* SAVE CARTE */
 
 async function saveMapQuizResult(){
 
@@ -3140,8 +2755,7 @@ window.firebaseDB,
 username,
 mode:"Carte Quiz",
 score:1500,
-timestamp:
-window.firebaseServerTimestamp()
+timestamp:window.firebaseServerTimestamp()
 }
 );
 
@@ -3149,41 +2763,30 @@ await refreshStudentDashboard();
 
 }catch(error){
 
-console.error(
-"Erreur Carte Quiz:",
-error
-);
+console.error("Erreur Carte Quiz:",error);
 
 }
 
 }
 
-
-/* =====================================================
-   NOM UTILISATEUR
-===================================================== */
+/* NOM */
 
 function saveUsername(){
 
 const value=
 document.getElementById("usernameInput")
-.value
-.trim();
+.value.trim();
 
 if(!value){
 
 alert("Entre un prénom ou un pseudo.");
-
 return;
 
 }
 
 username=value;
 
-localStorage.setItem(
-"wexUsername",
-username
-);
+localStorage.setItem("wexUsername",username);
 
 updateProfileDisplay();
 
@@ -3193,23 +2796,16 @@ refreshStudentDashboard();
 
 }
 
-
-/* =====================================================
-   OUVRIR CHANGEMENT DE NOM
-===================================================== */
-
 function openUsernameChange(){
 
 if(!username){
 
 alert("Aucun nom enregistré.");
-
 return;
 
 }
 
-const input=
-document.getElementById("changeUsernameInput");
+const input=document.getElementById("changeUsernameInput");
 
 input.value=username;
 
@@ -3223,24 +2819,20 @@ input.select();
 
 }
 
-
 /* =====================================================
    CHANGEMENT DE NOM
-   TRANSFERT FIREBASE COMPLET
+   TRANSFÈRE NOTES + POINTS
 ===================================================== */
 
 async function changeUsername(){
 
-const input=
-document.getElementById("changeUsernameInput");
+const input=document.getElementById("changeUsernameInput");
 
-const newUsername=
-input.value.trim();
+const newUsername=input.value.trim();
 
 if(!newUsername){
 
 alert("Entre un prénom ou un pseudo.");
-
 return;
 
 }
@@ -3248,27 +2840,20 @@ return;
 if(newUsername.length<2){
 
 alert("Le nom doit contenir au moins 2 caractères.");
-
 return;
 
 }
 
 const oldUsername=username;
 
-const oldKey=
-oldUsername.trim().toLowerCase();
-
-const newKey=
-newUsername.trim().toLowerCase();
+const oldKey=oldUsername.trim().toLowerCase();
+const newKey=newUsername.trim().toLowerCase();
 
 if(oldKey===newKey){
 
 username=newUsername;
 
-localStorage.setItem(
-"wexUsername",
-username
-);
+localStorage.setItem("wexUsername",username);
 
 updateProfileDisplay();
 
@@ -3282,20 +2867,13 @@ try{
 
 await window.firebaseReady;
 
-const db=
-window.firebaseDB;
+const db=window.firebaseDB;
 
-
-/* =========================================
-   RÉSULTATS
-========================================= */
+/* NOTES */
 
 const resultsSnap=
 await window.firebaseGetDocs(
-window.firebaseCollection(
-db,
-"results"
-)
+window.firebaseCollection(db,"results")
 );
 
 const resultUpdates=[];
@@ -3314,9 +2892,7 @@ if(user===oldKey){
 resultUpdates.push(
 window.firebaseUpdateDoc(
 docSnap.ref,
-{
-username:newUsername
-}
+{username:newUsername}
 )
 );
 
@@ -3324,17 +2900,11 @@ username:newUsername
 
 });
 
-
-/* =========================================
-   POINTS
-========================================= */
+/* POINTS */
 
 const pointsSnap=
 await window.firebaseGetDocs(
-window.firebaseCollection(
-db,
-"points"
-)
+window.firebaseCollection(db,"points")
 );
 
 const pointUpdates=[];
@@ -3353,9 +2923,7 @@ if(user===oldKey){
 pointUpdates.push(
 window.firebaseUpdateDoc(
 docSnap.ref,
-{
-username:newUsername
-}
+{username:newUsername}
 )
 );
 
@@ -3363,27 +2931,14 @@ username:newUsername
 
 });
 
-
-/* =========================================
-   ATTENDRE TOUTES LES MODIFICATIONS
-========================================= */
-
 await Promise.all([
 ...resultUpdates,
 ...pointUpdates
 ]);
 
-
-/* =========================================
-   SAUVEGARDER LE NOUVEAU NOM
-========================================= */
-
 username=newUsername;
 
-localStorage.setItem(
-"wexUsername",
-username
-);
+localStorage.setItem("wexUsername",username);
 
 updateProfileDisplay();
 
@@ -3397,10 +2952,7 @@ await refreshStudentDashboard();
 
 }catch(error){
 
-console.error(
-"Erreur changement de nom:",
-error
-);
+console.error("Erreur changement de nom:",error);
 
 alert(
 "Impossible de transférer les scores et les points. Vérifie ta connexion puis réessaie."
@@ -3410,36 +2962,24 @@ alert(
 
 }
 
-
-/* =====================================================
-   PROFIL
-===================================================== */
+/* PROFIL */
 
 function updateProfileDisplay(){
 
 const element=
-document.getElementById(
-"currentUsernameDisplay"
-);
+document.getElementById("currentUsernameDisplay");
 
 if(element){
-
-element.textContent=
-username||"-";
-
+element.textContent=username||"-";
 }
 
 }
 
-
-/* =====================================================
-   MODALES
-===================================================== */
+/* MODALES */
 
 function closeModal(id){
 
-const modal=
-document.getElementById(id);
+const modal=document.getElementById(id);
 
 if(modal){
 modal.style.display="none";
@@ -3447,33 +2987,33 @@ modal.style.display="none";
 
 }
 
-
 /* =====================================================
-   PROFESSEUR
+   CODE PROFESSEUR
 ===================================================== */
 
 function checkProfessorCode(){
 
 const code=
 document.getElementById("profCodeInput")
-.value
-.trim();
+.value.trim();
 
 closeModal("profCodeModal");
 
+/* ESPACE POINTS */
+
 if(code==="WEX-POINTS-2026"){
 
-goPage("professorPage");
-
-updateNamesButton();
+goPage("professorPointsPage");
 
 return;
 
 }
 
+/* ESPACE NOTES */
+
 if(code==="WEX-RESULTS-2026"){
 
-goPage("professorPage");
+goPage("professorResultsPage");
 
 updateNamesButton();
 
@@ -3487,28 +3027,25 @@ alert("Code professeur incorrect.");
 
 }
 
-
 /* =====================================================
    AJOUT POINTS
+   COLLECTION : points
 ===================================================== */
 
 async function addProfessorPoints(){
 
 const student=
 document.getElementById("pointStudent")
-.value
-.trim();
+.value.trim();
 
 const amount=
 Number(
-document.getElementById("pointAmount")
-.value
+document.getElementById("pointAmount").value
 );
 
 if(!student){
 
 alert("Entre le nom de l'élève.");
-
 return;
 
 }
@@ -3516,7 +3053,6 @@ return;
 if(!Number.isFinite(amount)||amount<=0){
 
 alert("Entre un nombre de points valide.");
-
 return;
 
 }
@@ -3533,8 +3069,7 @@ window.firebaseDB,
 {
 username:student,
 points:amount,
-timestamp:
-window.firebaseServerTimestamp()
+timestamp:window.firebaseServerTimestamp()
 }
 );
 
@@ -3542,34 +3077,31 @@ document.getElementById("pointsStatus")
 .textContent=
 `✅ ${amount} points ajoutés à ${student}.`;
 
-document.getElementById("pointAmount")
-.value="";
+document.getElementById("pointAmount").value="";
+document.getElementById("pointStudent").value="";
 
 await refreshStudentDashboard();
 
-await loadProfessorResults();
-
 }catch(error){
 
-console.error(error);
+console.error("Erreur ajout points:",error);
 
-alert(
-"Impossible d'ajouter les points."
-);
+alert("Impossible d'ajouter les points.");
 
 }
 
 }
-
 
 /* =====================================================
    RÉSULTATS PROF
+   COLLECTION : results
 ===================================================== */
 
 async function loadProfessorResults(){
 
-const table=
-document.getElementById("resultsTable");
+const table=document.getElementById("resultsTable");
+
+if(!table)return;
 
 table.innerHTML=
 `<tr>
@@ -3598,14 +3130,11 @@ results.push({
 
 id:docSnap.id,
 
-username:
-data.username||"",
+username:data.username||"",
 
-mode:
-data.mode||"",
+mode:data.mode||"",
 
-score:
-Number(data.score||0),
+score:Number(data.score||0),
 
 timestamp:data.timestamp
 
@@ -3615,11 +3144,15 @@ timestamp:data.timestamp
 
 results.sort(
 (a,b)=>
-(b.timestamp?.seconds||0)
--
+(b.timestamp?.seconds||0)-
 (a.timestamp?.seconds||0)
 );
 
+/*
+   Les points restent séparés dans Firebase.
+   Ils sont seulement additionnés à l'affichage
+   du score final.
+*/
 
 const pointsSnap=
 await window.firebaseGetDocs(
@@ -3641,12 +3174,10 @@ String(data.username||"")
 .toLowerCase();
 
 bonusMap[key]=
-(bonusMap[key]||0)
-+
+(bonusMap[key]||0)+
 Number(data.points||0);
 
 });
-
 
 table.innerHTML="";
 
@@ -3654,69 +3185,53 @@ if(!results.length){
 
 table.innerHTML=
 `<tr>
-<td colspan="5">
-Aucun résultat.
-</td>
+<td colspan="5">Aucun résultat.</td>
 </tr>`;
 
 return;
 
 }
 
-
-/* =========================================
-   CRÉATION DES NOMS ANONYMES
-========================================= */
+/* NOMS ANONYMES */
 
 const uniqueNames=[];
 
 results.forEach(result=>{
 
 const key=
-result.username
+String(result.username||"")
 .trim()
 .toLowerCase();
 
-if(
-!uniqueNames.includes(key)
-){
-
+if(!uniqueNames.includes(key)){
 uniqueNames.push(key);
-
 }
 
 });
 
-
-/* =========================================
-   AFFICHAGE
-========================================= */
+/* AFFICHAGE */
 
 results.forEach(result=>{
 
 const key=
-result.username
+String(result.username||"")
 .trim()
 .toLowerCase();
 
-const bonus=
-bonusMap[key]||0;
+const bonus=bonusMap[key]||0;
 
 const finalScore=
 result.score+bonus;
 
-const tr=
-document.createElement("tr");
+const tr=document.createElement("tr");
 
 let date="";
 
 if(result.timestamp?.seconds){
 
-date=
-new Date(
+date=new Date(
 result.timestamp.seconds*1000
-)
-.toLocaleString("fr-FR");
+).toLocaleString("fr-FR");
 
 }
 
@@ -3730,13 +3245,9 @@ namesHidden
 
 tr.innerHTML=`
 
-<td>
-${displayedName}
-</td>
+<td>${displayedName}</td>
 
-<td>
-${escapeHTML(result.mode)}
-</td>
+<td>${escapeHTML(result.mode)}</td>
 
 <td>
 <strong style="color:#59baff">
@@ -3744,9 +3255,7 @@ ${finalScore}
 </strong>
 </td>
 
-<td>
-${date}
-</td>
+<td>${date}</td>
 
 <td>
 
@@ -3766,7 +3275,7 @@ table.appendChild(tr);
 
 }catch(error){
 
-console.error(error);
+console.error("Résultats:",error);
 
 table.innerHTML=
 `<tr>
@@ -3779,49 +3288,23 @@ Impossible de charger les résultats.
 
 }
 
-
 /* =====================================================
-   SUPPRIMER RESULTAT + POINTS
+   SUPPRIMER UNE NOTE
+   IMPORTANT :
+   NE SUPPRIME PAS LES POINTS
 ===================================================== */
 
 async function deleteProfessorResult(id){
 
 if(!confirm(
-"Supprimer ce résultat et tous les points de cet élève ?"
+"Supprimer uniquement cette note ? Les points de l'élève seront conservés."
 ))return;
 
 try{
 
 await window.firebaseReady;
 
-const db=
-window.firebaseDB;
-
-const resultsSnap=
-await window.firebaseGetDocs(
-window.firebaseCollection(
-db,
-"results"
-)
-);
-
-let student="";
-
-resultsSnap.forEach(docSnap=>{
-
-if(docSnap.id===id){
-
-const data=
-docSnap.data();
-
-student=
-String(data.username||"")
-.trim()
-.toLowerCase();
-
-}
-
-});
+const db=window.firebaseDB;
 
 await window.firebaseDeleteDoc(
 window.firebaseDoc(
@@ -3831,63 +3314,22 @@ id
 )
 );
 
-const pointsSnap=
-await window.firebaseGetDocs(
-window.firebaseCollection(
-db,
-"points"
-)
-);
-
-const deletions=[];
-
-pointsSnap.forEach(docSnap=>{
-
-const data=
-docSnap.data();
-
-const pointUser=
-String(data.username||"")
-.trim()
-.toLowerCase();
-
-if(pointUser===student){
-
-deletions.push(
-window.firebaseDeleteDoc(
-window.firebaseDoc(
-db,
-"points",
-docSnap.id
-)
-)
-);
-
-}
-
-});
-
-await Promise.all(deletions);
-
 await refreshStudentDashboard();
 
 await loadProfessorResults();
 
 }catch(error){
 
-console.error(error);
+console.error("Erreur suppression note:",error);
 
-alert(
-"Impossible de supprimer le résultat."
-);
+alert("Impossible de supprimer cette note.");
 
 }
 
 }
-
 
 /* =====================================================
-   DASHBOARD ÉLÈVE
+   DASHBOARD
 ===================================================== */
 
 async function refreshStudentDashboard(){
@@ -3899,9 +3341,7 @@ try{
 await window.firebaseReady;
 
 const normalized=
-username
-.trim()
-.toLowerCase();
+username.trim().toLowerCase();
 
 const resultsSnap=
 await window.firebaseGetDocs(
@@ -3915,8 +3355,7 @@ let latest=null;
 
 resultsSnap.forEach(docSnap=>{
 
-const data=
-docSnap.data();
+const data=docSnap.data();
 
 const user=
 String(data.username||"")
@@ -3930,8 +3369,7 @@ data.timestamp?.seconds||0;
 
 if(
 !latest||
-seconds>
-(latest.timestamp?.seconds||0)
+seconds>(latest.timestamp?.seconds||0)
 ){
 
 latest={
@@ -3942,7 +3380,6 @@ timestamp:data.timestamp
 }
 
 });
-
 
 const pointsSnap=
 await window.firebaseGetDocs(
@@ -3956,8 +3393,7 @@ let bonus=0;
 
 pointsSnap.forEach(docSnap=>{
 
-const data=
-docSnap.data();
+const data=docSnap.data();
 
 const user=
 String(data.username||"")
@@ -3966,52 +3402,36 @@ String(data.username||"")
 
 if(user===normalized){
 
-bonus+=
-Number(data.points||0);
+bonus+=Number(data.points||0);
 
 }
 
 });
 
-
-const quizScore=
-latest
-?latest.score
-:0;
-
-const finalScore=
-quizScore+bonus;
+const quizScore=latest?latest.score:0;
+const finalScore=quizScore+bonus;
 
 document.getElementById(
 "homeQuizScore"
-).textContent=
-quizScore;
+).textContent=quizScore;
 
 document.getElementById(
 "homeBonusPoints"
-).textContent=
-bonus;
+).textContent=bonus;
 
 document.getElementById(
 "homeFinalScore"
-).textContent=
-finalScore;
+).textContent=finalScore;
 
 }catch(error){
 
-console.error(
-"Dashboard:",
-error
-);
+console.error("Dashboard:",error);
 
 }
 
 }
 
-
-/* =====================================================
-   ESCAPE HTML
-===================================================== */
+/* ESCAPE */
 
 function escapeHTML(value){
 
@@ -4024,26 +3444,19 @@ return String(value)
 
 }
 
-
-/* =====================================================
-   INITIALISATION
-===================================================== */
+/* INITIALISATION */
 
 renderCountries(countries);
 
 updateNamesButton();
-
 updateProfileDisplay();
 
 if(!username){
 
-setTimeout(
-()=>{
+setTimeout(()=>{
 document.getElementById("usernameModal")
 .style.display="flex";
-},
-400
-);
+},400);
 
 }else{
 
@@ -4056,33 +3469,26 @@ refreshStudentDashboard,
 3000
 );
 
-
-/* =====================================================
-   REDIMENSIONNEMENT
-===================================================== */
+/* RESIZE */
 
 window.addEventListener("resize",()=>{
 
 if(
-document
-.getElementById("mapPage")
+document.getElementById("mapPage")
 .classList.contains("active")
 ){
 
 mapLoaded=false;
-
 drawMap();
 
 }
 
 if(
-document
-.getElementById("mapQuizArea")
+document.getElementById("mapQuizArea")
 .style.display==="block"
 ){
 
 quizMapLoaded=false;
-
 drawQuizMap();
 
 }
