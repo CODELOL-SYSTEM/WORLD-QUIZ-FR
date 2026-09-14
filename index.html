@@ -4,404 +4,684 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>World English Explorer</title>
-<script src="https://d3js.org/d3.v7.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
 
 <style>
-*{box-sizing:border-box}
-html,body{margin:0;padding:0}
-body{font-family:Arial,Helvetica,sans-serif;background:#02060d;color:#fff;overflow-x:hidden}
-button,input,select{font:inherit}
-:root{--blue:#1683ff;--blue2:#59baff;--red:#ff3154;--green:#50e99b;--yellow:#ffd04d;--panel:#07111f;--panel2:#0a1728;--border:#173653}
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
 
-nav{position:fixed;top:0;left:0;right:0;height:70px;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 25px;background:rgba(2,6,13,.96);backdrop-filter:blur(15px);border-bottom:1px solid #12304d}
-.logo{font-size:20px;font-weight:1000;white-space:nowrap}.logo span{color:var(--blue)}
-.navlinks{display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
-.navlinks button,.prof-btn{background:#071525;color:#c9ddf5;border:1px solid #163957;padding:10px 13px;border-radius:10px;cursor:pointer;transition:.2s}
-.navlinks button:hover,.navlinks button.active,.prof-btn:hover{border-color:var(--blue);color:#fff;background:#0a1c30}
-.page{display:none;min-height:100vh;padding:105px 5% 50px;animation:pageIn .18s ease}.page.active{display:block}
-@keyframes pageIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
-.hero{min-height:calc(100vh - 120px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:radial-gradient(circle at 50% 25%,rgba(22,131,255,.18),transparent 35%),radial-gradient(circle at 80% 80%,rgba(255,49,84,.08),transparent 30%)}
-.hero h1{font-size:clamp(42px,8vw,88px);margin:0;font-weight:1000;letter-spacing:-3px}.hero h1 span{color:var(--blue)}
-.hero p{max-width:760px;color:#91a9c3;font-size:18px;line-height:1.6}
-.big-btn{border:0;border-radius:14px;padding:15px 24px;background:linear-gradient(135deg,#1683ff,#0758c4);color:#fff;font-weight:900;cursor:pointer;box-shadow:0 0 25px rgba(22,131,255,.2);transition:.2s}
-.big-btn:hover{transform:translateY(-2px);filter:brightness(1.1)}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;max-width:900px;width:100%;margin:35px auto 0}
-.stat,.result{background:linear-gradient(145deg,#07111f,#050c16);border:1px solid var(--border);border-radius:18px;padding:20px;text-align:center}
-.stat strong,.result strong{display:block;font-size:30px;margin-bottom:5px}.stat span,.result span{color:#7892ae;font-size:13px}
-.dashboard{max-width:1000px;margin:35px auto 0}.result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
-.profile-btn-wrap{text-align:center;margin-top:20px}
-.title{text-align:center;margin-bottom:30px}.title h2{font-size:42px;margin:0 0 10px}.title p{color:#8199b2}
-.search{width:100%;max-width:600px;display:block;margin:0 auto 25px;background:#071321;color:white;border:1px solid #1b3b5a;border-radius:12px;padding:14px 17px;outline:none}.search:focus{border-color:var(--blue)}
-.country-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:15px}
-.country{background:linear-gradient(145deg,#07111f,#050b14);border:1px solid #163451;border-radius:17px;padding:18px;transition:.2s;position:relative;overflow:hidden}.country:hover{transform:translateY(-4px);border-color:#3977aa}
-.primary-country{box-shadow:inset 3px 0 var(--red)}.secondary-country{box-shadow:inset 3px 0 var(--blue)}.other-country{box-shadow:inset 3px 0 #31475d}
-.flag{font-size:42px}.country h3{margin:10px 0 8px}.country p{color:#91a9c3;line-height:1.6;font-size:14px}
-.country-tag{display:inline-block;border-radius:999px;padding:6px 9px;font-size:11px;font-weight:800}.red-tag{background:#40121d;color:#ff6b83}.blue-tag{background:#092b50;color:#55b7ff}.gray-tag{background:#172331;color:#92a4b7}
-.map-wrap{position:relative;max-width:1300px;margin:auto;background:#030b15;border:1px solid #153652;border-radius:20px;overflow:hidden}
-#worldMap{width:100%;height:650px;display:block;cursor:grab}#worldMap:active{cursor:grabbing}
-.country-path{stroke:#0a2038;stroke-width:.6;cursor:pointer}.country-path:hover{filter:brightness(1.35)}
-.country-path.selected-country{stroke:#fff!important;stroke-width:2.7px!important;filter:drop-shadow(0 0 5px #fff)}
-.map-tooltip{position:fixed;z-index:2000;display:none;pointer-events:none;background:#06111f;border:1px solid #32618b;border-radius:10px;padding:10px 13px;font-size:13px;box-shadow:0 8px 30px #0008}
-.map-controls{display:flex;gap:8px;position:absolute;right:15px;bottom:15px;z-index:10}.map-controls button{width:44px;height:44px;border:1px solid #255277;border-radius:10px;background:#061525;color:#fff;cursor:pointer;font-size:20px}
-.legend{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;padding:15px;color:#9bb0c5;font-size:13px}.legend span{display:flex;align-items:center;gap:6px}.dot{width:13px;height:13px;border-radius:50%;display:inline-block}.dot.red{background:var(--red)}.dot.blue{background:var(--blue)}.dot.gray{background:#173049}
-.quiz-modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;max-width:1100px;margin:auto}
-.mode{background:linear-gradient(145deg,#081525,#040b14);border:1px solid #183754;border-radius:18px;padding:22px;cursor:pointer;transition:.2s}.mode:hover{transform:translateY(-4px);border-color:var(--blue)}.mode .icon{font-size:35px}.mode h3{margin:12px 0 7px}.mode p{color:#8199b2;font-size:13px;line-height:1.5}
-.difficulty-easy{border-color:#26744e}.difficulty-medium{border-color:#7d681e}.difficulty-hard{border-color:#853044}.difficulty-expert{border-color:#a5213e;box-shadow:0 0 20px rgba(255,49,84,.08)}
-.quiz-box{max-width:900px;margin:auto}.quiz-header{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:15px}.quiz-pill{padding:8px 12px;border-radius:999px;background:#0a192b;border:1px solid #1c405f;color:#9fb5ca;font-size:13px}
-.progress{width:100%;height:7px;background:#0a1827;border-radius:99px;overflow:hidden;margin-bottom:20px}.progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--red));transition:.2s}
-.timer{height:9px;background:#0a1827;border-radius:99px;overflow:hidden;margin:15px 0 6px}.timer-fill{height:100%;background:var(--blue);width:100%}.timer-text{text-align:right;color:#59baff;font-weight:900;font-size:13px}
-.question-card{background:linear-gradient(145deg,#081524,#040a12);border:1px solid #183754;border-radius:22px;padding:30px;text-align:center}.level{display:inline-block;padding:7px 12px;border-radius:999px;font-weight:900;font-size:12px}.easy{background:#123a29;color:#50e99b}.medium{background:#413615;color:#ffd04d}.hard{background:#421321;color:#ff7187}.expert{background:#4d0b20;color:#ff4d72}
-.question-card h2{font-size:clamp(22px,4vw,35px);line-height:1.3;margin:25px 0}.answers{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-.answer{padding:15px;border-radius:13px;border:1px solid #21425f;background:#071525;color:#eaf4ff;cursor:pointer;transition:.15s}.answer:hover:not(:disabled){border-color:var(--blue);background:#0a1d31}.answer:disabled{cursor:default}.answer.correct{background:#103c2b;border-color:var(--green);color:#8ff5bf}.answer.wrong{background:#451420;border-color:var(--red);color:#ff879a}
-.feedback{min-height:35px;margin:18px 0 4px;color:#a9bdd1}.next-btn{display:none;margin-top:10px}.victory{display:none;max-width:650px;margin:30px auto;text-align:center;background:#071321;border:1px solid #1e4668;border-radius:22px;padding:35px}.victory h2{font-size:45px;margin:0 0 10px}.final-number{font-size:60px;font-weight:1000;color:#59baff}
-.map-quiz{max-width:1200px;margin:auto}.map-quiz-info{background:#071321;border:1px solid #173653;border-radius:16px;padding:18px;margin-bottom:15px;text-align:center;color:#9eb3c8}.map-quiz-tools{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin:15px 0}
-.color-tool{padding:12px 20px;border-radius:10px;border:2px solid #244765;background:#081626;color:#fff;cursor:pointer;font-weight:900}.color-tool.active.red-tool{border-color:var(--red);background:#39111a}.color-tool.active.blue-tool{border-color:var(--blue);background:#09294a}
-#quizMap{width:100%;height:650px;display:block;background:#030b15;border-radius:18px;border:1px solid #183754}.quiz-map-country{stroke:#0c2539;stroke-width:.5;cursor:pointer}.quiz-map-country:hover{stroke:#fff;stroke-width:1.5}
-.professor{max-width:1100px;margin:auto}.prof-panel{background:#071321;border:1px solid #183754;border-radius:18px;padding:22px;margin-bottom:18px}.prof-panel h3{margin-top:0}
-.prof-form{display:flex;gap:10px;flex-wrap:wrap}.prof-form input,.prof-form select{flex:1;min-width:180px;background:#030b15;border:1px solid #21425f;color:#fff;padding:13px;border-radius:10px;outline:none}
-.prof-form select option{background:#071321}.prof-table{width:100%;border-collapse:collapse;margin-top:15px}.prof-table th,.prof-table td{padding:12px;border-bottom:1px solid #17304a;text-align:left}.prof-table th{color:#70baff}.prof-table td{color:#a6b9cc}
-.delete-btn{border:1px solid #773044;background:#35101a;color:#ff7a90;padding:7px 10px;border-radius:8px;cursor:pointer}.name-control{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:15px}.name-status{color:#7892ae;font-size:13px}
-.code-card{background:linear-gradient(145deg,#081525,#040b14);border:1px solid #183754;border-radius:15px;padding:17px;margin-top:10px;display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}.code-value{font-size:22px;font-weight:1000;color:#59baff;letter-spacing:2px}.code-name{color:#9eb3c8}.code-copy{padding:9px 13px;border:1px solid #245277;border-radius:9px;background:#0a1c30;color:#fff;cursor:pointer}
-.danger-panel{background:linear-gradient(145deg,#17070b,#08090e);border:2px solid #ff3154;border-radius:20px;padding:25px;box-shadow:0 0 35px rgba(255,49,84,.12)}.danger-panel h2{color:#ff536f}.danger-button{width:100%;padding:18px;border:0;border-radius:14px;background:#d90000;color:#fff;font-weight:1000;cursor:pointer}.danger-button:hover{background:#ff0000}.danger-warning{color:#a9b9c9;line-height:1.6}
-.modal{position:fixed;inset:0;z-index:3000;display:none;align-items:center;justify-content:center;background:#000b;padding:20px}.modal-card{width:min(430px,100%);background:#071321;border:1px solid #214766;border-radius:20px;padding:25px;box-shadow:0 20px 80px #000}.modal-card h2{margin-top:0}.modal-card input{width:100%;padding:13px;background:#030b15;color:#fff;border:1px solid #244a69;border-radius:10px;outline:none;margin:10px 0}.modal-actions{display:flex;gap:10px;margin-top:12px}.modal-actions button{flex:1}.hidden{display:none!important}
-@media(max-width:800px){nav{height:auto;min-height:70px;padding:10px;gap:10px}.logo{font-size:15px}.navlinks{gap:4px}.navlinks button,.prof-btn{padding:8px;font-size:11px}.page{padding:105px 4% 40px}.stats,.result-grid{grid-template-columns:1fr}.answers{grid-template-columns:1fr}#worldMap,#quizMap{height:450px}.question-card{padding:20px}}
+:root{
+  --bg:#07111f;
+  --bg2:#0b1728;
+  --card:#101f33;
+  --card2:#14263e;
+  --blue:#42a5ff;
+  --blue2:#1677d2;
+  --cyan:#43e8ff;
+  --green:#39e58c;
+  --red:#ff5571;
+  --yellow:#ffd65a;
+  --text:#f4f8ff;
+  --muted:#91a4bb;
+  --border:rgba(255,255,255,.09);
+  --shadow:0 15px 50px rgba(0,0,0,.35);
+}
+
+html,body{
+  width:100%;
+  min-height:100%;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,Arial,sans-serif;
+}
+
+body{
+  overflow-x:hidden;
+}
+
+button,input,select{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+.navbar{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  height:72px;
+  z-index:1000;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 22px;
+  background:rgba(5,13,24,.94);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(16px);
+}
+
+.logo{
+  font-size:21px;
+  font-weight:900;
+  white-space:nowrap;
+  color:#fff;
+}
+
+.logo span{
+  color:var(--cyan);
+}
+
+.navlinks{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+
+.navlinks::-webkit-scrollbar{
+  display:none;
+}
+
+.navlinks button{
+  border:0;
+  background:transparent;
+  color:#aebed0;
+  padding:11px 13px;
+  border-radius:12px;
+  white-space:nowrap;
+  transition:.2s;
+}
+
+.navlinks button:hover,
+.navlinks button.active{
+  background:#122943;
+  color:#fff;
+}
+
+.navlinks .code-nav{
+  color:var(--yellow);
+}
+
+.navlinks .prof-btn{
+  background:linear-gradient(135deg,#287bd7,#174f9d);
+  color:#fff;
+}
+
+.page{
+  display:none;
+  min-height:100vh;
+  padding:105px 24px 45px;
+  max-width:1400px;
+  margin:auto;
+}
+
+.page.active{
+  display:block;
+}
+
+.hero{
+  min-height:480px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+
+.hero-inner{
+  max-width:900px;
+}
+
+.hero h1{
+  font-size:clamp(42px,7vw,88px);
+  line-height:.95;
+  font-weight:1000;
+  letter-spacing:-4px;
+  margin-bottom:25px;
+}
+
+.hero h1 span{
+  color:var(--cyan);
+}
+
+.hero p{
+  max-width:700px;
+  margin:auto;
+  color:var(--muted);
+  font-size:18px;
+  line-height:1.7;
+}
+
+.big-btn{
+  margin-top:24px;
+  border:0;
+  border-radius:15px;
+  padding:15px 23px;
+  color:#fff;
+  font-weight:800;
+  background:linear-gradient(135deg,var(--blue),var(--blue2));
+  box-shadow:0 10px 30px rgba(39,135,230,.2);
+  transition:.2s;
+}
+
+.big-btn:hover{
+  transform:translateY(-2px);
+  filter:brightness(1.08);
+}
+
+.big-btn.green{
+  background:linear-gradient(135deg,#25d77d,#13995b);
+}
+
+.big-btn.red{
+  background:linear-gradient(135deg,#ff4564,#b81838);
+}
+
+.big-btn.dark{
+  background:#17283d;
+}
+
+.section-title{
+  margin-bottom:24px;
+}
+
+.section-title h2{
+  font-size:36px;
+  font-weight:950;
+}
+
+.section-title p{
+  color:var(--muted);
+  margin-top:7px;
+}
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:18px;
+}
+
+.card{
+  background:linear-gradient(145deg,var(--card),var(--bg2));
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:23px;
+  box-shadow:var(--shadow);
+}
+
+.card h3{
+  margin-bottom:10px;
+}
+
+.card p{
+  color:var(--muted);
+  line-height:1.6;
+}
+
+.stat-card{
+  position:relative;
+  overflow:hidden;
+}
+
+.stat-card::after{
+  content:"";
+  position:absolute;
+  width:100px;
+  height:100px;
+  border-radius:50%;
+  background:rgba(66,165,255,.08);
+  right:-25px;
+  top:-25px;
+}
+
+.stat-value{
+  font-size:36px;
+  font-weight:950;
+  color:var(--cyan);
+}
+
+.profile-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+
+.profile-name{
+  font-size:32px;
+  font-weight:900;
+  margin:10px 0;
+}
+
+.code-display{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  background:#0a192b;
+  border:1px solid rgba(255,214,90,.2);
+  color:var(--yellow);
+  padding:9px 13px;
+  border-radius:11px;
+  font-weight:800;
+}
+
+.empty-code{
+  color:var(--muted);
+}
+
+input,select{
+  width:100%;
+  border:1px solid var(--border);
+  outline:none;
+  background:#091729;
+  color:#fff;
+  padding:14px 15px;
+  border-radius:12px;
+  margin-top:10px;
+}
+
+input:focus,select:focus{
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(66,165,255,.1);
+}
+
+.form-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.map-box{
+  min-height:520px;
+  border:1px solid var(--border);
+  border-radius:22px;
+  background:
+    radial-gradient(circle at 50% 30%,rgba(45,145,255,.14),transparent 40%),
+    #071525;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+
+.world-placeholder{
+  text-align:center;
+  padding:30px;
+}
+
+.world-placeholder .globe{
+  font-size:130px;
+  margin-bottom:20px;
+}
+
+.country-tools{
+  display:flex;
+  gap:10px;
+  margin-bottom:20px;
+}
+
+.country-tools input{
+  margin:0;
+}
+
+.country-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+  gap:12px;
+}
+
+.country-card{
+  background:#0d1d31;
+  border:1px solid var(--border);
+  border-radius:15px;
+  padding:15px;
+  transition:.2s;
+}
+
+.country-card:hover{
+  transform:translateY(-2px);
+  border-color:rgba(66,165,255,.35);
+}
+
+.country-flag{
+  font-size:32px;
+  margin-bottom:8px;
+}
+
+.country-name{
+  font-weight:850;
+}
+
+.country-capital{
+  color:var(--muted);
+  font-size:13px;
+  margin-top:5px;
+}
+
+.quiz-menu{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:16px;
+}
+
+.quiz-option{
+  border:1px solid var(--border);
+  background:linear-gradient(145deg,#10233a,#0b1727);
+  border-radius:20px;
+  padding:24px;
+  text-align:left;
+  color:#fff;
+  transition:.2s;
+}
+
+.quiz-option:hover{
+  border-color:rgba(67,232,255,.4);
+  transform:translateY(-3px);
+}
+
+.quiz-icon{
+  font-size:42px;
+  margin-bottom:15px;
+}
+
+.quiz-option h3{
+  margin-bottom:7px;
+}
+
+.quiz-option p{
+  color:var(--muted);
+  line-height:1.5;
+}
+
+.quiz-game{
+  max-width:850px;
+  margin:auto;
+}
+
+.quiz-top{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:15px;
+  color:var(--muted);
+}
+
+.progress{
+  width:100%;
+  height:8px;
+  background:#122238;
+  border-radius:100px;
+  overflow:hidden;
+  margin-bottom:25px;
+}
+
+.progress-bar{
+  height:100%;
+  width:0;
+  background:linear-gradient(90deg,var(--blue),var(--cyan));
+  transition:.3s;
+}
+
+.question-card{
+  background:linear-gradient(145deg,#102239,#0b1728);
+  border:1px solid var(--border);
+  border-radius:24px;
+  padding:28px;
+}
+
+.question{
+  font-size:26px;
+  font-weight:900;
+  line-height:1.3;
+  margin-bottom:23px;
+}
+
+.answers{
+  display:grid;
+  gap:11px;
+}
+
+.answer{
+  width:100%;
+  text-align:left;
+  border:1px solid var(--border);
+  border-radius:13px;
+  padding:15px;
+  background:#0b1b2e;
+  color:#fff;
+  transition:.2s;
+}
+
+.answer:hover{
+  background:#122943;
+}
+
+.answer.correct{
+  background:rgba(57,229,140,.18);
+  border-color:var(--green);
+}
+
+.answer.wrong{
+  background:rgba(255,85,113,.16);
+  border-color:var(--red);
+}
+
+.result-box{
+  text-align:center;
+  padding:35px;
+}
+
+.result-score{
+  font-size:70px;
+  font-weight:1000;
+  color:var(--cyan);
+}
+
+.prof-panel{
+  background:linear-gradient(145deg,#101f33,#0a1626);
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:24px;
+  margin-bottom:20px;
+}
+
+.prof-panel h3{
+  margin-bottom:8px;
+}
+
+.prof-panel p{
+  color:var(--muted);
+}
+
+.table-wrap{
+  overflow-x:auto;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:15px;
+}
+
+th,td{
+  padding:13px 12px;
+  text-align:left;
+  border-bottom:1px solid var(--border);
+}
+
+th{
+  color:var(--cyan);
+  font-size:13px;
+}
+
+td{
+  color:#dce7f3;
+}
+
+.code-list{
+  display:grid;
+  gap:12px;
+  margin-top:18px;
+}
+
+.code-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  padding:16px;
+  border-radius:15px;
+  background:#0b192b;
+  border:1px solid var(--border);
+}
+
+.code-row strong{
+  color:var(--yellow);
+}
+
+.modal{
+  position:fixed;
+  inset:0;
+  z-index:5000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:rgba(0,0,0,.72);
+  backdrop-filter:blur(8px);
+}
+
+.modal-card{
+  width:min(500px,100%);
+  background:linear-gradient(145deg,#12243a,#091522);
+  border:1px solid var(--border);
+  border-radius:23px;
+  padding:27px;
+  box-shadow:0 25px 80px rgba(0,0,0,.55);
+}
+
+.modal-card h2{
+  font-size:28px;
+  margin-bottom:8px;
+}
+
+.modal-card p{
+  color:var(--muted);
+  line-height:1.5;
+}
+
+.modal-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.modal-actions .big-btn{
+  flex:1;
+  min-width:150px;
+}
+
+.status{
+  min-height:22px;
+  margin-top:12px;
+  font-size:14px;
+  font-weight:700;
+}
+
+.status.success{
+  color:var(--green);
+}
+
+.status.error{
+  color:var(--red);
+}
+
+.warning{
+  padding:15px;
+  background:rgba(255,85,113,.08);
+  border:1px solid rgba(255,85,113,.2);
+  border-radius:14px;
+  color:#ffb1bd;
+  line-height:1.5;
+  margin-top:15px;
+}
+
+@media(max-width:900px){
+  .navbar{
+    height:65px;
+    padding:0 10px;
+  }
+
+  .logo{
+    font-size:16px;
+  }
+
+  .navlinks button{
+    padding:9px 8px;
+    font-size:12px;
+  }
+
+  .page{
+    padding:90px 14px 35px;
+  }
+
+  .profile-grid{
+    grid-template-columns:1fr;
+  }
+
+  .form-row{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:550px){
+  .hero h1{
+    letter-spacing:-2px;
+  }
+
+  .question{
+    font-size:21px;
+  }
+
+  .result-score{
+    font-size:55px;
+  }
+}
 </style>
-</head>
-<body>
-
-<nav>
-<div class="logo">WORLD <span>ENGLISH</span> EXPLORER</div>
-<div class="navlinks">
-<button data-page="homePage" onclick="goPage('homePage')">Accueil</button>
-<button data-page="mapPage" onclick="goPage('mapPage')">Carte</button>
-<button data-page="countriesPage" onclick="goPage('countriesPage')">Pays</button>
-<button data-page="quizPage" onclick="goPage('quizPage')">Quiz</button>
-<button data-page="profilePage" onclick="goPage('profilePage')">👤 Profil</button>
-<button class="prof-btn" onclick="openProfessor()">👨‍🏫 Prof</button>
-</div>
-</nav>
-
-<main id="homePage" class="page active">
-<div class="hero">
-<h1>WORLD <span>ENGLISH</span> EXPLORER</h1>
-<p>Explore le monde anglophone, découvre les pays, leurs capitales et entraîne-toi avec des quiz de plus en plus difficiles.</p>
-<button class="big-btn" onclick="goPage('quizPage')">🎯 Commencer les quiz</button>
-<div class="stats">
-<div class="stat"><strong id="countryCount">195</strong><span>Pays étudiés</span></div>
-<div class="stat"><strong>🔴</strong><span>Anglais principal</span></div>
-<div class="stat"><strong>🔵</strong><span>Anglais seconde langue / officiel</span></div>
-</div>
-<div class="dashboard">
-<h2>📊 Mon score</h2>
-<div class="result-grid">
-<div class="result"><strong id="homeQuizScore">0</strong><span>⭐ Score du quiz</span></div>
-<div class="result"><strong id="homeBonusPoints">0</strong><span>➕ Points ajoutés</span></div>
-<div class="result"><strong id="homeFinalScore">0</strong><span>🏆 Score final</span></div>
-</div>
-<div class="profile-btn-wrap">
-<button class="big-btn" style="background:#162333" onclick="openUsernameChange()">✏️ Changer mon nom</button>
-</div>
-</div>
-</div>
-</main>
-
-<main id="profilePage" class="page">
-<div class="title"><h2>👤 Mon profil</h2><p>Modifie ton prénom, ton pseudo ou ton code élève.</p></div>
-<div class="prof-panel" style="max-width:600px;margin:auto">
-<h3>✏️ Mon nom</h3>
-<p style="color:#8199b2">Nom actuel : <strong id="currentUsernameDisplay">-</strong></p>
-<button class="big-btn" onclick="openUsernameChange()">✏️ Modifier mon nom</button>
-<hr style="border-color:#173653;margin:25px 0">
-<h3>🔑 Mon code élève</h3>
-<p style="color:#8199b2">Code actuel : <strong id="currentStudentCodeDisplay">-</strong></p>
-<button class="big-btn" onclick="openStudentCodeChange()">🔑 Changer mon code</button>
-<p id="profileStatus" class="name-status"></p>
-</div>
-</main>
-
-<main id="mapPage" class="page">
-<div class="title"><h2>🗺️ Carte du monde</h2><p>Clique sur un pays pour afficher un contour blanc.</p></div>
-<div class="legend">
-<span><i class="dot red"></i>Anglais principal</span>
-<span><i class="dot blue"></i>Anglais seconde langue / officiel</span>
-<span><i class="dot gray"></i>Autre pays</span>
-</div>
-<div class="map-wrap">
-<svg id="worldMap"></svg>
-<div class="map-controls"><button onclick="changeMapZoom(1)">+</button><button onclick="changeMapZoom(-1)">−</button></div>
-</div>
-<div id="mapTooltip" class="map-tooltip"></div>
-</main>
-
-<main id="countriesPage" class="page">
-<div class="title"><h2>🌍 Les pays</h2><p>Les 195 pays avec leur capitale et leur statut linguistique.</p></div>
-<input id="countrySearch" class="search" placeholder="🔎 Rechercher un pays...">
-<div id="countryGrid" class="country-grid"></div>
-</main>
-
-<main id="quizPage" class="page">
-<div id="quizStart">
-<div class="title"><h2>🎯 Quiz</h2><p>Choisis ton mode. Les niveaux difficiles rapportent beaucoup plus.</p></div>
-<div class="quiz-modes">
-<div class="mode difficulty-easy" onclick="startQuiz('easy')"><div class="icon">🟢</div><h3>Facile</h3><p>Questions simples pour commencer.</p></div>
-<div class="mode difficulty-medium" onclick="startQuiz('medium')"><div class="icon">🟡</div><h3>Moyen</h3><p>Questions intermédiaires.</p></div>
-<div class="mode difficulty-hard" onclick="startQuiz('hard')"><div class="icon">🔴</div><h3>Difficile</h3><p>Questions plus complexes.</p></div>
-<div class="mode difficulty-expert" onclick="startQuiz('expert')"><div class="icon">💀</div><h3>Expert</h3><p>Le niveau le plus difficile.</p></div>
-<div class="mode" onclick="startQuiz('classic')"><div class="icon">🌎</div><h3>Classique</h3><p>Un mélange de difficultés.</p></div>
-<div class="mode" onclick="startQuiz('capitals')"><div class="icon">🏛️</div><h3>Capitales</h3><p>Retrouve le pays correspondant à une capitale.</p></div>
-<div class="mode" onclick="startQuiz('countries')"><div class="icon">🌍</div><h3>Pays</h3><p>Identifie le pays à partir de sa capitale.</p></div>
-<div class="mode" onclick="startQuiz('challenge')"><div class="icon">🔥</div><h3>Challenge</h3><p>Un mélange plus corsé.</p></div>
-<div class="mode" onclick="startMapQuiz()"><div class="icon">🗺️</div><h3>Carte Quiz</h3><p>Colorie les pays anglophones.</p></div>
-</div>
-</div>
-
-<div id="quizGame" style="display:none">
-<div class="quiz-box">
-<div class="quiz-header"><span id="questionNumber" class="quiz-pill"></span><span id="difficultyText" class="quiz-pill"></span></div>
-<div class="progress"><div id="progressFill" class="progress-fill"></div></div>
-<div class="question-card">
-<span id="levelBadge" class="level easy"></span>
-<h2 id="questionText"></h2>
-<div class="timer"><div id="timerFill" class="timer-fill"></div></div>
-<div id="timerText" class="timer-text">15s</div>
-<div id="answers" class="answers"></div>
-<div id="feedback" class="feedback"></div>
-<button id="nextBtn" class="big-btn next-btn">Question suivante →</button>
-</div>
-</div>
-</div>
-
-<div id="victory" class="victory">
-<div style="font-size:55px">🏆</div><h2>Quiz terminé !</h2><p>Ton score :</p>
-<div id="finalQuizScore" class="final-number">0</div>
-<p id="resultMessage" style="color:#8fa8bf"></p>
-<button class="big-btn" onclick="backToQuizMenu()">↩️ Retour aux quiz</button>
-</div>
-
-<div id="mapQuizArea" style="display:none">
-<div class="map-quiz">
-<div class="title"><h2>🗺️ Carte Quiz</h2><p>Colorie les pays anglophones selon leur catégorie.</p></div>
-<div class="map-quiz-info">🔴 <b>Rouge</b> = anglais principal &nbsp;&nbsp;&nbsp; 🔵 <b>Bleu</b> = anglais seconde langue / officiel<br><br>Les autres pays restent neutres.</div>
-<div class="map-quiz-tools">
-<button id="redTool" class="color-tool red-tool active" onclick="selectMapColor('primary')">🔴 Rouge</button>
-<button id="blueTool" class="color-tool blue-tool" onclick="selectMapColor('secondary')">🔵 Bleu</button>
-<button class="color-tool" onclick="resetMapQuiz()">↩️ Recommencer</button>
-<button class="big-btn" onclick="validateMapQuiz()">✅ Valider</button>
-</div>
-<svg id="quizMap"></svg>
-<div id="mapQuizResult" class="victory">
-<div style="font-size:55px">🗺️</div><h2 id="mapQuizTitle">Carte terminée</h2>
-<div id="mapQuizScore" class="final-number">0</div><p id="mapQuizMessage"></p>
-<button class="big-btn" onclick="backToQuizMenu()">🎯 Retour aux quiz</button>
-</div>
-</div>
-</div>
-</main>
-
-<main id="professorPointsPage" class="page">
-<div class="professor">
-<div class="title"><h2>👨‍🏫 Gestion des points</h2><p>Ajoute uniquement des points aux élèves.</p></div>
-<div class="prof-panel">
-<h3>➕ Ajouter des points</h3>
-<div class="prof-form">
-<input id="pointStudent" placeholder="Nom de l'élève">
-<input id="pointAmount" type="number" placeholder="Nombre de points">
-<button class="big-btn" onclick="addProfessorPoints()">Ajouter</button>
-</div>
-<p id="pointsStatus" class="name-status"></p>
-</div>
-<div class="prof-panel">
-<button class="big-btn" onclick="goPage('professorResultsPage');loadProfessorResults()">📊 Notes</button>
-<button class="big-btn" style="background:#162333" onclick="goPage('professorCodesPage')">🔑 Créer un code</button>
-</div>
-</div>
-</main>
-
-<main id="professorResultsPage" class="page">
-<div class="professor">
-<div class="title"><h2>👨‍🏫 Gestion des notes</h2><p>Consulte les résultats des quiz.</p></div>
-
-<div class="prof-panel">
-<h3>⚙️ Outils professeur</h3>
-<div class="prof-form">
-<button class="big-btn" onclick="goPage('professorCodesPage')">🔑 Créer un code</button>
-<button class="big-btn" onclick="goPage('professorCodeResultsPage');loadProfessorCodeSelect()">📊 Notes par code</button>
-</div>
-</div>
-
-<div class="prof-panel">
-<h3>👁️ Visibilité des noms</h3>
-<p style="color:#8199b2">Tu peux masquer tous les noms affichés dans les résultats. Les vrais noms restent enregistrés dans Firebase.</p>
-<div class="name-control">
-<button id="toggleNamesBtn" class="big-btn" onclick="toggleNamesVisibility()">🙈 Masquer tous les noms</button>
-<span id="nameVisibilityStatus" class="name-status"></span>
-</div>
-</div>
-
-<div class="prof-panel">
-<h3>📊 Tous les résultats</h3>
-<button class="big-btn" onclick="loadProfessorResults()">🔄 Actualiser</button>
-<div style="overflow-x:auto">
-<table class="prof-table"><thead><tr><th>Élève</th><th>Quiz</th><th>Score final</th><th>Date</th><th></th></tr></thead><tbody id="resultsTable"></tbody></table>
-</div>
-</div>
-</div>
-</main><main id="professorCodesPage" class="page">
-<div class="professor">
-<div class="title">
-<h2>🔑 Créer un code élève</h2>
-<p>Chaque code permet de retrouver uniquement les notes des élèves qui l'ont utilisé.</p>
-</div>
-
-<div class="prof-panel">
-<h3>➕ Nouveau code</h3>
-<div class="prof-form">
-<input id="newCodeName" placeholder="Nom du groupe, ex : 5A Quiz 1">
-<button class="big-btn" onclick="createProfessorCode()">🔑 Créer le code</button>
-</div>
-<div id="createdCodeBox" style="margin-top:15px"></div>
-</div>
-
-<div class="prof-panel">
-<h3>🔐 Codes créés</h3>
-<div id="codesList"><p class="name-status">Chargement...</p></div>
-</div>
-
-<div class="prof-panel">
-<button class="big-btn" onclick="goPage('professorResultsPage');loadProfessorResults()">← Retour aux notes</button>
-</div>
-</div>
-</main>
-
-<main id="professorCodeResultsPage" class="page">
-<div class="professor">
-<div class="title">
-<h2>📊 Notes par code</h2>
-<p>Seuls les élèves ayant utilisé le code sélectionné apparaissent.</p>
-</div>
-
-<div class="prof-panel">
-<h3>🔑 Choisir un code</h3>
-<div class="prof-form">
-<select id="professorCodeSelect" onchange="loadProfessorResultsByCode()">
-<option value="">Choisir un code...</option>
-</select>
-<button class="big-btn" onclick="loadProfessorResultsByCode()">🔄 Actualiser</button>
-</div>
-</div>
-
-<div class="prof-panel">
-<h3 id="selectedCodeTitle">📊 Résultats</h3>
-<div style="overflow-x:auto">
-<table class="prof-table">
-<thead><tr><th>Élève</th><th>Quiz</th><th>Score final</th><th>Date</th><th></th></tr></thead>
-<tbody id="codeResultsTable"></tbody>
-</table>
-</div>
-</div>
-
-<div class="prof-panel">
-<button class="big-btn" onclick="goPage('professorResultsPage');loadProfessorResults()">← Retour aux notes</button>
-</div>
-</div>
-</main>
-
-<!-- ZONE ADMIN WEX -->
-<main id="professorDangerPage" class="page">
-<div class="professor">
-<div class="title">
-<h2>⚠️ Zone WEX</h2>
-<p>Administration des données de World English Explorer.</p>
-</div>
-
-<div class="danger-panel">
-<h2>🔴 Suppression complète</h2>
-<p class="danger-warning">
-Cette action supprimera définitivement les données des collections Firebase :
-</p>
-<ul class="danger-warning">
-<li>👤 tous les prénoms enregistrés dans les résultats</li>
-<li>📝 toutes les notes / tous les résultats</li>
-<li>⭐ tous les points</li>
-<li>🔑 tous les codes élèves créés</li>
-</ul>
-<p class="danger-warning"><b>⚠️ Cette action est irréversible.</b></p>
-<button class="danger-button" onclick="deleteEverythingWEX()">🔴 TOUT SUPPRIMER</button>
-</div>
-
-<div class="prof-panel" style="margin-top:18px">
-<button class="big-btn" onclick="goPage('professorResultsPage');loadProfessorResults()">← Retour</button>
-</div>
-</div>
-</main>
-
-<!-- PREMIÈRE CONNEXION -->
-<div id="usernameModal" class="modal">
-<div class="modal-card">
-<h2>👋 Bienvenue</h2>
-<p style="color:#8da4bb">Entre ton prénom ou ton pseudo et le code donné par ton professeur.</p>
-<input id="usernameInput" placeholder="Ton prénom / pseudo">
-<input id="studentCodeInput" placeholder="Code donné par le professeur" onkeydown="if(event.key==='Enter')saveUsername()">
-<button class="big-btn" style="width:100%" onclick="saveUsername()">Continuer</button>
-</div>
-</div>
-
-<!-- CHANGEMENT NOM -->
-<div id="changeUsernameModal" class="modal">
-<div class="modal-card">
-<h2>✏️ Changer mon nom</h2>
-<p style="color:#8da4bb">Tous tes anciens scores et tes points seront transférés vers ton nouveau nom. Le code des résultats reste conservé.</p>
-<input id="changeUsernameInput" placeholder="Nouveau prénom / pseudo" onkeydown="if(event.key==='Enter')changeUsername()">
-<div class="modal-actions">
-<button class="big-btn" onclick="changeUsername()">💾 Enregistrer</button>
-<button class="big-btn" style="background:#162333" onclick="closeModal('changeUsernameModal')">Annuler</button>
-</div>
-</div>
-</div>
-
-<!-- CHANGEMENT CODE ÉLÈVE -->
-<div id="studentCodeModal" class="modal">
-<div class="modal-card">
-<h2>🔑 Changer mon code</h2>
-<p style="color:#8da4bb">Entre le nouveau code donné par ton professeur.</p>
-<input id="changeStudentCodeInput" placeholder="Code élève" onkeydown="if(event.key==='Enter')changeStudentCode()">
-<div class="modal-actions">
-<button class="big-btn" onclick="changeStudentCode()">💾 Enregistrer</button>
-<button class="big-btn" style="background:#162333" onclick="closeModal('studentCodeModal')">Annuler</button>
-</div>
-</div>
-</div>
-
-<!-- CODE PROF -->
-<div id="profCodeModal" class="modal">
-<div class="modal-card">
-<h2>👨‍🏫 Accès professeur</h2>
-<p style="color:#8da4bb">Entre le code professeur.</p>
-<input id="profCodeInput" type="password" placeholder="Code" onkeydown="if(event.key==='Enter')checkProfessorCode()">
-<div class="modal-actions">
-<button class="big-btn" onclick="checkProfessorCode()">Entrer</button>
-<button class="big-btn" style="background:#162333" onclick="closeModal('profCodeModal')">Annuler</button>
-</div>
-</div>
-</div>
 
 <script type="module">
+import {initializeApp}
+from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  serverTimestamp,
+  deleteDoc,
+  doc,
+  updateDoc
+}
+from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
 const firebaseConfig={
-apiKey:"AIzaSyAxf_h-uxZcWBXgdkUy6CCyr6yS-mUzdFM",
-authDomain:"world-english-explorer.firebaseapp.com",
-projectId:"world-english-explorer",
-storageBucket:"world-english-explorer.firebasestorage.app",
-messagingSenderId:"435091959800",
-appId:"1:435091959800:web:a3626b385bf15534d9f00d",
-measurementId:"G-SJSZ5KCDQS"
+  apiKey:"AIzaSyAxf_h-uxZcWBXgdkUy6CCyr6yS-mUzdFM",
+  authDomain:"world-english-explorer.firebaseapp.com",
+  projectId:"world-english-explorer",
+  storageBucket:"world-english-explorer.firebasestorage.app",
+  messagingSenderId:"435091959800",
+  appId:"1:435091959800:web:a3626b385bf15534d9f00d",
+  measurementId:"G-SJSZ5KCDQS"
 };
 
-window.firebaseReady=(async()=>{
-const {initializeApp}=await import("https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js");
-const {getFirestore,collection,addDoc,getDocs,serverTimestamp,deleteDoc,doc,updateDoc}=await import("https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js");
 const app=initializeApp(firebaseConfig);
 const db=getFirestore(app);
+
 window.firebaseDB=db;
 window.firebaseCollection=collection;
 window.firebaseAddDoc=addDoc;
@@ -410,875 +690,1961 @@ window.firebaseServerTimestamp=serverTimestamp;
 window.firebaseDeleteDoc=deleteDoc;
 window.firebaseDoc=doc;
 window.firebaseUpdateDoc=updateDoc;
-return db;
-})();
 </script>
+</head>
 
-<script>
-const rawCountries=`
-004|AF|Afghanistan|Kaboul|Asie|other
-008|AL|Albanie|Tirana|Europe|other
-012|DZ|Algérie|Alger|Afrique|other
-020|AD|Andorre|Andorre-la-Vieille|Europe|other
-024|AO|Angola|Luanda|Afrique|other
-028|AG|Antigua-et-Barbuda|Saint John’s|Amérique du Nord|primary
-032|AR|Argentine|Buenos Aires|Amérique du Sud|other
-051|AM|Arménie|Erevan|Asie|other
-036|AU|Australie|Canberra|Océanie|primary
-040|AT|Autriche|Vienne|Europe|other
-031|AZ|Azerbaïdjan|Bakou|Asie|other
-044|BS|Bahamas|Nassau|Amérique du Nord|primary
-048|BH|Bahreïn|Manama|Asie|other
-050|BD|Bangladesh|Dacca|Asie|secondary
-052|BB|Barbade|Bridgetown|Amérique du Nord|primary
-112|BY|Biélorussie|Minsk|Europe|other
-056|BE|Belgique|Bruxelles|Europe|other
-084|BZ|Belize|Belmopan|Amérique du Nord|secondary
-204|BJ|Bénin|Porto-Novo|Afrique|other
-064|BT|Bhoutan|Thimphou|Asie|other
-068|BO|Bolivie|Sucre|Amérique du Sud|other
-070|BA|Bosnie-Herzégovine|Sarajevo|Europe|other
-072|BW|Botswana|Gaborone|Afrique|secondary
-076|BR|Brésil|Brasília|Amérique du Sud|other
-096|BN|Brunei|Bandar Seri Begawan|Asie|secondary
-100|BG|Bulgarie|Sofia|Europe|other
-854|BF|Burkina Faso|Ouagadougou|Afrique|other
-108|BI|Burundi|Gitega|Afrique|other
-132|CV|Cap-Vert|Praia|Afrique|other
-116|KH|Cambodge|Phnom Penh|Asie|other
-120|CM|Cameroun|Yaoundé|Afrique|other
-124|CA|Canada|Ottawa|Amérique du Nord|secondary
-140|CF|République centrafricaine|Bangui|Afrique|other
-148|TD|Tchad|N’Djamena|Afrique|other
-152|CL|Chili|Santiago|Amérique du Sud|other
-156|CN|Chine|Pékin|Asie|other
-170|CO|Colombie|Bogota|Amérique du Sud|other
-174|KM|Comores|Moroni|Afrique|other
-178|CG|République du Congo|Brazzaville|Afrique|other
-180|CD|République démocratique du Congo|Kinshasa|Afrique|other
-188|CR|Costa Rica|San José|Amérique du Nord|other
-384|CI|Côte d’Ivoire|Yamoussoukro|Afrique|other
-191|HR|Croatie|Zagreb|Europe|other
-192|CU|Cuba|La Havane|Amérique du Nord|other
-196|CY|Chypre|Nicosie|Europe|other
-203|CZ|Tchéquie|Prague|Europe|other
-208|DK|Danemark|Copenhague|Europe|other
-262|DJ|Djibouti|Djibouti|Afrique|other
-212|DM|Dominique|Roseau|Amérique du Nord|primary
-214|DO|République dominicaine|Saint-Domingue|Amérique du Nord|other
-218|EC|Équateur|Quito|Amérique du Sud|other
-818|EG|Égypte|Le Caire|Afrique|other
-222|SV|Salvador|San Salvador|Amérique du Nord|other
-226|GQ|Guinée équatoriale|Malabo|Afrique|other
-232|ER|Érythrée|Asmara|Afrique|other
-233|EE|Estonie|Tallinn|Europe|other
-748|SZ|Eswatini|Mbabane|Afrique|secondary
-231|ET|Éthiopie|Addis-Abeba|Afrique|other
-242|FJ|Fidji|Suva|Océanie|secondary
-246|FI|Finlande|Helsinki|Europe|other
-250|FR|France|Paris|Europe|other
-266|GA|Gabon|Libreville|Afrique|other
-270|GM|Gambie|Banjul|Afrique|secondary
-268|GE|Géorgie|Tbilissi|Asie|other
-276|DE|Allemagne|Berlin|Europe|other
-288|GH|Ghana|Accra|Afrique|secondary
-300|GR|Grèce|Athènes|Europe|other
-308|GD|Grenade|Saint-Georges|Amérique du Nord|primary
-320|GT|Guatemala|Guatemala|Amérique du Nord|other
-324|GN|Guinée|Conakry|Afrique|other
-624|GW|Guinée-Bissau|Bissau|Afrique|other
-328|GY|Guyana|Georgetown|Amérique du Sud|primary
-332|HT|Haïti|Port-au-Prince|Amérique du Nord|other
-340|HN|Honduras|Tegucigalpa|Amérique du Nord|other
-348|HU|Hongrie|Budapest|Europe|other
-352|IS|Islande|Reykjavik|Europe|other
-356|IN|Inde|New Delhi|Asie|secondary
-360|ID|Indonésie|Jakarta|Asie|other
-364|IR|Iran|Téhéran|Asie|other
-368|IQ|Irak|Bagdad|Asie|other
-372|IE|Irlande|Dublin|Europe|primary
-376|IL|Israël|Jérusalem|Asie|other
-380|IT|Italie|Rome|Europe|other
-388|JM|Jamaïque|Kingston|Amérique du Nord|primary
-392|JP|Japon|Tokyo|Asie|other
-400|JO|Jordanie|Amman|Asie|other
-398|KZ|Kazakhstan|Astana|Asie|other
-404|KE|Kenya|Nairobi|Afrique|secondary
-296|KI|Kiribati|Tarawa-Sud|Océanie|secondary
-408|KP|Corée du Nord|Pyongyang|Asie|other
-410|KR|Corée du Sud|Séoul|Asie|other
-414|KW|Koweït|Koweït|Asie|other
-417|KG|Kirghizistan|Bichkek|Asie|other
-418|LA|Laos|Vientiane|Asie|other
-428|LV|Lettonie|Riga|Europe|other
-422|LB|Liban|Beyrouth|Asie|other
-426|LS|Lesotho|Maseru|Afrique|secondary
-430|LR|Liberia|Monrovia|Afrique|secondary
-434|LY|Libye|Tripoli|Afrique|other
-438|LI|Liechtenstein|Vaduz|Europe|other
-440|LT|Lituanie|Vilnius|Europe|other
-442|LU|Luxembourg|Luxembourg|Europe|other
-450|MG|Madagascar|Antananarivo|Afrique|other
-454|MW|Malawi|Lilongwe|Afrique|secondary
-458|MY|Malaisie|Kuala Lumpur|Asie|secondary
-462|MV|Maldives|Malé|Asie|other
-466|ML|Mali|Bamako|Afrique|other
-470|MT|Malte|La Valette|Europe|secondary
-584|MH|Îles Marshall|Majuro|Océanie|secondary
-478|MR|Mauritanie|Nouakchott|Afrique|other
-480|MU|Maurice|Port-Louis|Afrique|secondary
-484|MX|Mexique|Mexico|Amérique du Nord|other
-583|FM|Micronésie|Palikir|Océanie|secondary
-498|MD|Moldavie|Chișinău|Europe|other
-492|MC|Monaco|Monaco|Europe|other
-496|MN|Mongolie|Oulan-Bator|Asie|other
-499|ME|Monténégro|Podgorica|Europe|other
-504|MA|Maroc|Rabat|Afrique|other
-508|MZ|Mozambique|Maputo|Afrique|other
-104|MM|Myanmar|Naypyidaw|Asie|other
-516|NA|Namibie|Windhoek|Afrique|secondary
-520|NR|Nauru|Yaren|Océanie|secondary
-524|NP|Népal|Katmandou|Asie|other
-528|NL|Pays-Bas|Amsterdam|Europe|other
-554|NZ|Nouvelle-Zélande|Wellington|Océanie|primary
-558|NI|Nicaragua|Managua|Amérique du Nord|other
-562|NE|Niger|Niamey|Afrique|other
-566|NG|Nigeria|Abuja|Afrique|secondary
-807|MK|Macédoine du Nord|Skopje|Europe|other
-578|NO|Norvège|Oslo|Europe|other
-512|OM|Oman|Mascate|Asie|other
-586|PK|Pakistan|Islamabad|Asie|secondary
-585|PW|Palaos|Ngerulmud|Océanie|secondary
-591|PA|Panama|Panama|Amérique du Nord|other
-598|PG|Papouasie-Nouvelle-Guinée|Port Moresby|Océanie|secondary
-600|PY|Paraguay|Asunción|Amérique du Sud|other
-604|PE|Pérou|Lima|Amérique du Sud|other
-608|PH|Philippines|Manille|Asie|secondary
-616|PL|Pologne|Varsovie|Europe|other
-620|PT|Portugal|Lisbonne|Europe|other
-634|QA|Qatar|Doha|Asie|other
-642|RO|Roumanie|Bucarest|Europe|other
-643|RU|Russie|Moscou|Europe|other
-646|RW|Rwanda|Kigali|Afrique|secondary
-659|KN|Saint-Christophe-et-Niévès|Basseterre|Amérique du Nord|primary
-662|LC|Sainte-Lucie|Castries|Amérique du Nord|primary
-670|VC|Saint-Vincent-et-les-Grenadines|Kingstown|Amérique du Nord|primary
-882|WS|Samoa|Apia|Océanie|secondary
-674|SM|Saint-Marin|Saint-Marin|Europe|other
-678|ST|Sao Tomé-et-Principe|Sao Tomé|Afrique|other
-682|SA|Arabie saoudite|Riyad|Asie|other
-686|SN|Sénégal|Dakar|Afrique|other
-688|RS|Serbie|Belgrade|Europe|other
-690|SC|Seychelles|Victoria|Afrique|secondary
-694|SL|Sierra Leone|Freetown|Afrique|secondary
-702|SG|Singapour|Singapour|Asie|secondary
-703|SK|Slovaquie|Bratislava|Europe|other
-705|SI|Slovénie|Ljubljana|Europe|other
-090|SB|Îles Salomon|Honiara|Océanie|secondary
-706|SO|Somalie|Mogadiscio|Afrique|other
-710|ZA|Afrique du Sud|Pretoria|Afrique|secondary
-728|SS|Soudan du Sud|Djouba|Afrique|other
-724|ES|Espagne|Madrid|Europe|other
-144|LK|Sri Lanka|Sri Jayawardenepura Kotte|Asie|other
-729|SD|Soudan|Khartoum|Afrique|other
-740|SR|Suriname|Paramaribo|Amérique du Sud|other
-752|SE|Suède|Stockholm|Europe|other
-756|CH|Suisse|Berne|Europe|other
-760|SY|Syrie|Damas|Asie|other
-762|TJ|Tadjikistan|Douchanbé|Asie|other
-834|TZ|Tanzanie|Dodoma|Afrique|other
-764|TH|Thaïlande|Bangkok|Asie|other
-626|TL|Timor oriental|Dili|Asie|other
-768|TG|Togo|Lomé|Afrique|other
-776|TO|Tonga|Nuku’alofa|Océanie|secondary
-780|TT|Trinité-et-Tobago|Port-d’Espagne|Amérique du Nord|primary
-788|TN|Tunisie|Tunis|Afrique|other
-792|TR|Turquie|Ankara|Asie|other
-795|TM|Turkménistan|Achgabat|Asie|other
-798|TV|Tuvalu|Funafuti|Océanie|other
-800|UG|Ouganda|Kampala|Afrique|secondary
-804|UA|Ukraine|Kyiv|Europe|other
-784|AE|Émirats arabes unis|Abou Dabi|Asie|other
-826|GB|Royaume-Uni|Londres|Europe|primary
-840|US|États-Unis|Washington D.C.|Amérique du Nord|primary
-858|UY|Uruguay|Montevideo|Amérique du Sud|other
-860|UZ|Ouzbékistan|Tachkent|Asie|other
-548|VU|Vanuatu|Port-Vila|Océanie|secondary
-336|VA|Vatican|Cité du Vatican|Europe|other
-862|VE|Venezuela|Caracas|Amérique du Sud|other
-704|VN|Viêt Nam|Hanoï|Asie|other
-887|YE|Yémen|Sanaa|Asie|other
-894|ZM|Zambie|Lusaka|Afrique|secondary
-716|ZW|Zimbabwe|Harare|Afrique|secondary
-275|PS|Palestine|Ramallah|Asie|other
-`;
+<body>
 
-const countries=rawCountries.trim().split("\n").map(line=>{
-const [id,code,name,capital,continent,type]=line.split("|");
-return{id,code,name,capital,continent,type};
-});
+<nav class="navbar">
+  <div class="logo">🌍 World <span>English Explorer</span></div>
 
-countries.forEach(c=>c.flag=[...c.code].map(x=>String.fromCodePoint(127397+x.charCodeAt(0))).join(""));
-document.getElementById("countryCount").textContent=countries.length;
+  <div class="navlinks">
+    <button data-page="homePage" onclick="goPage('homePage')">Accueil</button>
+    <button data-page="mapPage" onclick="goPage('mapPage')">Carte</button>
+    <button data-page="countriesPage" onclick="goPage('countriesPage')">Pays</button>
+    <button data-page="quizPage" onclick="goPage('quizPage')">Quiz</button>
+    <button data-page="profilePage" onclick="goPage('profilePage')">👤 Profil</button>
 
-let username=localStorage.getItem("wexUsername")||"";
+    <!-- LE BOUTON CODE EST ICI, DANS LA BARRE DU HAUT -->
+    <button id="studentCodeNavBtn" class="code-nav" onclick="openStudentCode()">
+      🔑 Code
+    </button>
+
+    <button class="prof-btn" onclick="openProfessor()">👨‍🏫 Prof</button>
+  </div>
+</nav>
+
+<!-- ACCUEIL -->
+<section id="homePage" class="page active">
+  <div class="hero">
+    <div class="hero-inner">
+      <h1>WORLD<br><span>ENGLISH</span><br>EXPLORER 🌍</h1>
+      <p>
+        Explore les pays du monde, apprends leur géographie,
+        teste tes connaissances et suis tes résultats.
+      </p>
+      <button class="big-btn" onclick="goPage('quizPage')">
+        🚀 Commencer un quiz
+      </button>
+    </div>
+  </div>
+
+  <div class="cards">
+    <div class="card stat-card">
+      <div class="stat-value">195+</div>
+      <h3>🌎 Pays</h3>
+      <p>Découvre les pays du monde entier.</p>
+    </div>
+
+    <div class="card stat-card">
+      <div class="stat-value">6</div>
+      <h3>🧠 Modes</h3>
+      <p>Plusieurs types de quiz pour progresser.</p>
+    </div>
+
+    <div class="card stat-card">
+      <div class="stat-value">∞</div>
+      <h3>🏆 Défis</h3>
+      <p>Recommence les quiz pour améliorer ton score.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PROFIL -->
+<section id="profilePage" class="page">
+  <div class="section-title">
+    <h2>👤 Mon profil</h2>
+    <p>Ton nom et ta connexion à ton groupe.</p>
+  </div>
+
+  <div class="profile-grid">
+    <div class="card">
+      <h3>Nom / pseudo</h3>
+      <div id="profileName" class="profile-name">Non défini</div>
+
+      <button class="big-btn" onclick="openUsernameChange()">
+        ✏️ Changer mon nom
+      </button>
+    </div>
+
+    <div class="card">
+      <h3>🔑 Code professeur</h3>
+      <p>Le code permet de rattacher tes résultats au groupe de ton professeur.</p>
+
+      <div style="margin-top:15px">
+        <div id="profileCode" class="code-display empty-code">
+          Aucun code connecté
+        </div>
+      </div>
+
+      <button class="big-btn" onclick="openStudentCode()">
+        🔑 Changer / entrer mon code
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- CARTE -->
+<section id="mapPage" class="page">
+  <div class="section-title">
+    <h2>🗺️ Carte du monde</h2>
+    <p>Explore les continents et teste ensuite tes connaissances.</p>
+  </div>
+
+  <div class="map-box">
+    <div class="world-placeholder">
+      <div class="globe">🌎</div>
+      <h2>Le monde t'attend</h2>
+      <p style="color:var(--muted);margin-top:8px">
+        Utilise le quiz de carte pour tester tes connaissances.
+      </p>
+      <button class="big-btn" onclick="startMapQuiz()">
+        🗺️ Quiz de carte
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- PAYS -->
+<section id="countriesPage" class="page">
+  <div class="section-title">
+    <h2>🌍 Les pays</h2>
+    <p>Recherche rapidement un pays.</p>
+  </div>
+
+  <div class="country-tools">
+    <input
+      id="countrySearch"
+      placeholder="🔎 Rechercher un pays..."
+      oninput="renderCountries()"
+    >
+  </div>
+
+  <div id="countryGrid" class="country-grid"></div>
+</section>
+
+<!-- QUIZ -->
+<section id="quizPage" class="page">
+  <div id="quizMenu">
+    <div class="section-title">
+      <h2>🧠 Choisis ton quiz</h2>
+      <p>Chaque bonne réponse rapporte des points.</p>
+    </div>
+
+    <div class="quiz-menu">
+      <button class="quiz-option" onclick="startQuiz('countries')">
+        <div class="quiz-icon">🌎</div>
+        <h3>Pays du monde</h3>
+        <p>Retrouve les pays et leurs informations.</p>
+      </button>
+
+      <button class="quiz-option" onclick="startQuiz('capitals')">
+        <div class="quiz-icon">🏙️</div>
+        <h3>Capitales</h3>
+        <p>Associe les pays à leurs capitales.</p>
+      </button>
+
+      <button class="quiz-option" onclick="startQuiz('flags')">
+        <div class="quiz-icon">🚩</div>
+        <h3>Drapeaux</h3>
+        <p>Reconnais les drapeaux du monde.</p>
+      </button>
+
+      <button class="quiz-option" onclick="startQuiz('continents')">
+        <div class="quiz-icon">🌐</div>
+        <h3>Continents</h3>
+        <p>Teste tes connaissances géographiques.</p>
+      </button>
+
+      <button class="quiz-option" onclick="startQuiz('english')">
+        <div class="quiz-icon">🇬🇧</div>
+        <h3>English</h3>
+        <p>Quelques questions autour de l'anglais.</p>
+      </button>
+
+      <button class="quiz-option" onclick="startQuiz('mixed')">
+        <div class="quiz-icon">🔥</div>
+        <h3>Mix total</h3>
+        <p>Un mélange de toutes les catégories.</p>
+      </button>
+    </div>
+  </div>
+
+  <div id="quizGame" class="quiz-game" style="display:none">
+    <div class="quiz-top">
+      <span id="quizModeLabel">Quiz</span>
+      <span id="quizCounter">1 / 10</span>
+    </div>
+
+    <div class="progress">
+      <div id="quizProgress" class="progress-bar"></div>
+    </div>
+
+    <div class="question-card">
+      <div id="questionText" class="question"></div>
+      <div id="answers" class="answers"></div>
+    </div>
+
+    <button class="big-btn dark" onclick="quitQuiz()">
+      ← Quitter le quiz
+    </button>
+  </div>
+
+  <div id="quizResult" class="quiz-game" style="display:none">
+    <div class="question-card result-box">
+      <h2>🎉 Quiz terminé !</h2>
+
+      <div id="resultScore" class="result-score">0/10</div>
+
+      <p id="resultMessage" style="color:var(--muted)"></p>
+
+      <button class="big-btn" onclick="backToQuizMenu()">
+        🔄 Refaire un quiz
+      </button>
+
+      <button class="big-btn dark" onclick="goPage('profilePage')">
+        👤 Voir mon profil
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- QUIZ PROF -->
+<section id="professorPointsPage" class="page">
+  <div class="section-title">
+    <h2>📊 Points des élèves</h2>
+    <p>Vue générale des résultats enregistrés.</p>
+  </div>
+
+  <div class="prof-panel">
+    <button class="big-btn" onclick="loadProfessorPoints()">
+      🔄 Actualiser
+    </button>
+
+    <div id="profPointsOutput" class="table-wrap"></div>
+  </div>
+</section>
+
+<section id="professorResultsPage" class="page">
+  <div class="section-title">
+    <h2>📚 Résultats des quiz</h2>
+    <p>Consulte les résultats enregistrés.</p>
+  </div>
+
+  <div class="prof-panel">
+    <button class="big-btn" onclick="loadProfessorResults()">
+      🔄 Actualiser
+    </button>
+
+    <div id="profResultsOutput" class="table-wrap"></div>
+  </div>
+</section>
+
+<!-- CRÉATION DES CODES PROF -->
+<section id="professorCodesPage" class="page">
+  <div class="section-title">
+    <h2>🔑 Créer un code</h2>
+    <p>Choisis toi-même le code qui sera donné aux élèves.</p>
+  </div>
+
+  <div class="prof-panel">
+    <h3>Créer un nouveau code</h3>
+    <p>
+      Le code peut contenir des lettres, chiffres et tirets.
+      Il sera automatiquement enregistré en majuscules.
+    </p>
+
+    <div class="form-row">
+      <div>
+        <input
+          id="newCodeValue"
+          placeholder="Ex : 5A-QUIZ1"
+          maxlength="30"
+        >
+      </div>
+
+      <div>
+        <input
+          id="newCodeName"
+          placeholder="Nom du groupe (facultatif)"
+          maxlength="60"
+        >
+      </div>
+    </div>
+
+    <button class="big-btn green" onclick="createProfessorCode()">
+      🔑 Créer le code
+    </button>
+
+    <div id="createCodeStatus" class="status"></div>
+  </div>
+
+  <div class="prof-panel">
+    <h3>📋 Codes déjà créés</h3>
+    <div id="createdCodesList" class="code-list">
+      Chargement...
+    </div>
+  </div>
+</section>
+
+<!-- RÉSULTATS PAR CODE -->
+<section id="professorCodeResultsPage" class="page">
+  <div class="section-title">
+    <h2>👥 Résultats par code</h2>
+    <p>Choisis un code pour voir uniquement son groupe.</p>
+  </div>
+
+  <div class="prof-panel">
+    <select id="profCodeSelect" onchange="loadCodeResults()">
+      <option value="">Choisir un code...</option>
+    </select>
+
+    <div id="codeResultsOutput" class="table-wrap"></div>
+  </div>
+</section>
+
+<!-- ZONE DANGEREUSE -->
+<section id="professorDangerPage" class="page">
+  <div class="section-title">
+    <h2>⚠️ Administration</h2>
+    <p>Zone réservée à la suppression totale des données.</p>
+  </div>
+
+  <div class="prof-panel">
+    <h3>🔴 Supprimer toutes les données</h3>
+
+    <div class="warning">
+      Cette action supprime les résultats, les points et les codes
+      enregistrés dans Firebase. Elle est irréversible.
+    </div>
+
+    <button class="big-btn red" onclick="deleteEverything()">
+      🔴 TOUT SUPPRIMER
+    </button>
+
+    <div id="dangerStatus" class="status"></div>
+  </div>
+</section>
+
+<!-- MODAL PREMIÈRE CONNEXION : NOM UNIQUEMENT -->
+<div id="usernameModal" class="modal">
+  <div class="modal-card">
+    <h2>👋 Bienvenue !</h2>
+
+    <p>
+      Entre ton prénom ou ton pseudo pour enregistrer tes résultats.
+    </p>
+
+    <input
+      id="usernameInput"
+      maxlength="30"
+      placeholder="Ton prénom ou pseudo..."
+      onkeydown="if(event.key==='Enter')saveUsername()"
+    >
+
+    <div id="usernameStatus" class="status"></div>
+
+    <div class="modal-actions">
+      <button class="big-btn" onclick="saveUsername()">
+        Continuer
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CODE ÉLÈVE, SÉPARÉ DU PRÉNOM -->
+<div id="studentCodeModal" class="modal">
+  <div class="modal-card">
+    <h2>🔑 Code élève</h2>
+
+    <p>
+      Entre le code donné par ton professeur.
+      Si le code existe, tu seras connecté directement à ce groupe.
+    </p>
+
+    <input
+      id="studentCodeTopInput"
+      maxlength="30"
+      placeholder="Ex : 5A-QUIZ1"
+      onkeydown="if(event.key==='Enter')connectStudentCode()"
+    >
+
+    <div id="studentCodeStatus" class="status"></div>
+
+    <div class="modal-actions">
+      <button class="big-btn green" onclick="connectStudentCode()">
+        🚀 Se connecter
+      </button>
+
+      <button
+        class="big-btn dark"
+        onclick="closeModal('studentCodeModal')"
+      >
+        Annuler
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- CHANGEMENT NOM -->
+<div id="usernameChangeModal" class="modal">
+  <div class="modal-card">
+    <h2>✏️ Changer mon nom</h2>
+
+    <p>Ton code professeur restera inchangé.</p>
+
+    <input
+      id="usernameChangeInput"
+      maxlength="30"
+      placeholder="Nouveau prénom ou pseudo..."
+      onkeydown="if(event.key==='Enter')changeUsername()"
+    >
+
+    <div id="usernameChangeStatus" class="status"></div>
+
+    <div class="modal-actions">
+      <button class="big-btn" onclick="changeUsername()">
+        Enregistrer
+      </button>
+
+      <button
+        class="big-btn dark"
+        onclick="closeModal('usernameChangeModal')"
+      >
+        Annuler
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PROF -->
+<div id="profCodeModal" class="modal">
+  <div class="modal-card">
+    <h2>👨‍🏫 Accès professeur</h2>
+
+    <p>
+      Entre ton code professeur.
+    </p>
+
+    <input
+      id="profCodeInput"
+      maxlength="40"
+      placeholder="Code professeur..."
+      onkeydown="if(event.key==='Enter')checkProfessorCode()"
+    >
+
+    <div id="profCodeStatus" class="status"></div>
+
+    <div class="modal-actions">
+      <button class="big-btn" onclick="checkProfessorCode()">
+        🔓 Ouvrir
+      </button>
+
+      <button
+        class="big-btn dark"
+        onclick="closeModal('profCodeModal')"
+      >
+        Annuler
+      </button>
+    </div>
+  </div>
+</div><script>
+/* =========================================================
+   WORLD ENGLISH EXPLORER
+   LOGIQUE PRINCIPALE
+========================================================= */
+
 let studentCode=localStorage.getItem("wexStudentCode")||"";
-let namesHidden=localStorage.getItem("wexHideNames")==="true";
-let mapLoaded=false,mapZoomBehavior=null,mapZoomLevel=1;
-let quizQuestions=[],currentQuestion=0,score=0,combo=0,maxCombo=0,correctAnswers=0;
-let timeLeft=15,maxTime=15,timerInterval=null,currentMode="classic",answered=false;
-let quizMapLoaded=false,quizMapColor="primary",mapQuizColors={};
+let username=localStorage.getItem("wexUsername")||"";
 
-const primaryIDs=new Set(countries.filter(c=>c.type==="primary").map(c=>c.id));
-const secondaryIDs=new Set(countries.filter(c=>c.type==="secondary").map(c=>c.id));
-const byId=new Map(countries.map(c=>[c.id,c]));
+let currentQuiz=[];
+let currentQuizIndex=0;
+let currentScore=0;
+let currentQuizMode="";
+let quizLocked=false;
 
-function normalizeCode(v){return String(v||"").trim().toUpperCase()}
+const QUIZ_LENGTH=10;
+
+/* =========================================================
+   PAYS
+========================================================= */
+
+const countries=[
+  ["🇦🇫","Afghanistan","Kabul","Asia"],
+  ["🇦🇱","Albania","Tirana","Europe"],
+  ["🇩🇿","Algeria","Algiers","Africa"],
+  ["🇦🇩","Andorra","Andorra la Vella","Europe"],
+  ["🇦🇴","Angola","Luanda","Africa"],
+  ["🇦🇬","Antigua and Barbuda","Saint John's","North America"],
+  ["🇦🇷","Argentina","Buenos Aires","South America"],
+  ["🇦🇲","Armenia","Yerevan","Asia"],
+  ["🇦🇺","Australia","Canberra","Oceania"],
+  ["🇦🇹","Austria","Vienna","Europe"],
+  ["🇦🇿","Azerbaijan","Baku","Asia"],
+  ["🇧🇸","Bahamas","Nassau","North America"],
+  ["🇧🇭","Bahrain","Manama","Asia"],
+  ["🇧🇩","Bangladesh","Dhaka","Asia"],
+  ["🇧🇧","Barbados","Bridgetown","North America"],
+  ["🇧🇾","Belarus","Minsk","Europe"],
+  ["🇧🇪","Belgium","Brussels","Europe"],
+  ["🇧🇿","Belize","Belmopan","North America"],
+  ["🇧🇯","Benin","Porto-Novo","Africa"],
+  ["🇧🇹","Bhutan","Thimphu","Asia"],
+  ["🇧🇴","Bolivia","Sucre","South America"],
+  ["🇧🇦","Bosnia and Herzegovina","Sarajevo","Europe"],
+  ["🇧🇼","Botswana","Gaborone","Africa"],
+  ["🇧🇷","Brazil","Brasilia","South America"],
+  ["🇧🇳","Brunei","Bandar Seri Begawan","Asia"],
+  ["🇧🇬","Bulgaria","Sofia","Europe"],
+  ["🇧🇫","Burkina Faso","Ouagadougou","Africa"],
+  ["🇧🇮","Burundi","Gitega","Africa"],
+  ["🇨🇻","Cabo Verde","Praia","Africa"],
+  ["🇰🇭","Cambodia","Phnom Penh","Asia"],
+  ["🇨🇲","Cameroon","Yaounde","Africa"],
+  ["🇨🇦","Canada","Ottawa","North America"],
+  ["🇨🇫","Central African Republic","Bangui","Africa"],
+  ["🇹🇩","Chad","N'Djamena","Africa"],
+  ["🇨🇱","Chile","Santiago","South America"],
+  ["🇨🇳","China","Beijing","Asia"],
+  ["🇨🇴","Colombia","Bogota","South America"],
+  ["🇰🇲","Comoros","Moroni","Africa"],
+  ["🇨🇬","Republic of the Congo","Brazzaville","Africa"],
+  ["🇨🇩","Democratic Republic of the Congo","Kinshasa","Africa"],
+  ["🇨🇷","Costa Rica","San Jose","North America"],
+  ["🇨🇮","Cote d'Ivoire","Yamoussoukro","Africa"],
+  ["🇭🇷","Croatia","Zagreb","Europe"],
+  ["🇨🇺","Cuba","Havana","North America"],
+  ["🇨🇾","Cyprus","Nicosia","Europe"],
+  ["🇨🇿","Czechia","Prague","Europe"],
+  ["🇩🇰","Denmark","Copenhagen","Europe"],
+  ["🇩🇯","Djibouti","Djibouti","Africa"],
+  ["🇩🇲","Dominica","Roseau","North America"],
+  ["🇩🇴","Dominican Republic","Santo Domingo","North America"],
+  ["🇪🇨","Ecuador","Quito","South America"],
+  ["🇪🇬","Egypt","Cairo","Africa"],
+  ["🇸🇻","El Salvador","San Salvador","North America"],
+  ["🇬🇶","Equatorial Guinea","Malabo","Africa"],
+  ["🇪🇷","Eritrea","Asmara","Africa"],
+  ["🇪🇪","Estonia","Tallinn","Europe"],
+  ["🇸🇿","Eswatini","Mbabane","Africa"],
+  ["🇪🇹","Ethiopia","Addis Ababa","Africa"],
+  ["🇫🇯","Fiji","Suva","Oceania"],
+  ["🇫🇮","Finland","Helsinki","Europe"],
+  ["🇫🇷","France","Paris","Europe"],
+  ["🇬🇦","Gabon","Libreville","Africa"],
+  ["🇬🇲","Gambia","Banjul","Africa"],
+  ["🇬🇪","Georgia","Tbilisi","Asia"],
+  ["🇩🇪","Germany","Berlin","Europe"],
+  ["🇬🇭","Ghana","Accra","Africa"],
+  ["🇬🇷","Greece","Athens","Europe"],
+  ["🇬🇩","Grenada","St. George's","North America"],
+  ["🇬🇹","Guatemala","Guatemala City","North America"],
+  ["🇬🇳","Guinea","Conakry","Africa"],
+  ["🇬🇼","Guinea-Bissau","Bissau","Africa"],
+  ["🇬🇾","Guyana","Georgetown","South America"],
+  ["🇭🇹","Haiti","Port-au-Prince","North America"],
+  ["🇭🇳","Honduras","Tegucigalpa","North America"],
+  ["🇭🇺","Hungary","Budapest","Europe"],
+  ["🇮🇸","Iceland","Reykjavik","Europe"],
+  ["🇮🇳","India","New Delhi","Asia"],
+  ["🇮🇩","Indonesia","Jakarta","Asia"],
+  ["🇮🇷","Iran","Tehran","Asia"],
+  ["🇮🇶","Iraq","Baghdad","Asia"],
+  ["🇮🇪","Ireland","Dublin","Europe"],
+  ["🇮🇱","Israel","Jerusalem","Asia"],
+  ["🇮🇹","Italy","Rome","Europe"],
+  ["🇯🇲","Jamaica","Kingston","North America"],
+  ["🇯🇵","Japan","Tokyo","Asia"],
+  ["🇯🇴","Jordan","Amman","Asia"],
+  ["🇰🇿","Kazakhstan","Astana","Asia"],
+  ["🇰🇪","Kenya","Nairobi","Africa"],
+  ["🇰🇮","Kiribati","South Tarawa","Oceania"],
+  ["🇰🇼","Kuwait","Kuwait City","Asia"],
+  ["🇰🇬","Kyrgyzstan","Bishkek","Asia"],
+  ["🇱🇦","Laos","Vientiane","Asia"],
+  ["🇱🇻","Latvia","Riga","Europe"],
+  ["🇱🇧","Lebanon","Beirut","Asia"],
+  ["🇱🇸","Lesotho","Maseru","Africa"],
+  ["🇱🇷","Liberia","Monrovia","Africa"],
+  ["🇱🇾","Libya","Tripoli","Africa"],
+  ["🇱🇮","Liechtenstein","Vaduz","Europe"],
+  ["🇱🇹","Lithuania","Vilnius","Europe"],
+  ["🇱🇺","Luxembourg","Luxembourg","Europe"],
+  ["🇲🇬","Madagascar","Antananarivo","Africa"],
+  ["🇲🇼","Malawi","Lilongwe","Africa"],
+  ["🇲🇾","Malaysia","Kuala Lumpur","Asia"],
+  ["🇲🇻","Maldives","Male","Asia"],
+  ["🇲🇱","Mali","Bamako","Africa"],
+  ["🇲🇹","Malta","Valletta","Europe"],
+  ["🇲🇭","Marshall Islands","Majuro","Oceania"],
+  ["🇲🇷","Mauritania","Nouakchott","Africa"],
+  ["🇲🇺","Mauritius","Port Louis","Africa"],
+  ["🇲🇽","Mexico","Mexico City","North America"],
+  ["🇫🇲","Micronesia","Palikir","Oceania"],
+  ["🇲🇩","Moldova","Chisinau","Europe"],
+  ["🇲🇨","Monaco","Monaco","Europe"],
+  ["🇲🇳","Mongolia","Ulaanbaatar","Asia"],
+  ["🇲🇪","Montenegro","Podgorica","Europe"],
+  ["🇲🇦","Morocco","Rabat","Africa"],
+  ["🇲🇿","Mozambique","Maputo","Africa"],
+  ["🇲🇲","Myanmar","Naypyidaw","Asia"],
+  ["🇳🇦","Namibia","Windhoek","Africa"],
+  ["🇳🇷","Nauru","Yaren","Oceania"],
+  ["🇳🇵","Nepal","Kathmandu","Asia"],
+  ["🇳🇱","Netherlands","Amsterdam","Europe"],
+  ["🇳🇿","New Zealand","Wellington","Oceania"],
+  ["🇳🇮","Nicaragua","Managua","North America"],
+  ["🇳🇪","Niger","Niamey","Africa"],
+  ["🇳🇬","Nigeria","Abuja","Africa"],
+  ["🇰🇵","North Korea","Pyongyang","Asia"],
+  ["🇲🇰","North Macedonia","Skopje","Europe"],
+  ["🇳🇴","Norway","Oslo","Europe"],
+  ["🇴🇲","Oman","Muscat","Asia"],
+  ["🇵🇰","Pakistan","Islamabad","Asia"],
+  ["🇵🇼","Palau","Ngerulmud","Oceania"],
+  ["🇵🇸","Palestine","Ramallah","Asia"],
+  ["🇵🇦","Panama","Panama City","North America"],
+  ["🇵🇬","Papua New Guinea","Port Moresby","Oceania"],
+  ["🇵🇾","Paraguay","Asuncion","South America"],
+  ["🇵🇪","Peru","Lima","South America"],
+  ["🇵🇭","Philippines","Manila","Asia"],
+  ["🇵🇱","Poland","Warsaw","Europe"],
+  ["🇵🇹","Portugal","Lisbon","Europe"],
+  ["🇶🇦","Qatar","Doha","Asia"],
+  ["🇷🇴","Romania","Bucharest","Europe"],
+  ["🇷🇺","Russia","Moscow","Europe"],
+  ["🇷🇼","Rwanda","Kigali","Africa"],
+  ["🇰🇳","Saint Kitts and Nevis","Basseterre","North America"],
+  ["🇱🇨","Saint Lucia","Castries","North America"],
+  ["🇻🇨","Saint Vincent and the Grenadines","Kingstown","North America"],
+  ["🇼🇸","Samoa","Apia","Oceania"],
+  ["🇸🇲","San Marino","San Marino","Europe"],
+  ["🇸🇹","Sao Tome and Principe","Sao Tome","Africa"],
+  ["🇸🇦","Saudi Arabia","Riyadh","Asia"],
+  ["🇸🇳","Senegal","Dakar","Africa"],
+  ["🇷🇸","Serbia","Belgrade","Europe"],
+  ["🇸🇨","Seychelles","Victoria","Africa"],
+  ["🇸🇱","Sierra Leone","Freetown","Africa"],
+  ["🇸🇬","Singapore","Singapore","Asia"],
+  ["🇸🇰","Slovakia","Bratislava","Europe"],
+  ["🇸🇮","Slovenia","Ljubljana","Europe"],
+  ["🇸🇧","Solomon Islands","Honiara","Oceania"],
+  ["🇸🇴","Somalia","Mogadishu","Africa"],
+  ["🇿🇦","South Africa","Pretoria","Africa"],
+  ["🇰🇷","South Korea","Seoul","Asia"],
+  ["🇸🇸","South Sudan","Juba","Africa"],
+  ["🇪🇸","Spain","Madrid","Europe"],
+  ["🇱🇰","Sri Lanka","Sri Jayawardenepura Kotte","Asia"],
+  ["🇸🇩","Sudan","Khartoum","Africa"],
+  ["🇸🇷","Suriname","Paramaribo","South America"],
+  ["🇸🇪","Sweden","Stockholm","Europe"],
+  ["🇨🇭","Switzerland","Bern","Europe"],
+  ["🇸🇾","Syria","Damascus","Asia"],
+  ["🇹🇯","Tajikistan","Dushanbe","Asia"],
+  ["🇹🇿","Tanzania","Dodoma","Africa"],
+  ["🇹🇭","Thailand","Bangkok","Asia"],
+  ["🇹🇱","Timor-Leste","Dili","Asia"],
+  ["🇹🇬","Togo","Lome","Africa"],
+  ["🇹🇴","Tonga","Nuku'alofa","Oceania"],
+  ["🇹🇹","Trinidad and Tobago","Port of Spain","North America"],
+  ["🇹🇳","Tunisia","Tunis","Africa"],
+  ["🇹🇷","Turkey","Ankara","Asia"],
+  ["🇹🇲","Turkmenistan","Ashgabat","Asia"],
+  ["🇹🇻","Tuvalu","Funafuti","Oceania"],
+  ["🇺🇬","Uganda","Kampala","Africa"],
+  ["🇺🇦","Ukraine","Kyiv","Europe"],
+  ["🇦🇪","United Arab Emirates","Abu Dhabi","Asia"],
+  ["🇬🇧","United Kingdom","London","Europe"],
+  ["🇺🇸","United States","Washington, D.C.","North America"],
+  ["🇺🇾","Uruguay","Montevideo","South America"],
+  ["🇺🇿","Uzbekistan","Tashkent","Asia"],
+  ["🇻🇺","Vanuatu","Port Vila","Oceania"],
+  ["🇻🇦","Vatican City","Vatican City","Europe"],
+  ["🇻🇪","Venezuela","Caracas","South America"],
+  ["🇻🇳","Vietnam","Hanoi","Asia"],
+  ["🇾🇪","Yemen","Sanaa","Asia"],
+  ["🇿🇲","Zambia","Lusaka","Africa"],
+  ["🇿🇼","Zimbabwe","Harare","Africa"]
+];
+
+/* =========================================================
+   QUESTIONS
+========================================================= */
+
+function randomArray(array){
+  return [...array].sort(()=>Math.random()-.5);
+}
+
+function pickRandom(array,n){
+  return randomArray(array).slice(0,n);
+}
+
+function makeQuestion(question,correct,others){
+  return {
+    question,
+    correct,
+    answers:randomArray([correct,...others])
+  };
+}
+
+function buildCountryQuestions(){
+  return pickRandom(countries,35).map(c=>{
+    const wrong=pickRandom(
+      countries.filter(x=>x[1]!==c[1]).map(x=>x[1]),
+      3
+    );
+
+    return makeQuestion(
+      `Quel est le pays représenté par ${c[0]} ?`,
+      c[1],
+      wrong
+    );
+  });
+}
+
+function buildCapitalQuestions(){
+  return pickRandom(countries,35).map(c=>{
+    const wrong=pickRandom(
+      countries.filter(x=>x[2]!==c[2]).map(x=>x[2]),
+      3
+    );
+
+    return makeQuestion(
+      `Quelle est la capitale de ${c[1]} ?`,
+      c[2],
+      wrong
+    );
+  });
+}
+
+function buildFlagQuestions(){
+  return pickRandom(countries,35).map(c=>{
+    const wrong=pickRandom(
+      countries.filter(x=>x[1]!==c[1]).map(x=>x[1]),
+      3
+    );
+
+    return makeQuestion(
+      `Quel pays possède le drapeau ${c[0]} ?`,
+      c[1],
+      wrong
+    );
+  });
+}
+
+function buildContinentQuestions(){
+  return pickRandom(countries,35).map(c=>{
+    const wrong=pickRandom(
+      ["Africa","Asia","Europe","North America","South America","Oceania"]
+        .filter(x=>x!==c[3]),
+      3
+    );
+
+    return makeQuestion(
+      `Sur quel continent se trouve ${c[1]} ?`,
+      c[3],
+      wrong
+    );
+  });
+}
+
+const englishQuestions=[
+  makeQuestion(
+    "What is the capital of the United Kingdom?",
+    "London",
+    ["Dublin","Paris","Edinburgh"]
+  ),
+  makeQuestion(
+    "Which country speaks English as an official language?",
+    "Ireland",
+    ["Brazil","Japan","Morocco"]
+  ),
+  makeQuestion(
+    "What is the English word for « France »?",
+    "France",
+    ["French","Francia","França"]
+  ),
+  makeQuestion(
+    "What is the capital of Ireland?",
+    "Dublin",
+    ["London","Cardiff","Belfast"]
+  ),
+  makeQuestion(
+    "Which country is part of the United Kingdom?",
+    "Scotland",
+    ["Spain","Germany","Italy"]
+  ),
+  makeQuestion(
+    "What does 'hello' mean?",
+    "Bonjour",
+    ["Merci","Au revoir","S'il vous plaît"]
+  ),
+  makeQuestion(
+    "What is the English word for « rouge »?",
+    "Red",
+    ["Blue","Green","Black"]
+  ),
+  makeQuestion(
+    "What is the English word for « bleu »?",
+    "Blue",
+    ["Red","Yellow","White"]
+  ),
+  makeQuestion(
+    "Which country has London as its capital?",
+    "United Kingdom",
+    ["Ireland","Canada","Australia"]
+  ),
+  makeQuestion(
+    "Which country has Dublin as its capital?",
+    "Ireland",
+    ["United Kingdom","Iceland","New Zealand"]
+  ),
+  makeQuestion(
+    "What is the English word for « avril »?",
+    "April",
+    ["August","June","October"]
+  ),
+  makeQuestion(
+    "How do you say « seize avril » in British English?",
+    "16 April",
+    ["April 16","April sixteen only","16 Avril"]
+  ),
+  makeQuestion(
+    "What does UK stand for?",
+    "United Kingdom",
+    ["United Korea","Universal Kingdom","United Kenya"]
+  ),
+  makeQuestion(
+    "What is the capital of Australia?",
+    "Canberra",
+    ["Sydney","Melbourne","Perth"]
+  ),
+  makeQuestion(
+    "What is the capital of Canada?",
+    "Ottawa",
+    ["Toronto","Vancouver","Montreal"]
+  )
+];
+
+function buildMixedQuestions(){
+  return [
+    ...buildCountryQuestions(),
+    ...buildCapitalQuestions(),
+    ...buildFlagQuestions(),
+    ...buildContinentQuestions(),
+    ...englishQuestions
+  ];
+}
+
+function getQuestionPool(mode){
+  if(mode==="countries") return buildCountryQuestions();
+  if(mode==="capitals") return buildCapitalQuestions();
+  if(mode==="flags") return buildFlagQuestions();
+  if(mode==="continents") return buildContinentQuestions();
+  if(mode==="english") return [...englishQuestions];
+  return buildMixedQuestions();
+}
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
 
 function goPage(pageId){
-clearInterval(timerInterval);
-document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-const page=document.getElementById(pageId);if(!page)return;
-page.classList.add("active");
-document.querySelectorAll(".navlinks button[data-page]").forEach(b=>b.classList.toggle("active",b.dataset.page===pageId));
-if(pageId==="mapPage")setTimeout(drawMap,50);
-if(pageId==="countriesPage")renderCountries(countries);
-if(pageId==="profilePage")updateProfileDisplay();
-if(pageId==="professorResultsPage")updateNamesButton();
-if(pageId==="professorCodesPage")loadProfessorCodes();
-if(pageId==="professorCodeResultsPage")loadProfessorCodeSelect();
+  document.querySelectorAll(".page").forEach(page=>{
+    page.classList.remove("active");
+  });
+
+  const target=document.getElementById(pageId);
+
+  if(!target)return;
+
+  target.classList.add("active");
+
+  document.querySelectorAll(".navlinks button[data-page]").forEach(btn=>{
+    btn.classList.toggle(
+      "active",
+      btn.dataset.page===pageId
+    );
+  });
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
+  if(pageId==="countriesPage"){
+    renderCountries();
+  }
+
+  if(pageId==="professorCodesPage"){
+    loadCreatedCodes();
+  }
+
+  if(pageId==="professorCodeResultsPage"){
+    loadProfessorCodeSelect();
+  }
 }
 
-function openProfessor(){
-document.getElementById("profCodeInput").value="";
-document.getElementById("profCodeModal").style.display="flex";
+/* =========================================================
+   MODALS
+========================================================= */
+
+function openModal(id){
+  const el=document.getElementById(id);
+  if(el)el.style.display="flex";
 }
 
-function updateNamesButton(){
-const b=document.getElementById("toggleNamesBtn"),s=document.getElementById("nameVisibilityStatus");
-if(!b)return;
-b.textContent=namesHidden?"👁️ Afficher les noms":"🙈 Masquer tous les noms";
-if(s)s.textContent=namesHidden?"Les noms sont actuellement masqués.":"Les noms sont actuellement visibles.";
+function closeModal(id){
+  const el=document.getElementById(id);
+  if(el)el.style.display="none";
 }
 
-function toggleNamesVisibility(){
-namesHidden=!namesHidden;
-localStorage.setItem("wexHideNames",namesHidden);
-updateNamesButton();
-loadProfessorResults();
-}
-
-function renderCountries(list){
-const grid=document.getElementById("countryGrid");grid.innerHTML="";
-list.forEach(c=>{
-const d=document.createElement("div");
-d.className="country "+(c.type==="primary"?"primary-country":c.type==="secondary"?"secondary-country":"other-country");
-const label=c.type==="primary"?"🔴 Anglais principal":c.type==="secondary"?"🔵 Anglais seconde langue / officiel":"⚫ Autre pays";
-const tag=c.type==="primary"?"red-tag":c.type==="secondary"?"blue-tag":"gray-tag";
-d.innerHTML=`<div class="flag">${c.flag}</div><h3>${escapeHTML(c.name)}</h3><p>🏛️ Capitale : <strong>${escapeHTML(c.capital)}</strong><br>🌍 Continent : ${escapeHTML(c.continent)}</p><span class="country-tag ${tag}">${label}</span>`;
-grid.appendChild(d);
+window.addEventListener("click",e=>{
+  document.querySelectorAll(".modal").forEach(modal=>{
+    if(e.target===modal){
+      modal.style.display="none";
+    }
+  });
 });
-}
 
-document.getElementById("countrySearch").addEventListener("input",e=>{
-const v=e.target.value.toLowerCase().trim();
-renderCountries(countries.filter(c=>c.name.toLowerCase().includes(v)||c.capital.toLowerCase().includes(v)||c.continent.toLowerCase().includes(v)));
-});
-
-function drawMap(){
-if(mapLoaded)return;
-const container=document.getElementById("worldMap"),width=container.clientWidth,height=container.clientHeight;
-if(width<100)return;
-const svg=d3.select("#worldMap");svg.attr("viewBox",`0 0 ${width} ${height}`);svg.selectAll("*").remove();
-const projection=d3.geoNaturalEarth1().fitSize([width,height],{type:"Sphere"}),path=d3.geoPath().projection(projection);
-const content=svg.append("g").attr("class","map-content");
-content.append("path").datum({type:"Sphere"}).attr("fill","#061a30").attr("stroke","#28537c").attr("stroke-width","1").attr("d",path);
-d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(world=>{
-const land=topojson.feature(world,world.objects.countries),tooltip=document.getElementById("mapTooltip");
-content.selectAll(".country-path").data(land.features).enter().append("path").attr("class","country-path").attr("d",path)
-.attr("fill",d=>{const id=String(d.id).padStart(3,"0");return primaryIDs.has(id)?"#ff3154":secondaryIDs.has(id)?"#1683ff":"#173049"})
-.on("click",(event)=>{content.selectAll(".country-path").classed("selected-country",false);d3.select(event.currentTarget).classed("selected-country",true)})
-.on("mousemove",(event,d)=>{const id=String(d.id).padStart(3,"0"),c=byId.get(id);if(!c)return;tooltip.style.display="block";tooltip.innerHTML=`<strong>${c.flag} ${escapeHTML(c.name)}</strong><br>Capitale : ${escapeHTML(c.capital)}<br>${c.type==="primary"?"🔴 Anglais principal":c.type==="secondary"?"🔵 Anglais seconde langue / officiel":"⚫ Autre pays"}`;tooltip.style.left=event.clientX+15+"px";tooltip.style.top=event.clientY+15+"px"})
-.on("mouseleave",()=>tooltip.style.display="none");
-mapZoomBehavior=d3.zoom().scaleExtent([1,8]).on("zoom",event=>content.attr("transform",event.transform));
-svg.call(mapZoomBehavior);svg.on("dblclick.zoom",null);mapZoomLevel=1;mapLoaded=true;
-});
-}
-
-function changeMapZoom(direction){
-if(!mapLoaded)return;
-mapZoomLevel=Math.max(1,Math.min(8,mapZoomLevel*(direction>0?1.35:1/1.35)));
-d3.select("#worldMap").transition().duration(180).call(mapZoomBehavior.scaleTo,mapZoomLevel);
-}
-
-/* QUESTIONS */
-const questionPools={
-easy:[
-["Quelle est la capitale du Royaume-Uni ?","Londres",["Londres","Dublin","Paris","Madrid"],1],
-["Quelle est la capitale du Canada ?","Ottawa",["Toronto","Ottawa","Vancouver","Montréal"],1],
-["Quelle est la capitale de l’Australie ?","Canberra",["Sydney","Canberra","Melbourne","Perth"],1],
-["Quel pays a Londres comme capitale ?","Royaume-Uni",["Royaume-Uni","Irlande","Canada","Australie"],1],
-["Quel pays a Canberra comme capitale ?","Australie",["Australie","Nouvelle-Zélande","Canada","Fidji"],1],
-["Quel pays a Dublin comme capitale ?","Irlande",["Irlande","Royaume-Uni","Australie","Canada"],1],
-["Quelle est la capitale de la Nouvelle-Zélande ?","Wellington",["Auckland","Wellington","Suva","Apia"],1],
-["Quelle est la capitale de l’Irlande ?","Dublin",["Dublin","Cork","Belfast","Galway"],1],
-["Quelle est la capitale des États-Unis ?","Washington D.C.",["New York","Washington D.C.","Chicago","Boston"],1],
-["Quel pays a Washington D.C. comme capitale ?","États-Unis",["États-Unis","Canada","Royaume-Uni","Australie"],1],
-["Quelle est la capitale de la Jamaïque ?","Kingston",["Kingston","Nassau","Bridgetown","Georgetown"],1],
-["Quel pays a Kingston comme capitale ?","Jamaïque",["Jamaïque","Bahamas","Barbade","Belize"],1]
-],
-medium:[
-["Quelle est la capitale du Bangladesh ?","Dacca",["Dacca","Chittagong","Sylhet","Rajshahi"],2],
-["Quelle est la capitale de l’Inde ?","New Delhi",["Mumbai","New Delhi","Kolkata","Chennai"],2],
-["Quelle est la capitale du Ghana ?","Accra",["Accra","Kumasi","Lagos","Abuja"],2],
-["Quelle est la capitale du Kenya ?","Nairobi",["Nairobi","Mombasa","Kampala","Accra"],2],
-["Quelle est la capitale du Nigeria ?","Abuja",["Lagos","Abuja","Kano","Ibadan"],2],
-["Quelle est la capitale de la Malaisie ?","Kuala Lumpur",["Kuala Lumpur","Singapour","Jakarta","Manille"],2],
-["Quelle est la capitale du Pakistan ?","Islamabad",["Karachi","Islamabad","Lahore","Peshawar"],2],
-["Quelle est la capitale de l’Ouganda ?","Kampala",["Kampala","Nairobi","Kigali","Accra"],2],
-["Quelle est la capitale de la Zambie ?","Lusaka",["Lusaka","Harare","Gaborone","Windhoek"],2],
-["Quelle est la capitale du Zimbabwe ?","Harare",["Harare","Lusaka","Gaborone","Pretoria"],2],
-["Quelle est la capitale de la Namibie ?","Windhoek",["Windhoek","Gaborone","Lusaka","Harare"],2],
-["Quelle est la capitale du Botswana ?","Gaborone",["Gaborone","Windhoek","Lusaka","Harare"],2],
-["Quel pays a Nairobi comme capitale ?","Kenya",["Kenya","Ghana","Nigeria","Ouganda"],2],
-["Quel pays a Kampala comme capitale ?","Ouganda",["Ouganda","Kenya","Rwanda","Ghana"],2],
-["Quel pays a Islamabad comme capitale ?","Pakistan",["Pakistan","Inde","Bangladesh","Malaisie"],2]
-],
-hard:[
-["Quelle est la capitale des Bahamas ?","Nassau",["Nassau","Kingston","Bridgetown","Belmopan"],3],
-["Quelle est la capitale de la Barbade ?","Bridgetown",["Bridgetown","Nassau","Kingston","Roseau"],3],
-["Quelle est la capitale du Belize ?","Belmopan",["Belmopan","Nassau","Georgetown","Kingston"],3],
-["Quelle est la capitale de la Guyana ?","Georgetown",["Georgetown","Paramaribo","Kingstown","Castries"],3],
-["Quelle est la capitale du Rwanda ?","Kigali",["Kigali","Nairobi","Kampala","Bujumbura"],3],
-["Quelle est la capitale des Fidji ?","Suva",["Suva","Apia","Nuku’alofa","Port-Vila"],3],
-["Quelle est la capitale de la Papouasie-Nouvelle-Guinée ?","Port Moresby",["Port Moresby","Suva","Honiara","Apia"],3],
-["Quelle est la capitale des Seychelles ?","Victoria",["Victoria","Port-Louis","Moroni","Maputo"],3],
-["Quelle est la capitale de la Sierra Leone ?","Freetown",["Freetown","Monrovia","Conakry","Accra"],3],
-["Quelle est la capitale du Liberia ?","Monrovia",["Monrovia","Freetown","Accra","Banjul"],3],
-["Quelle est la capitale de la Gambie ?","Banjul",["Banjul","Freetown","Monrovia","Accra"],3],
-["Quelle est la capitale de Maurice ?","Port-Louis",["Port-Louis","Victoria","Moroni","Maputo"],3],
-["Quelle est la capitale du Malawi ?","Lilongwe",["Lilongwe","Lusaka","Harare","Nairobi"],3],
-["Quelle est la capitale du Lesotho ?","Maseru",["Maseru","Mbabane","Gaborone","Maseru"],3],
-["Quelle est la capitale de la Micronésie ?","Palikir",["Palikir","Majuro","Tarawa-Sud","Ngerulmud"],3]
-],
-expert:[
-["Quel pays a Ngerulmud comme capitale ?","Palaos",["Palaos","Micronésie","Îles Marshall","Kiribati"],4],
-["Quel pays a Tarawa-Sud comme capitale ?","Kiribati",["Kiribati","Tuvalu","Samoa","Tonga"],4],
-["Quel pays a Majuro comme capitale ?","Îles Marshall",["Îles Marshall","Micronésie","Palaos","Samoa"],4],
-["Quel pays a Funafuti comme capitale ?","Tuvalu",["Tuvalu","Tonga","Samoa","Kiribati"],4],
-["Quel pays a Nuku’alofa comme capitale ?","Tonga",["Tonga","Samoa","Tuvalu","Fidji"],4],
-["Quel pays a Port-Vila comme capitale ?","Vanuatu",["Vanuatu","Fidji","Samoa","Tonga"],4],
-["Quel pays a Honiara comme capitale ?","Îles Salomon",["Îles Salomon","Vanuatu","Fidji","Samoa"],4],
-["Quel pays a Apia comme capitale ?","Samoa",["Samoa","Tonga","Tuvalu","Fidji"],4],
-["Quel pays a Basseterre comme capitale ?","Saint-Christophe-et-Niévès",["Saint-Christophe-et-Niévès","Sainte-Lucie","Grenade","Dominique"],4],
-["Quel pays a Castries comme capitale ?","Sainte-Lucie",["Sainte-Lucie","Grenade","Dominique","Barbade"],4],
-["Quel pays a Kingstown comme capitale ?","Saint-Vincent-et-les-Grenadines",["Saint-Vincent-et-les-Grenadines","Sainte-Lucie","Grenade","Bahamas"],4],
-["Quel pays a Saint-Georges comme capitale ?","Grenade",["Grenade","Dominique","Sainte-Lucie","Barbade"],4]
-],
-classic:[
-["Quelle est la capitale de l’Angleterre ?","Londres",["Londres","Manchester","Liverpool","Birmingham"],1],
-["Quelle est la capitale des États-Unis ?","Washington D.C.",["New York","Washington D.C.","Chicago","Boston"],1],
-["Quelle est la capitale du Canada ?","Ottawa",["Toronto","Ottawa","Vancouver","Montréal"],1],
-["Quelle est la capitale de l’Australie ?","Canberra",["Sydney","Canberra","Melbourne","Perth"],1],
-["Quelle est la capitale du Bangladesh ?","Dacca",["Dacca","Chittagong","Sylhet","Rajshahi"],2],
-["Quelle est la capitale de l’Inde ?","New Delhi",["Mumbai","New Delhi","Kolkata","Chennai"],2],
-["Quelle est la capitale du Ghana ?","Accra",["Accra","Kumasi","Lagos","Abuja"],2],
-["Quelle est la capitale du Nigeria ?","Abuja",["Lagos","Abuja","Kano","Ibadan"],3],
-["Quelle est la capitale de la Namibie ?","Windhoek",["Windhoek","Gaborone","Lusaka","Harare"],3],
-["Quelle est la capitale du Rwanda ?","Kigali",["Kigali","Nairobi","Kampala","Bujumbura"],3],
-["Quelle est la capitale des Bahamas ?","Nassau",["Nassau","Kingston","Bridgetown","Belmopan"],3],
-["Quel pays a Wellington comme capitale ?","Nouvelle-Zélande",["Nouvelle-Zélande","Australie","Irlande","Fidji"],1]
-],
-capitals:[
-["Londres est la capitale de quel pays ?","Royaume-Uni",["Royaume-Uni","Canada","Australie","Irlande"],1],
-["Washington D.C. est la capitale de quel pays ?","États-Unis",["États-Unis","Canada","Royaume-Uni","Australie"],1],
-["Canberra est la capitale de quel pays ?","Australie",["Australie","Nouvelle-Zélande","Canada","Irlande"],1],
-["Dacca est la capitale de quel pays ?","Bangladesh",["Bangladesh","Pakistan","Inde","Malaisie"],2],
-["Ottawa est la capitale de quel pays ?","Canada",["Canada","États-Unis","Australie","Nouvelle-Zélande"],2],
-["New Delhi est la capitale de quel pays ?","Inde",["Inde","Pakistan","Bangladesh","Malaisie"],2],
-["Islamabad est la capitale de quel pays ?","Pakistan",["Pakistan","Inde","Bangladesh","Malaisie"],2],
-["Pretoria est la capitale administrative de quel pays ?","Afrique du Sud",["Afrique du Sud","Kenya","Nigeria","Ghana"],3],
-["Kuala Lumpur est la capitale de quel pays ?","Malaisie",["Malaisie","Singapour","Indonésie","Philippines"],3],
-["Bridgetown est la capitale de quel pays ?","Barbade",["Barbade","Bahamas","Jamaïque","Belize"],3],
-["Nassau est la capitale de quel pays ?","Bahamas",["Bahamas","Jamaïque","Barbade","Belize"],3],
-["Suva est la capitale de quel pays ?","Fidji",["Fidji","Samoa","Tonga","Vanuatu"],3]
-],
-countries:[
-["Quel pays a Londres comme capitale ?","Royaume-Uni",["Royaume-Uni","Irlande","Canada","Australie"],1],
-["Quel pays a Canberra comme capitale ?","Australie",["Australie","Nouvelle-Zélande","Fidji","Canada"],1],
-["Quel pays a Wellington comme capitale ?","Nouvelle-Zélande",["Nouvelle-Zélande","Australie","Irlande","Fidji"],1],
-["Quel pays a Dacca comme capitale ?","Bangladesh",["Bangladesh","Pakistan","Inde","Malaisie"],2],
-["Quel pays a Nairobi comme capitale ?","Kenya",["Kenya","Ghana","Nigeria","Ouganda"],2],
-["Quel pays a Kampala comme capitale ?","Ouganda",["Ouganda","Kenya","Rwanda","Ghana"],2],
-["Quel pays a Lusaka comme capitale ?","Zambie",["Zambie","Zimbabwe","Namibie","Botswana"],2],
-["Quel pays a Harare comme capitale ?","Zimbabwe",["Zimbabwe","Zambie","Botswana","Namibie"],3],
-["Quel pays a Gaborone comme capitale ?","Botswana",["Botswana","Namibie","Zambie","Rwanda"],3],
-["Quel pays a Windhoek comme capitale ?","Namibie",["Namibie","Botswana","Zimbabwe","Afrique du Sud"],3],
-["Quel pays a Suva comme capitale ?","Fidji",["Fidji","Samoa","Tonga","Vanuatu"],3],
-["Quel pays a Georgetown comme capitale ?","Guyana",["Guyana","Suriname","Belize","Bahamas"],3]
-],
-challenge:[
-["Dans quel pays l’anglais et le français sont-ils langues officielles ?","Canada",["Canada","Australie","Jamaïque","Ghana"],1],
-["Quel pays d’Océanie a Suva pour capitale ?","Fidji",["Fidji","Australie","Nouvelle-Zélande","Samoa"],1],
-["Quel pays a Nassau pour capitale ?","Bahamas",["Bahamas","Jamaïque","Barbade","Belize"],2],
-["Quel pays a Dacca pour capitale ?","Bangladesh",["Bangladesh","Inde","Pakistan","Népal"],2],
-["Quel pays a Accra pour capitale ?","Ghana",["Ghana","Nigeria","Kenya","Ouganda"],2],
-["Quel pays a Abuja pour capitale ?","Nigeria",["Nigeria","Ghana","Kenya","Zambie"],3],
-["Quel pays a Kigali pour capitale ?","Rwanda",["Rwanda","Ouganda","Kenya","Burundi"],3],
-["Quel pays a Windhoek pour capitale ?","Namibie",["Namibie","Botswana","Zimbabwe","Zambie"],3],
-["Quel pays a Islamabad pour capitale ?","Pakistan",["Pakistan","Inde","Malaisie","Philippines"],3],
-["Quel pays a Pretoria pour capitale administrative ?","Afrique du Sud",["Afrique du Sud","Nigeria","Ghana","Kenya"],3],
-["Quel pays a Bridgetown pour capitale ?","Barbade",["Barbade","Bahamas","Jamaïque","Belize"],3],
-["Quel pays a Port-Louis pour capitale ?","Maurice",["Maurice","Seychelles","Comores","Maldives"],3]
-]
-};function shuffle(a){const x=[...a];for(let i=x.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]]}return x}
-
-function levelData(l){
-if(l===1)return{name:"FACILE",icon:"🟢",time:15,base:40,cls:"easy"};
-if(l===2)return{name:"MOYEN",icon:"🟡",time:12,base:100,cls:"medium"};
-if(l===3)return{name:"DIFFICILE",icon:"🔴",time:10,base:250,cls:"hard"};
-return{name:"EXPERT",icon:"💀",time:9,base:500,cls:"expert"};
-}
-
-function getMultiplier(){if(combo>=8)return 4;if(combo>=6)return 3;if(combo>=4)return 2;if(combo>=2)return 1.5;return 1}
-
-function startQuiz(mode){
-currentMode=mode;clearInterval(timerInterval);score=0;combo=0;maxCombo=0;correctAnswers=0;currentQuestion=0;
-quizQuestions=shuffle(questionPools[mode]||questionPools.classic).slice(0,10).map(x=>({q:x[0],a:x[1],options:x[2],level:x[3]}));
-document.getElementById("quizStart").style.display="none";document.getElementById("quizGame").style.display="block";document.getElementById("mapQuizArea").style.display="none";document.getElementById("victory").style.display="none";loadQuestion();
-}
-
-function loadQuestion(){
-clearInterval(timerInterval);answered=false;
-const q=quizQuestions[currentQuestion],d=levelData(q.level);maxTime=d.time;timeLeft=maxTime;
-document.getElementById("questionNumber").textContent=`Question ${currentQuestion+1}/${quizQuestions.length}`;
-document.getElementById("difficultyText").textContent=d.name;
-const badge=document.getElementById("levelBadge");badge.textContent=`${d.icon} ${d.name}`;badge.className=`level ${d.cls}`;
-document.getElementById("questionText").textContent=q.q;document.getElementById("feedback").innerHTML="";document.getElementById("nextBtn").style.display="none";
-document.getElementById("progressFill").style.width=`${currentQuestion/quizQuestions.length*100}%`;
-const box=document.getElementById("answers");box.innerHTML="";
-shuffle(q.options).forEach(option=>{const b=document.createElement("button");b.className="answer";b.textContent=option;b.onclick=()=>answerQuestion(option,b);box.appendChild(b)});
-updateTimer();
-timerInterval=setInterval(()=>{timeLeft=Math.max(0,timeLeft-.1);updateTimer();if(timeLeft<=0){clearInterval(timerInterval);timeoutQuestion()}},100);
-}
-
-function updateTimer(){
-const p=timeLeft/maxTime*100,fill=document.getElementById("timerFill"),text=document.getElementById("timerText");
-fill.style.width=p+"%";text.textContent=Math.ceil(timeLeft)+"s";
-if(p<=30){fill.style.background="#ff3154";text.style.color="#ff637d"}else if(p<=60){fill.style.background="#ffd04d";text.style.color="#ffd04d"}else{fill.style.background="#1683ff";text.style.color="#59baff"}
-}
-
-function answerQuestion(selected,button){
-if(answered)return;answered=true;clearInterval(timerInterval);
-const q=quizQuestions[currentQuestion];
-document.querySelectorAll(".answer").forEach(b=>{b.disabled=true;if(b.textContent===q.a)b.classList.add("correct")});
-if(selected===q.a){
-button.classList.add("correct");correctAnswers++;combo++;maxCombo=Math.max(maxCombo,combo);
-const d=levelData(q.level),mult=getMultiplier(),timeBonus=Math.round(timeLeft/maxTime*20),points=Math.round(d.base*mult)+timeBonus;
-score+=points;document.getElementById("feedback").innerHTML="✅ Correct !";
-}else{button.classList.add("wrong");combo=0;document.getElementById("feedback").innerHTML=`❌ Raté ! La bonne réponse était <strong>${escapeHTML(q.a)}</strong>`}
-document.getElementById("nextBtn").style.display="inline-block";
-}
-
-function timeoutQuestion(){
-if(answered)return;answered=true;combo=0;
-const q=quizQuestions[currentQuestion];
-document.querySelectorAll(".answer").forEach(b=>{b.disabled=true;if(b.textContent===q.a)b.classList.add("correct")});
-document.getElementById("feedback").innerHTML=`⏰ Temps écoulé ! La réponse était <strong>${escapeHTML(q.a)}</strong>`;
-document.getElementById("nextBtn").style.display="inline-block";
-}
-
-document.getElementById("nextBtn").onclick=()=>{currentQuestion++;if(currentQuestion>=quizQuestions.length)finishQuiz();else loadQuestion()};
-
-async function finishQuiz(){
-clearInterval(timerInterval);document.getElementById("quizGame").style.display="none";document.getElementById("victory").style.display="block";
-document.getElementById("finalQuizScore").textContent=score;document.getElementById("resultMessage").textContent=`${correctAnswers}/${quizQuestions.length} bonnes réponses`;
-if(username){
-try{
-await window.firebaseReady;
-await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDB,"results"),{
-username,code:studentCode||"",mode:currentMode,score,timestamp:window.firebaseServerTimestamp()
-});
-}catch(e){console.error("Firebase résultat:",e)}
-}
-await refreshStudentDashboard();
-}
-
-function backToQuizMenu(){clearInterval(timerInterval);document.getElementById("quizGame").style.display="none";document.getElementById("victory").style.display="none";document.getElementById("mapQuizArea").style.display="none";document.getElementById("quizStart").style.display="block"}
-
-function startMapQuiz(){
-clearInterval(timerInterval);mapQuizColors={};
-document.getElementById("quizStart").style.display="none";document.getElementById("quizGame").style.display="none";document.getElementById("victory").style.display="none";document.getElementById("mapQuizArea").style.display="block";
-setTimeout(drawQuizMap,50);
-}
-
-function selectMapColor(color){quizMapColor=color;document.getElementById("redTool").classList.toggle("active",color==="primary");document.getElementById("blueTool").classList.toggle("active",color==="secondary")}
-
-function drawQuizMap(){
-const svg=d3.select("#quizMap"),element=document.getElementById("quizMap"),width=element.clientWidth,height=element.clientHeight;
-if(width<100)return;
-svg.attr("viewBox",`0 0 ${width} ${height}`);svg.selectAll("*").remove();
-const projection=d3.geoNaturalEarth1().fitSize([width,height],{type:"Sphere"}),path=d3.geoPath().projection(projection);
-svg.append("path").datum({type:"Sphere"}).attr("fill","#061a30").attr("stroke","#28537c").attr("d",path);
-d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(world=>{
-const land=topojson.feature(world,world.objects.countries);
-svg.selectAll(".quiz-map-country").data(land.features).enter().append("path").attr("class","quiz-map-country").attr("d",path)
-.attr("fill",d=>{const id=String(d.id).padStart(3,"0");return mapQuizColors[id]==="primary"?"#ff3154":mapQuizColors[id]==="secondary"?"#1683ff":"#173049"})
-.on("click",(event,d)=>{const id=String(d.id).padStart(3,"0");mapQuizColors[id]=quizMapColor;d3.select(event.currentTarget).attr("fill",quizMapColor==="primary"?"#ff3154":"#1683ff")});
-quizMapLoaded=true;
-});
-}
-
-function resetMapQuiz(){mapQuizColors={};document.getElementById("mapQuizResult").style.display="none";drawQuizMap()}
-
-async function validateMapQuiz(){
-let errors=0,correct=0;
-countries.forEach(c=>{const selected=mapQuizColors[c.id]||null,expected=(c.type==="primary"||c.type==="secondary")?c.type:null;if(selected===expected)correct++;else errors++});
-const perfect=errors===0,earned=perfect?1500:0;
-document.getElementById("mapQuizResult").style.display="block";document.getElementById("mapQuizScore").textContent=earned;
-document.getElementById("mapQuizTitle").textContent=perfect?"🎉 Carte parfaite !":"🗺️ Carte terminée";
-document.getElementById("mapQuizMessage").textContent=perfect?"Tous les pays ont été correctement coloriés.":`${correct}/${countries.length} pays correctement coloriés.`;
-if(perfect)await saveMapQuizResult();
-}
-
-async function saveMapQuizResult(){
-if(!username)return;
-try{
-await window.firebaseReady;
-await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDB,"results"),{
-username,code:studentCode||"",mode:"Carte Quiz",score:1500,timestamp:window.firebaseServerTimestamp()
-});
-await refreshStudentDashboard();
-}catch(e){console.error("Erreur Carte Quiz:",e)}
-}
-
-/* CODES ÉLÈVES */
-
-async function codeExists(code){
-try{
-await window.firebaseReady;
-const snap=await window.firebaseGetDocs(window.firebaseCollection(window.firebaseDB,"quizCodes"));
-const target=normalizeCode(code);
-let exists=false;
-snap.forEach(d=>{if(normalizeCode(d.data().code)===target)exists=true});
-return exists;
-}catch(e){console.error(e);return false}
-}
-
-async function saveUsername(){
-const value=document.getElementById("usernameInput").value.trim();
-const code=normalizeCode(document.getElementById("studentCodeInput").value);
-if(!value){alert("Entre un prénom ou un pseudo.");return}
-if(value.length<2){alert("Le nom doit contenir au moins 2 caractères.");return}
-if(!code){alert("Entre le code donné par ton professeur.");return}
-if(!(await codeExists(code))){alert("❌ Code élève incorrect. Demande le code à ton professeur.");return}
-username=value;studentCode=code;
-localStorage.setItem("wexUsername",username);localStorage.setItem("wexStudentCode",studentCode);
-updateProfileDisplay();closeModal("usernameModal");refreshStudentDashboard();
-}
-
-function openStudentCodeChange(){
-if(!username){alert("Aucun nom enregistré.");return}
-document.getElementById("changeStudentCodeInput").value=studentCode;
-document.getElementById("studentCodeModal").style.display="flex";
-}
-
-async function changeStudentCode(){
-const code=normalizeCode(document.getElementById("changeStudentCodeInput").value);
-if(!code){alert("Entre un code.");return}
-if(!(await codeExists(code))){alert("❌ Ce code n'existe pas.");return}
-studentCode=code;localStorage.setItem("wexStudentCode",studentCode);
-updateProfileDisplay();document.getElementById("profileStatus").textContent="✅ Code élève modifié.";closeModal("studentCodeModal");
-}
-
-/* NOM */
-
-function openUsernameChange(){
-if(!username){alert("Aucun nom enregistré.");return}
-const input=document.getElementById("changeUsernameInput");input.value=username;
-document.getElementById("changeUsernameModal").style.display="flex";
-setTimeout(()=>{input.focus();input.select()},50);
-}
-
-async function changeUsername(){
-const newUsername=document.getElementById("changeUsernameInput").value.trim();
-if(!newUsername){alert("Entre un prénom ou un pseudo.");return}
-if(newUsername.length<2){alert("Le nom doit contenir au moins 2 caractères.");return}
-const oldKey=username.trim().toLowerCase(),newKey=newUsername.trim().toLowerCase();
-if(oldKey===newKey){username=newUsername;localStorage.setItem("wexUsername",username);updateProfileDisplay();closeModal("changeUsernameModal");return}
-try{
-await window.firebaseReady;
-const db=window.firebaseDB;
-const resultsSnap=await window.firebaseGetDocs(window.firebaseCollection(db,"results"));
-const pointsSnap=await window.firebaseGetDocs(window.firebaseCollection(db,"points"));
-const updates=[];
-resultsSnap.forEach(d=>{const u=String(d.data().username||"").trim().toLowerCase();if(u===oldKey)updates.push(window.firebaseUpdateDoc(d.ref,{username:newUsername}))});
-pointsSnap.forEach(d=>{const u=String(d.data().username||"").trim().toLowerCase();if(u===oldKey)updates.push(window.firebaseUpdateDoc(d.ref,{username:newUsername}))});
-await Promise.all(updates);
-username=newUsername;localStorage.setItem("wexUsername",username);updateProfileDisplay();
-document.getElementById("profileStatus").textContent="✅ Nom modifié. Tes scores et tes points ont été transférés.";
-closeModal("changeUsernameModal");await refreshStudentDashboard();
-}catch(e){console.error(e);alert("Impossible de transférer les scores et les points.")}
-}
+/* =========================================================
+   PROFIL
+========================================================= */
 
 function updateProfileDisplay(){
-document.getElementById("currentUsernameDisplay").textContent=username||"-";
-document.getElementById("currentStudentCodeDisplay").textContent=studentCode||"Aucun code";
+  document.getElementById("profileName").textContent=
+    username||"Non défini";
+
+  const codeEl=document.getElementById("profileCode");
+
+  if(studentCode){
+    codeEl.className="code-display";
+    codeEl.textContent="🔑 "+studentCode;
+  }else{
+    codeEl.className="code-display empty-code";
+    codeEl.textContent="Aucun code connecté";
+  }
+
+  const nav=document.getElementById("studentCodeNavBtn");
+
+  if(nav){
+    nav.textContent=studentCode
+      ? "🔑 Code ✓"
+      : "🔑 Code";
+  }
 }
 
-function closeModal(id){const m=document.getElementById(id);if(m)m.style.display="none"}
+function openUsernameChange(){
+  document.getElementById("usernameChangeInput").value=username;
+  document.getElementById("usernameChangeStatus").textContent="";
+  openModal("usernameChangeModal");
+}
 
-/* PROFESSEUR */
+function saveUsername(){
+  const input=document.getElementById("usernameInput");
+  const status=document.getElementById("usernameStatus");
+
+  const value=input.value.trim();
+
+  if(value.length<2){
+    status.className="status error";
+    status.textContent="❌ Entre au moins 2 caractères.";
+    return;
+  }
+
+  username=value.slice(0,30);
+  localStorage.setItem("wexUsername",username);
+
+  updateProfileDisplay();
+
+  closeModal("usernameModal");
+
+  status.textContent="";
+}
+
+function changeUsername(){
+  const input=document.getElementById("usernameChangeInput");
+  const status=document.getElementById("usernameChangeStatus");
+
+  const value=input.value.trim();
+
+  if(value.length<2){
+    status.className="status error";
+    status.textContent="❌ Nom trop court.";
+    return;
+  }
+
+  username=value.slice(0,30);
+  localStorage.setItem("wexUsername",username);
+
+  updateProfileDisplay();
+
+  status.className="status success";
+  status.textContent="✅ Nom enregistré.";
+
+  setTimeout(()=>{
+    closeModal("usernameChangeModal");
+  },500);
+}
+
+/* =========================================================
+   CODE ÉLÈVE
+   IMPORTANT : CE N'EST PAS DANS LE MODAL DU PRÉNOM
+========================================================= */
+
+function normalizeCode(value){
+  return String(value||"")
+    .trim()
+    .toUpperCase()
+    .replace(/\s+/g,"");
+}
+
+function openStudentCode(){
+  const input=document.getElementById("studentCodeTopInput");
+  const status=document.getElementById("studentCodeStatus");
+
+  input.value=studentCode||"";
+  status.textContent="";
+  status.className="status";
+
+  openModal("studentCodeModal");
+
+  setTimeout(()=>{
+    input.focus();
+  },100);
+}
+
+async function codeExists(code){
+  try{
+    const snap=await firebaseGetDocs(
+      firebaseCollection(firebaseDB,"quizCodes")
+    );
+
+    let exists=false;
+
+    snap.forEach(item=>{
+      const data=item.data();
+
+      if(normalizeCode(data.code)===code){
+        exists=true;
+      }
+    });
+
+    return exists;
+
+  }catch(error){
+    console.error(error);
+    throw error;
+  }
+}
+
+async function connectStudentCode(){
+  const input=document.getElementById("studentCodeTopInput");
+  const status=document.getElementById("studentCodeStatus");
+
+  const code=normalizeCode(input.value);
+
+  if(!code){
+    status.className="status error";
+    status.textContent="❌ Entre un code.";
+    return;
+  }
+
+  status.className="status";
+  status.textContent="⏳ Vérification du code...";
+
+  try{
+    const exists=await codeExists(code);
+
+    if(!exists){
+      status.className="status error";
+      status.textContent="❌ Ce code n'existe pas.";
+      return;
+    }
+
+    studentCode=code;
+
+    localStorage.setItem(
+      "wexStudentCode",
+      studentCode
+    );
+
+    updateProfileDisplay();
+
+    status.className="status success";
+    status.textContent=
+      "✅ Connecté directement au groupe "+studentCode+" !";
+
+    setTimeout(()=>{
+      closeModal("studentCodeModal");
+    },700);
+
+  }catch(error){
+    console.error(error);
+
+    status.className="status error";
+    status.textContent=
+      "❌ Impossible de vérifier le code.";
+  }
+}
+
+/* =========================================================
+   PAYS
+========================================================= */
+
+function renderCountries(){
+  const grid=document.getElementById("countryGrid");
+  const search=(document.getElementById("countrySearch").value||"")
+    .trim()
+    .toLowerCase();
+
+  const filtered=countries.filter(c=>
+    c[1].toLowerCase().includes(search) ||
+    c[2].toLowerCase().includes(search) ||
+    c[3].toLowerCase().includes(search)
+  );
+
+  grid.innerHTML=filtered.map(c=>`
+    <div class="country-card">
+      <div class="country-flag">${c[0]}</div>
+      <div class="country-name">${escapeHtml(c[1])}</div>
+      <div class="country-capital">
+        🏙️ ${escapeHtml(c[2])}
+      </div>
+      <div class="country-capital">
+        🌍 ${escapeHtml(c[3])}
+      </div>
+    </div>
+  `).join("");
+
+  if(!filtered.length){
+    grid.innerHTML=`
+      <div class="card" style="grid-column:1/-1">
+        Aucun pays trouvé.
+      </div>
+    `;
+  }
+}
+
+/* =========================================================
+   QUIZ
+========================================================= */
+
+function startQuiz(mode){
+  currentQuizMode=mode;
+
+  const pool=getQuestionPool(mode);
+
+  currentQuiz=randomArray(pool).slice(
+    0,
+    Math.min(QUIZ_LENGTH,pool.length)
+  );
+
+  currentQuizIndex=0;
+  currentScore=0;
+  quizLocked=false;
+
+  document.getElementById("quizMenu").style.display="none";
+  document.getElementById("quizResult").style.display="none";
+  document.getElementById("quizGame").style.display="block";
+
+  const labels={
+    countries:"🌎 Pays du monde",
+    capitals:"🏙️ Capitales",
+    flags:"🚩 Drapeaux",
+    continents:"🌐 Continents",
+    english:"🇬🇧 English",
+    mixed:"🔥 Mix total"
+  };
+
+  document.getElementById("quizModeLabel").textContent=
+    labels[mode]||"Quiz";
+
+  showQuestion();
+}
+
+function startMapQuiz(){
+  startQuiz("countries");
+}
+
+function showQuestion(){
+  const q=currentQuiz[currentQuizIndex];
+
+  if(!q){
+    finishQuiz();
+    return;
+  }
+
+  quizLocked=false;
+
+  document.getElementById("quizCounter").textContent=
+    `${currentQuizIndex+1} / ${currentQuiz.length}`;
+
+  document.getElementById("quizProgress").style.width=
+    `${(currentQuizIndex/currentQuiz.length)*100}%`;
+
+  document.getElementById("questionText").textContent=
+    q.question;
+
+  const answers=document.getElementById("answers");
+
+  answers.innerHTML="";
+
+  q.answers.forEach(answer=>{
+    const btn=document.createElement("button");
+
+    btn.className="answer";
+    btn.textContent=answer;
+
+    btn.onclick=()=>{
+      answerQuestion(btn,answer,q.correct);
+    };
+
+    answers.appendChild(btn);
+  });
+}
+
+function answerQuestion(button,answer,correct){
+  if(quizLocked)return;
+
+  quizLocked=true;
+
+  const buttons=[
+    ...document.querySelectorAll("#answers .answer")
+  ];
+
+  buttons.forEach(btn=>{
+    if(btn.textContent===correct){
+      btn.classList.add("correct");
+    }
+  });
+
+  if(answer===correct){
+    currentScore++;
+    button.classList.add("correct");
+  }else{
+    button.classList.add("wrong");
+  }
+
+  setTimeout(()=>{
+    currentQuizIndex++;
+    showQuestion();
+  },650);
+}
+
+async function finishQuiz(){
+  document.getElementById("quizGame").style.display="none";
+  document.getElementById("quizResult").style.display="block";
+
+  const total=currentQuiz.length;
+
+  document.getElementById("resultScore").textContent=
+    `${currentScore}/${total}`;
+
+  let message="";
+
+  const ratio=currentScore/total;
+
+  if(ratio===1){
+    message="🏆 Score parfait !";
+  }else if(ratio>=.8){
+    message="🔥 Excellent travail !";
+  }else if(ratio>=.6){
+    message="👍 Très bien !";
+  }else if(ratio>=.4){
+    message="💪 Continue à t'entraîner !";
+  }else{
+    message="📚 Encore quelques révisions et ça ira mieux !";
+  }
+
+  document.getElementById("resultMessage").textContent=message;
+
+  await saveQuizResult();
+}
+
+async function saveQuizResult(){
+  try{
+    await firebaseAddDoc(
+      firebaseCollection(firebaseDB,"results"),
+      {
+        username:username||"Anonyme",
+        code:studentCode||"",
+        mode:currentQuizMode,
+        score:currentScore,
+        total:currentQuiz.length,
+        percentage:Math.round(
+          currentScore/currentQuiz.length*100
+        ),
+        createdAt:firebaseServerTimestamp()
+      }
+    );
+
+    await firebaseAddDoc(
+      firebaseCollection(firebaseDB,"points"),
+      {
+        username:username||"Anonyme",
+        code:studentCode||"",
+        mode:currentQuizMode,
+        points:currentScore,
+        score:currentScore,
+        total:currentQuiz.length,
+        createdAt:firebaseServerTimestamp()
+      }
+    );
+
+  }catch(error){
+    console.error("Firebase:",error);
+  }
+}
+
+function quitQuiz(){
+  if(confirm("Quitter le quiz ? Ton score actuel ne sera pas enregistré.")){
+    backToQuizMenu();
+  }
+}
+
+function backToQuizMenu(){
+  document.getElementById("quizGame").style.display="none";
+  document.getElementById("quizResult").style.display="none";
+  document.getElementById("quizMenu").style.display="block";
+}<script>
+/* =========================================================
+   PROFESSEUR
+========================================================= */
+
+function openProfessor(){
+  document.getElementById("profCodeInput").value="";
+  document.getElementById("profCodeStatus").textContent="";
+  document.getElementById("profCodeStatus").className="status";
+
+  openModal("profCodeModal");
+
+  setTimeout(()=>{
+    document.getElementById("profCodeInput").focus();
+  },100);
+}
 
 function checkProfessorCode(){
-const code=document.getElementById("profCodeInput").value.trim().toUpperCase();
-closeModal("profCodeModal");
+  const input=document.getElementById("profCodeInput");
+  const status=document.getElementById("profCodeStatus");
 
-if(code==="WEX"){
-goPage("professorDangerPage");
-return;
-}
-if(code==="WEX-POINTS-2026"){goPage("professorPointsPage");return}
-if(code==="WEX-RESULTS-2026"){goPage("professorResultsPage");updateNamesButton();loadProfessorResults();return}
-alert("Code professeur incorrect.");
+  const code=normalizeCode(input.value);
+
+  closeModal("profCodeModal");
+
+  /*
+    CODES PROFESSEUR
+    WEX = suppression totale
+    WEX-CREATE-CODE = création de codes
+    WEX-POINTS-2026 = points
+    WEX-RESULTS-2026 = résultats
+  */
+
+  if(code==="WEX"){
+    goPage("professorDangerPage");
+    return;
+  }
+
+  if(code==="WEX-CREATE-CODE"){
+    goPage("professorCodesPage");
+    loadCreatedCodes();
+    return;
+  }
+
+  if(code==="WEX-POINTS-2026"){
+    goPage("professorPointsPage");
+    loadProfessorPoints();
+    return;
+  }
+
+  if(code==="WEX-RESULTS-2026"){
+    goPage("professorResultsPage");
+    loadProfessorResults();
+    return;
+  }
+
+  alert("❌ Code professeur incorrect.");
 }
 
-async function addProfessorPoints(){
-const student=document.getElementById("pointStudent").value.trim(),amount=Number(document.getElementById("pointAmount").value);
-if(!student){alert("Entre le nom de l'élève.");return}
-if(!Number.isFinite(amount)||amount<=0){alert("Entre un nombre de points valide.");return}
-try{
-await window.firebaseReady;
-await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDB,"points"),{username:student,points:amount,timestamp:window.firebaseServerTimestamp()});
-document.getElementById("pointsStatus").textContent=`✅ ${amount} points ajoutés à ${student}.`;
-document.getElementById("pointAmount").value="";document.getElementById("pointStudent").value="";
-await refreshStudentDashboard();
-}catch(e){console.error(e);alert("Impossible d'ajouter les points.")}
-}
-
-/* CRÉATION DES CODES */
-
-function randomQuizCode(){
-const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-let code="WEX-";
-for(let i=0;i<5;i++)code+=chars[Math.floor(Math.random()*chars.length)];
-return code;
-}
-
-async function generateUniqueQuizCode(){
-await window.firebaseReady;
-const snap=await window.firebaseGetDocs(window.firebaseCollection(window.firebaseDB,"quizCodes"));
-const used=new Set();
-snap.forEach(d=>used.add(normalizeCode(d.data().code)));
-let code;
-do{code=randomQuizCode()}while(used.has(code));
-return code;
-}
+/* =========================================================
+   CRÉATION D'UN CODE PERSONNALISÉ
+========================================================= */
 
 async function createProfessorCode(){
-const name=document.getElementById("newCodeName").value.trim();
-if(!name){alert("Entre un nom pour ce code.");return}
-try{
-const code=await generateUniqueQuizCode();
-await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDB,"quizCodes"),{
-code,name,createdAt:window.firebaseServerTimestamp()
-});
-document.getElementById("newCodeName").value="";
-document.getElementById("createdCodeBox").innerHTML=`
-<div class="code-card">
-<div><div class="code-name">✅ Code créé : ${escapeHTML(name)}</div><div class="code-value">${escapeHTML(code)}</div></div>
-<button class="code-copy" onclick="copyCode('${code}')">📋 Copier</button>
-</div>`;
-await loadProfessorCodes();
-}catch(e){console.error(e);alert("Impossible de créer le code.")}
+  const codeInput=document.getElementById("newCodeValue");
+  const nameInput=document.getElementById("newCodeName");
+  const status=document.getElementById("createCodeStatus");
+
+  const code=normalizeCode(codeInput.value);
+  const name=nameInput.value.trim();
+
+  status.className="status";
+
+  if(!code){
+    status.className="status error";
+    status.textContent="❌ Choisis un code.";
+    return;
+  }
+
+  if(!/^[A-Z0-9-]{3,30}$/.test(code)){
+    status.className="status error";
+    status.textContent=
+      "❌ Utilise uniquement A-Z, 0-9 et - (3 à 30 caractères).";
+    return;
+  }
+
+  const reserved=[
+    "WEX",
+    "WEX-CREATE-CODE",
+    "WEX-POINTS-2026",
+    "WEX-RESULTS-2026"
+  ];
+
+  if(reserved.includes(code)){
+    status.className="status error";
+    status.textContent="❌ Ce code est réservé.";
+    return;
+  }
+
+  status.textContent="⏳ Vérification...";
+
+  try{
+    const exists=await codeExists(code);
+
+    if(exists){
+      status.className="status error";
+      status.textContent=
+        "❌ Ce code existe déjà. Choisis-en un autre.";
+      return;
+    }
+
+    await firebaseAddDoc(
+      firebaseCollection(firebaseDB,"quizCodes"),
+      {
+        code:code,
+        name:name||code,
+        createdAt:firebaseServerTimestamp()
+      }
+    );
+
+    codeInput.value="";
+    nameInput.value="";
+
+    status.className="status success";
+    status.textContent=
+      `✅ Code ${code} créé avec succès !`;
+
+    await loadCreatedCodes();
+
+  }catch(error){
+    console.error(error);
+
+    status.className="status error";
+    status.textContent=
+      "❌ Erreur lors de la création du code.";
+  }
 }
 
-async function copyCode(code){
-try{await navigator.clipboard.writeText(code);alert("✅ Code copié !")}
-catch(e){prompt("Copie ce code :",code)}
+/* =========================================================
+   LISTE DES CODES
+========================================================= */
+
+async function loadCreatedCodes(){
+  const container=document.getElementById("createdCodesList");
+
+  if(!container)return;
+
+  container.innerHTML="⏳ Chargement...";
+
+  try{
+    const snap=await firebaseGetDocs(
+      firebaseCollection(firebaseDB,"quizCodes")
+    );
+
+    const rows=[];
+
+    snap.forEach(item=>{
+      const data=item.data();
+
+      rows.push({
+        id:item.id,
+        code:normalizeCode(data.code),
+        name:data.name||data.code
+      });
+    });
+
+    rows.sort((a,b)=>a.code.localeCompare(b.code));
+
+    if(!rows.length){
+      container.innerHTML=`
+        <div class="card">
+          Aucun code créé pour le moment.
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML=rows.map(row=>`
+      <div class="code-row">
+        <div>
+          <strong>🔑 ${escapeHtml(row.code)}</strong>
+          <div style="color:var(--muted);margin-top:5px">
+            ${escapeHtml(row.name)}
+          </div>
+        </div>
+
+        <button
+          class="big-btn dark"
+          style="margin:0"
+          onclick="viewCodeResults('${escapeAttr(row.code)}')"
+        >
+          👥 Résultats
+        </button>
+      </div>
+    `).join("");
+
+  }catch(error){
+    console.error(error);
+
+    container.innerHTML=`
+      <div class="warning">
+        ❌ Impossible de charger les codes.
+      </div>
+    `;
+  }
 }
 
-async function loadProfessorCodes(){
-const box=document.getElementById("codesList");if(!box)return;
-box.innerHTML='<p class="name-status">Chargement...</p>';
-try{
-await window.firebaseReady;
-const snap=await window.firebaseGetDocs(window.firebaseCollection(window.firebaseDB,"quizCodes"));
-const arr=[];
-snap.forEach(d=>{const x=d.data();arr.push({id:d.id,code:x.code||"",name:x.name||"Code sans nom",createdAt:x.createdAt})});
-arr.sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
-box.innerHTML="";
-if(!arr.length){box.innerHTML='<p class="name-status">Aucun code créé.</p>';return}
-arr.forEach(x=>{
-const div=document.createElement("div");div.className="code-card";
-div.innerHTML=`<div><div class="code-name">${escapeHTML(x.name)}</div><div class="code-value">${escapeHTML(x.code)}</div></div><button class="code-copy">📋 Copier</button>`;
-div.querySelector("button").onclick=()=>copyCode(x.code);box.appendChild(div);
-});
-}catch(e){console.error(e);box.innerHTML='<p class="name-status">Impossible de charger les codes.</p>'}
+function viewCodeResults(code){
+  goPage("professorCodeResultsPage");
+
+  setTimeout(async()=>{
+    await loadProfessorCodeSelect();
+
+    const select=document.getElementById("profCodeSelect");
+
+    if(select){
+      select.value=code;
+      await loadCodeResults();
+    }
+  },100);
 }
+
+/* =========================================================
+   SELECTEUR DES CODES
+========================================================= */
 
 async function loadProfessorCodeSelect(){
-const select=document.getElementById("professorCodeSelect");if(!select)return;
-select.innerHTML='<option value="">Choisir un code...</option>';
-try{
-await window.firebaseReady;
-const snap=await window.firebaseGetDocs(window.firebaseCollection(window.firebaseDB,"quizCodes"));
-const arr=[];snap.forEach(d=>{const x=d.data();arr.push({code:x.code||"",name:x.name||x.code||""})});
-arr.sort((a,b)=>a.name.localeCompare(b.name));
-arr.forEach(x=>{const o=document.createElement("option");o.value=normalizeCode(x.code);o.textContent=`${x.name} — ${x.code}`;select.appendChild(o)});
-}catch(e){console.error(e)}
+  const select=document.getElementById("profCodeSelect");
+
+  if(!select)return;
+
+  select.innerHTML=
+    `<option value="">Choisir un code...</option>`;
+
+  try{
+    const snap=await firebaseGetDocs(
+      firebaseCollection(firebaseDB,"quizCodes")
+    );
+
+    const codes=[];
+
+    snap.forEach(item=>{
+      const data=item.data();
+
+      codes.push({
+        code:normalizeCode(data.code),
+        name:data.name||data.code
+      });
+    });
+
+    codes.sort((a,b)=>a.code.localeCompare(b.code));
+
+    codes.forEach(item=>{
+      const option=document.createElement("option");
+
+      option.value=item.code;
+      option.textContent=
+        `${item.code} • ${item.name}`;
+
+      select.appendChild(option);
+    });
+
+  }catch(error){
+    console.error(error);
+  }
 }
 
-async function buildBonusMap(){
-const snap=await window.firebaseGetDocs(window.firebaseCollection(window.firebaseDB,"points"));
-const map={};
-snap.forEach(d=>{const x=d.data(),key=String(x.username||"").trim().toLowerCase();map[key]=(map[key]||0)+Number(x.points||0)});
-return map;
+/* =========================================================
+   RÉSULTATS D'UN CODE
+========================================================= */
+
+async function loadCodeResults(){
+  const select=document.getElementById("profCodeSelect");
+  const output=document.getElementById("codeResultsOutput");
+
+  const code=normalizeCode(select.value);
+
+  if(!code){
+    output.innerHTML="";
+    return;
+  }
+
+  output.innerHTML="⏳ Chargement...";
+
+  try{
+    const snap=await firebaseGetDocs(
+      firebaseCollection(firebaseDB,"results")
+    );
+
+    const rows=[];
+
+    snap.forEach(item=>{
+      const data=item.data();
+
+      if(normalizeCode(data.code)===code){
+        rows.push({
+          username:data.username||"Anonyme",
+          mode:data.mode||"-",
+          score:Number(data.score||0),
+          total:Number(data.total||0),
+          percentage:Number(data.percentage||0)
+        });
+      }
+    });
+
+    if(!rows.length){
+      output.innerHTML=`
+        <div class="card" style="margin-top:20px">
+          Aucun résultat pour le code
+          <strong>${escapeHtml(code)}</strong>.
+        </div>
+      `;
+      return;
+    }
+
+    rows.sort((a,b)=>b.percentage-a.percentage);
+
+    output.innerHTML=`
+      <table>
+        <thead>
+          <tr>
+            <th>Élève</th>
+            <th>Quiz</th>
+            <th>Score</th>
+            <th>%</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          ${rows.map(row=>`
+            <tr>
+              <td>${escapeHtml(row.username)}</td>
+              <td>${escapeHtml(row.mode)}</td>
+              <td>${row.score}/${row.total}</td>
+              <td>${row.percentage}%</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    `;
+
+  }catch(error){
+    console.error(error);
+
+    output.innerHTML=`
+      <div class="warning">
+        ❌ Impossible de charger les résultats.
+      </div>
+    `;
+  }
 }
 
-function resultDate(ts){return ts?.seconds?new Date(ts.seconds*1000).toLocaleString("fr-FR"):""}
+/* =========================================================
+   TOUS LES POINTS
+========================================================= */
 
-function getDisplayedName(result,uniqueNames){
-const key=String(result.username||"").trim().toLowerCase(),index=uniqueNames.indexOf(key)+1;
-return namesHidden?`Élève ${index}`:escapeHTML(result.username);
+async function loadProfessorPoints(){
+  const output=document.getElementById("profPointsOutput");
+
+  output.innerHTML="⏳ Chargement...";
+
+  try{
+    const snap=await firebaseGetDocs(
+      firebaseCollection(firebaseDB,"points")
+    );
+
+    const rows=[];
+
+    snap.forEach(item=>{
+      const data=item.data();
+
+      rows.push({
+        username:data.username||"Anonyme",
+        code:data.code||"-",
+        mode:data.mode||"-",
+        points:Number(data.points||data.score||0),
+        total:Number(data.total||10)
+      });
+    });
+
+    if(!rows.length){
+      output.innerHTML=`
+        <div class="card">
+          Aucun point enregistré.
+        </div>
+      `;
+      return;
+    }
+
+    rows.sort((a,b)=>b.points-a.points);
+
+    output.innerHTML=`
+      <table>
+        <thead>
+          <tr>
+            <th>Élève</th>
+            <th>Code</th>
+            <th>Quiz</th>
+            <th>Points</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          ${rows.map(row=>`
+            <tr>
+              <td>${escapeHtml(row.username)}</td>
+              <td>
+                ${row.code
+                  ? `<strong>${escapeHtml(row.code)}</strong>`
+                  : `<span style="color:var(--muted)">Aucun</span>`
+                }
+              </td>
+              <td>${escapeHtml(row.mode)}</td>
+              <td>${row.points}/${row.total}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    `;
+
+  }catch(error){
+    console.error(error);
+
+    output.innerHTML=`
+      <div class="warning">
+        ❌ Impossible de charger les points.
+      </div>
+    `;
+  }
 }
 
-async function fetchResults(){
-const snap=await window.firebaseGetDocs(window.firebaseCollection(window.firebaseDB,"results"));
-const arr=[];
-snap.forEach(d=>{const x=d.data();arr.push({id:d.id,username:x.username||"",code:normalizeCode(x.code||""),mode:x.mode||"",score:Number(x.score||0),timestamp:x.timestamp})});
-arr.sort((a,b)=>(b.timestamp?.seconds||0)-(a.timestamp?.seconds||0));
-return arr;
-}
+/* =========================================================
+   TOUS LES RÉSULTATS
+========================================================= */
 
 async function loadProfessorResults(){
-const table=document.getElementById("resultsTable");if(!table)return;
-table.innerHTML='<tr><td colspan="5">Chargement...</td></tr>';
-try{
-await window.firebaseReady;
-const results=await fetchResults(),bonusMap=await buildBonusMap();
-table.innerHTML="";
-if(!results.length){table.innerHTML='<tr><td colspan="5">Aucun résultat.</td></tr>';return}
-const unique=[];results.forEach(r=>{const k=String(r.username).trim().toLowerCase();if(!unique.includes(k))unique.push(k)});
-results.forEach(r=>{
-const key=String(r.username).trim().toLowerCase(),finalScore=r.score+(bonusMap[key]||0),tr=document.createElement("tr");
-tr.innerHTML=`<td>${getDisplayedName(r,unique)}</td><td>${escapeHTML(r.mode)}</td><td><strong style="color:#59baff">${finalScore}</strong></td><td>${resultDate(r.timestamp)}</td><td><button class="delete-btn">Supprimer</button></td>`;
-tr.querySelector("button").onclick=()=>deleteProfessorResult(r.id);
-table.appendChild(tr);
-});
-}catch(e){console.error(e);table.innerHTML='<tr><td colspan="5">Impossible de charger les résultats.</td></tr>'}
+  const output=document.getElementById("profResultsOutput");
+
+  output.innerHTML="⏳ Chargement...";
+
+  try{
+    const snap=await firebaseGetDocs(
+      firebaseCollection(firebaseDB,"results")
+    );
+
+    const rows=[];
+
+    snap.forEach(item=>{
+      const data=item.data();
+
+      rows.push({
+        username:data.username||"Anonyme",
+        code:data.code||"",
+        mode:data.mode||"-",
+        score:Number(data.score||0),
+        total:Number(data.total||0),
+        percentage:Number(data.percentage||0)
+      });
+    });
+
+    if(!rows.length){
+      output.innerHTML=`
+        <div class="card">
+          Aucun résultat enregistré.
+        </div>
+      `;
+      return;
+    }
+
+    rows.sort((a,b)=>b.percentage-a.percentage);
+
+    output.innerHTML=`
+      <table>
+        <thead>
+          <tr>
+            <th>Élève</th>
+            <th>Code</th>
+            <th>Quiz</th>
+            <th>Score</th>
+            <th>%</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          ${rows.map(row=>`
+            <tr>
+              <td>${escapeHtml(row.username)}</td>
+              <td>
+                ${row.code
+                  ? `<strong>${escapeHtml(row.code)}</strong>`
+                  : `<span style="color:var(--muted)">Aucun</span>`
+                }
+              </td>
+              <td>${escapeHtml(row.mode)}</td>
+              <td>${row.score}/${row.total}</td>
+              <td>${row.percentage}%</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    `;
+
+  }catch(error){
+    console.error(error);
+
+    output.innerHTML=`
+      <div class="warning">
+        ❌ Impossible de charger les résultats.
+      </div>
+    `;
+  }
 }
 
-async function loadProfessorResultsByCode(){
-const table=document.getElementById("codeResultsTable"),select=document.getElementById("professorCodeSelect");
-if(!table||!select)return;
-const selected=normalizeCode(select.value);
-if(!selected){table.innerHTML='<tr><td colspan="5">Sélectionne un code.</td></tr>';document.getElementById("selectedCodeTitle").textContent="📊 Résultats";return}
-table.innerHTML='<tr><td colspan="5">Chargement...</td></tr>';
-try{
-await window.firebaseReady;
-const results=(await fetchResults()).filter(r=>r.code===selected),bonusMap=await buildBonusMap();
-document.getElementById("selectedCodeTitle").textContent=`📊 Résultats — ${selected}`;
-table.innerHTML="";
-if(!results.length){table.innerHTML='<tr><td colspan="5">Aucune note pour ce code.</td></tr>';return}
-const unique=[];results.forEach(r=>{const k=String(r.username).trim().toLowerCase();if(!unique.includes(k))unique.push(k)});
-results.forEach(r=>{
-const key=String(r.username).trim().toLowerCase(),finalScore=r.score+(bonusMap[key]||0),tr=document.createElement("tr");
-tr.innerHTML=`<td>${getDisplayedName(r,unique)}</td><td>${escapeHTML(r.mode)}</td><td><strong style="color:#59baff">${finalScore}</strong></td><td>${resultDate(r.timestamp)}</td><td><button class="delete-btn">Supprimer</button></td>`;
-tr.querySelector("button").onclick=()=>deleteProfessorCodeResult(r.id);
-table.appendChild(tr);
-});
-}catch(e){console.error(e);table.innerHTML='<tr><td colspan="5">Impossible de charger les résultats.</td></tr>'}
+/* =========================================================
+   SUPPRESSION TOTALE WEX
+========================================================= */
+
+async function deleteCollection(collectionName){
+  const snap=await firebaseGetDocs(
+    firebaseCollection(firebaseDB,collectionName)
+  );
+
+  const promises=[];
+
+  snap.forEach(item=>{
+    promises.push(
+      firebaseDeleteDoc(
+        firebaseDoc(
+          firebaseDB,
+          collectionName,
+          item.id
+        )
+      )
+    );
+  });
+
+  await Promise.all(promises);
 }
 
-async function deleteProfessorResult(id){
-if(!confirm("Supprimer uniquement cette note ? Les points seront conservés."))return;
-try{
-await window.firebaseReady;
-await window.firebaseDeleteDoc(window.firebaseDoc(window.firebaseDB,"results",id));
-await refreshStudentDashboard();await loadProfessorResults();
-}catch(e){console.error(e);alert("Impossible de supprimer cette note.")}
+async function deleteEverything(){
+  const status=document.getElementById("dangerStatus");
+
+  const first=prompt(
+    "ATTENTION ! Tape exactement SUPPRIMER pour continuer."
+  );
+
+  if(first!=="SUPPRIMER"){
+    status.className="status error";
+    status.textContent="❌ Suppression annulée.";
+    return;
+  }
+
+  const second=confirm(
+    "Dernière confirmation : supprimer TOUS les résultats, points et codes ?"
+  );
+
+  if(!second){
+    status.className="status error";
+    status.textContent="❌ Suppression annulée.";
+    return;
+  }
+
+  status.className="status";
+  status.textContent="⏳ Suppression en cours...";
+
+  try{
+    await deleteCollection("results");
+    await deleteCollection("points");
+    await deleteCollection("quizCodes");
+
+    localStorage.removeItem("wexUsername");
+    localStorage.removeItem("wexStudentCode");
+
+    username="";
+    studentCode="";
+
+    updateProfileDisplay();
+
+    status.className="status success";
+    status.textContent=
+      "✅ Toutes les données ont été supprimées.";
+
+    setTimeout(()=>{
+      location.reload();
+    },1000);
+
+  }catch(error){
+    console.error(error);
+
+    status.className="status error";
+    status.textContent=
+      "❌ Une erreur est survenue pendant la suppression.";
+  }
 }
 
-async function deleteProfessorCodeResult(id){
-if(!confirm("Supprimer uniquement cette note ? Les points seront conservés."))return;
-try{
-await window.firebaseReady;
-await window.firebaseDeleteDoc(window.firebaseDoc(window.firebaseDB,"results",id));
-await loadProfessorResultsByCode();
-}catch(e){console.error(e);alert("Impossible de supprimer cette note.")}
+/* =========================================================
+   SÉCURITÉ AFFICHAGE HTML
+========================================================= */
+
+function escapeHtml(value){
+  return String(value??"")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
 }
 
-/* SUPPRESSION TOTALE WEX */
-
-async function deleteEverythingWEX(){
-const first=prompt(
-"⚠️ ATTENTION ⚠️\n\nCette action supprimera définitivement :\n• toutes les notes\n• tous les points\n• tous les prénoms présents dans les résultats\n• tous les codes élèves\n\nÉcris exactement : SUPPRIMER"
-);
-if(first!=="SUPPRIMER"){alert("Suppression annulée.");return}
-if(!confirm("DERNIÈRE CONFIRMATION ⚠️\n\nToutes les données WEX vont être supprimées définitivement.")){alert("Suppression annulée.");return}
-
-try{
-await window.firebaseReady;
-let total=0;
-for(const collectionName of ["results","points","quizCodes"]){
-const snap=await window.firebaseGetDocs(window.firebaseCollection(window.firebaseDB,collectionName));
-for(const d of snap.docs){
-await window.firebaseDeleteDoc(window.firebaseDoc(window.firebaseDB,collectionName,d.id));
-total++;
-}
-}
-localStorage.removeItem("wexUsername");
-localStorage.removeItem("wexStudentCode");
-alert(`✅ SUPPRESSION TERMINÉE\n\n${total} éléments supprimés.`);
-location.reload();
-}catch(e){
-console.error("Suppression totale:",e);
-alert("❌ Erreur pendant la suppression. Certaines données peuvent ne pas avoir été supprimées.");
-}
+function escapeAttr(value){
+  return String(value??"")
+    .replace(/\\/g,"\\\\")
+    .replace(/'/g,"\\'");
 }
 
-/* DASHBOARD */
+/* =========================================================
+   INITIALISATION
+========================================================= */
 
-async function refreshStudentDashboard(){
-if(!username)return;
-try{
-await window.firebaseReady;
-const normalized=username.trim().toLowerCase();
-const results=await fetchResults();
-let latest=null;
-results.forEach(r=>{
-if(String(r.username).trim().toLowerCase()!==normalized)return;
-if(!latest||(r.timestamp?.seconds||0)>(latest.timestamp?.seconds||0))latest=r;
-});
-const bonusMap=await buildBonusMap(),bonus=bonusMap[normalized]||0,quizScore=latest?latest.score:0;
-document.getElementById("homeQuizScore").textContent=quizScore;
-document.getElementById("homeBonusPoints").textContent=bonus;
-document.getElementById("homeFinalScore").textContent=quizScore+bonus;
-}catch(e){console.error("Dashboard:",e)}
-}
+document.addEventListener("DOMContentLoaded",()=>{
+  updateProfileDisplay();
+  renderCountries();
 
-function escapeHTML(value){
-return String(value).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
-}
+  /*
+    Le modal de prénom ne demande PAS le code.
+    Le code est uniquement dans le bouton 🔑 Code
+    de la barre du haut.
+  */
 
-/* INIT */
+  if(!username){
+    setTimeout(()=>{
+      openModal("usernameModal");
 
-renderCountries(countries);
-updateNamesButton();
-updateProfileDisplay();
-
-if(!username){
-setTimeout(()=>document.getElementById("usernameModal").style.display="flex",400);
-}else{
-refreshStudentDashboard();
-}
-
-setInterval(refreshStudentDashboard,3000);
-
-window.addEventListener("resize",()=>{
-if(document.getElementById("mapPage").classList.contains("active")){mapLoaded=false;drawMap()}
-if(document.getElementById("mapQuizArea").style.display==="block"){quizMapLoaded=false;drawQuizMap()}
+      setTimeout(()=>{
+        const input=document.getElementById("usernameInput");
+        if(input)input.focus();
+      },100);
+    },400);
+  }
 });
 </script>
 
