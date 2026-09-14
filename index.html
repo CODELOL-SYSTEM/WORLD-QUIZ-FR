@@ -4,1461 +4,389 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>World English Explorer</title>
-
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
 
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
-body{
-font-family:Arial,Helvetica,sans-serif;
-background:#02060d;
-color:#fff;
-overflow-x:hidden
-}
-button,input{font:inherit}
-
-:root{
---blue:#1683ff;
---blue2:#59baff;
---red:#ff3154;
---green:#50e99b;
---yellow:#ffd04d;
---panel:#07111f;
---panel2:#0a1728;
---border:#173653
-}
-
-nav{
-position:fixed;
-top:0;
-left:0;
-right:0;
-height:70px;
-z-index:1000;
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:0 25px;
-background:rgba(2,6,13,.96);
-backdrop-filter:blur(15px);
-border-bottom:1px solid #12304d
-}
-
-.logo{
-font-size:20px;
-font-weight:1000;
-white-space:nowrap
-}
-.logo span{color:var(--blue)}
-
-.navlinks{
-display:flex;
-gap:7px;
-align-items:center;
-flex-wrap:wrap;
-justify-content:flex-end
-}
-
-.navlinks button,
-.prof-btn{
-background:#071525;
-color:#c9ddf5;
-border:1px solid #163957;
-padding:10px 13px;
-border-radius:10px;
-cursor:pointer;
-transition:.2s
-}
-
-.navlinks button:hover,
-.navlinks button.active,
-.prof-btn:hover{
-border-color:var(--blue);
-color:#fff;
-background:#0a1c30
-}
-
-.page{
-display:none;
-min-height:100vh;
-padding:105px 5% 50px;
-animation:pageIn .18s ease
-}
-
-.page.active{display:block}
-
-@keyframes pageIn{
-from{opacity:0;transform:translateY(5px)}
-to{opacity:1;transform:translateY(0)}
-}
-
-.hero{
-min-height:calc(100vh - 120px);
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
-text-align:center;
-background:
-radial-gradient(circle at 50% 25%,rgba(22,131,255,.18),transparent 35%),
-radial-gradient(circle at 80% 80%,rgba(255,49,84,.08),transparent 30%)
-}
-
-.hero h1{
-font-size:clamp(42px,8vw,88px);
-margin:0;
-font-weight:1000;
-letter-spacing:-3px
-}
-
-.hero h1 span{color:var(--blue)}
-
-.hero p{
-max-width:760px;
-color:#91a9c3;
-font-size:18px;
-line-height:1.6
-}
-
-.big-btn{
-border:0;
-border-radius:14px;
-padding:15px 24px;
-background:linear-gradient(135deg,#1683ff,#0758c4);
-color:#fff;
-font-weight:900;
-cursor:pointer;
-box-shadow:0 0 25px rgba(22,131,255,.2);
-transition:.2s
-}
-
-.big-btn:hover{
-transform:translateY(-2px);
-filter:brightness(1.1)
-}
-
-.stats{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:15px;
-max-width:900px;
-width:100%;
-margin:35px auto 0
-}
-
-.stat,.result{
-background:linear-gradient(145deg,#07111f,#050c16);
-border:1px solid var(--border);
-border-radius:18px;
-padding:20px;
-text-align:center
-}
-
-.stat strong,.result strong{
-display:block;
-font-size:30px;
-margin-bottom:5px
-}
-
-.stat span,.result span{
-color:#7892ae;
-font-size:13px
-}
-
-.dashboard{
-max-width:1000px;
-margin:35px auto 0
-}
-
-.result-grid{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:15px
-}
-
-.profile-btn-wrap{
-text-align:center;
-margin-top:20px
-}
-
-.title{
-text-align:center;
-margin-bottom:30px
-}
-
-.title h2{
-font-size:42px;
-margin:0 0 10px
-}
-
-.title p{color:#8199b2}
-
-.search{
-width:100%;
-max-width:600px;
-display:block;
-margin:0 auto 25px;
-background:#071321;
-color:white;
-border:1px solid #1b3b5a;
-border-radius:12px;
-padding:14px 17px;
-outline:none
-}
-
-.search:focus{border-color:var(--blue)}
-
-.country-grid{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
-gap:15px
-}
-
-.country{
-background:linear-gradient(145deg,#07111f,#050b14);
-border:1px solid #163451;
-border-radius:17px;
-padding:18px;
-transition:.2s;
-position:relative;
-overflow:hidden
-}
-
-.country:hover{
-transform:translateY(-4px);
-border-color:#3977aa
-}
-
-.primary-country{box-shadow:inset 3px 0 var(--red)}
-.secondary-country{box-shadow:inset 3px 0 var(--blue)}
-.other-country{box-shadow:inset 3px 0 #31475d}
-
-.flag{font-size:42px}
-.country h3{margin:10px 0 8px}
-
-.country p{
-color:#91a9c3;
-line-height:1.6;
-font-size:14px
-}
-
-.country-tag{
-display:inline-block;
-border-radius:999px;
-padding:6px 9px;
-font-size:11px;
-font-weight:800
-}
-
-.red-tag{background:#40121d;color:#ff6b83}
-.blue-tag{background:#092b50;color:#55b7ff}
-.gray-tag{background:#172331;color:#92a4b7}
-
-.map-wrap{
-position:relative;
-max-width:1300px;
-margin:auto;
-background:#030b15;
-border:1px solid #153652;
-border-radius:20px;
-overflow:hidden
-}
-
-#worldMap{
-width:100%;
-height:650px;
-display:block;
-cursor:grab
-}
-
-#worldMap:active{cursor:grabbing}
-
-.country-path{
-stroke:#0a2038;
-stroke-width:.6;
-cursor:pointer
-}
-
-.country-path:hover{
-filter:brightness(1.35)
-}
-
-.country-path.selected-country{
-stroke:#fff!important;
-stroke-width:2.7px!important;
-filter:drop-shadow(0 0 5px #fff)
-}
-
-.map-tooltip{
-position:fixed;
-z-index:2000;
-display:none;
-pointer-events:none;
-background:#06111f;
-border:1px solid #32618b;
-border-radius:10px;
-padding:10px 13px;
-font-size:13px;
-box-shadow:0 8px 30px #0008
-}
-
-.map-controls{
-display:flex;
-gap:8px;
-position:absolute;
-right:15px;
-bottom:15px;
-z-index:10
-}
-
-.map-controls button{
-width:44px;
-height:44px;
-border:1px solid #255277;
-border-radius:10px;
-background:#061525;
-color:#fff;
-cursor:pointer;
-font-size:20px
-}
-
-.legend{
-display:flex;
-gap:18px;
-flex-wrap:wrap;
-justify-content:center;
-padding:15px;
-color:#9bb0c5;
-font-size:13px
-}
-
-.legend span{
-display:flex;
-align-items:center;
-gap:6px
-}
-
-.dot{
-width:13px;
-height:13px;
-border-radius:50%;
-display:inline-block
-}
-
-.dot.red{background:var(--red)}
-.dot.blue{background:var(--blue)}
-.dot.gray{background:#173049}
-
-.quiz-modes{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:16px;
-max-width:1100px;
-margin:auto
-}
-
-.mode{
-background:linear-gradient(145deg,#081525,#040b14);
-border:1px solid #183754;
-border-radius:18px;
-padding:22px;
-cursor:pointer;
-transition:.2s
-}
-
-.mode:hover{
-transform:translateY(-4px);
-border-color:var(--blue)
-}
-
-.mode .icon{font-size:35px}
-
-.mode h3{
-margin:12px 0 7px
-}
-
-.mode p{
-color:#8199b2;
-font-size:13px;
-line-height:1.5
-}
-
-.difficulty-easy{border-color:#26744e}
-.difficulty-medium{border-color:#7d681e}
-.difficulty-hard{border-color:#853044}
-.difficulty-expert{
-border-color:#a5213e;
-box-shadow:0 0 20px rgba(255,49,84,.08)
-}
-
-.quiz-box{
-max-width:900px;
-margin:auto
-}
-
-.quiz-header{
-display:flex;
-gap:10px;
-justify-content:space-between;
-align-items:center;
-flex-wrap:wrap;
-margin-bottom:15px
-}
-
-.quiz-pill{
-padding:8px 12px;
-border-radius:999px;
-background:#0a192b;
-border:1px solid #1c405f;
-color:#9fb5ca;
-font-size:13px
-}
-
-.progress{
-width:100%;
-height:7px;
-background:#0a1827;
-border-radius:99px;
-overflow:hidden;
-margin-bottom:20px
-}
-
-.progress-fill{
-height:100%;
-width:0;
-background:linear-gradient(90deg,var(--blue),var(--red));
-transition:.2s
-}
-
-.timer{
-height:9px;
-background:#0a1827;
-border-radius:99px;
-overflow:hidden;
-margin:15px 0 6px
-}
-
-.timer-fill{
-height:100%;
-background:var(--blue);
-width:100%
-}
-
-.timer-text{
-text-align:right;
-color:#59baff;
-font-weight:900;
-font-size:13px
-}
-
-.question-card{
-background:linear-gradient(145deg,#081524,#040a12);
-border:1px solid #183754;
-border-radius:22px;
-padding:30px;
-text-align:center
-}
-
-.level{
-display:inline-block;
-padding:7px 12px;
-border-radius:999px;
-font-weight:900;
-font-size:12px
-}
-
-.easy{background:#123a29;color:#50e99b}
-.medium{background:#413615;color:#ffd04d}
-.hard{background:#421321;color:#ff7187}
-.expert{background:#4d0b20;color:#ff4d72}
-
-.question-card h2{
-font-size:clamp(22px,4vw,35px);
-line-height:1.3;
-margin:25px 0
-}
-
-.answers{
-display:grid;
-grid-template-columns:repeat(2,1fr);
-gap:12px
-}
-
-.answer{
-padding:15px;
-border-radius:13px;
-border:1px solid #21425f;
-background:#071525;
-color:#eaf4ff;
-cursor:pointer;
-transition:.15s
-}
-
-.answer:hover:not(:disabled){
-border-color:var(--blue);
-background:#0a1d31
-}
-
-.answer:disabled{cursor:default}
-
-.answer.correct{
-background:#103c2b;
-border-color:var(--green);
-color:#8ff5bf
-}
-
-.answer.wrong{
-background:#451420;
-border-color:var(--red);
-color:#ff879a
-}
-
-.feedback{
-min-height:35px;
-margin:18px 0 4px;
-color:#a9bdd1
-}
-
-.next-btn{
-display:none;
-margin-top:10px
-}
-
-.victory{
-display:none;
-max-width:650px;
-margin:30px auto;
-text-align:center;
-background:#071321;
-border:1px solid #1e4668;
-border-radius:22px;
-padding:35px
-}
-
-.victory h2{
-font-size:45px;
-margin:0 0 10px
-}
-
-.final-number{
-font-size:60px;
-font-weight:1000;
-color:#59baff
-}
-
-.map-quiz{
-max-width:1200px;
-margin:auto
-}
-
-.map-quiz-info{
-background:#071321;
-border:1px solid #173653;
-border-radius:16px;
-padding:18px;
-margin-bottom:15px;
-text-align:center;
-color:#9eb3c8
-}
-
-.map-quiz-tools{
-display:flex;
-justify-content:center;
-flex-wrap:wrap;
-gap:10px;
-margin:15px 0
-}
-
-.color-tool{
-padding:12px 20px;
-border-radius:10px;
-border:2px solid #244765;
-background:#081626;
-color:#fff;
-cursor:pointer;
-font-weight:900
-}
-
-.color-tool.active.red-tool{
-border-color:var(--red);
-background:#39111a
-}
-
-.color-tool.active.blue-tool{
-border-color:var(--blue);
-background:#09294a
-}
-
-#quizMap{
-width:100%;
-height:650px;
-display:block;
-background:#030b15;
-border-radius:18px;
-border:1px solid #183754
-}
-
-.quiz-map-country{
-stroke:#0c2539;
-stroke-width:.5;
-cursor:pointer
-}
-
-.quiz-map-country:hover{
-stroke:#fff;
-stroke-width:1.5
-}
-
-.professor{
-max-width:1100px;
-margin:auto
-}
-
-.prof-panel{
-background:#071321;
-border:1px solid #183754;
-border-radius:18px;
-padding:22px;
-margin-bottom:18px
-}
-
-.prof-panel h3{margin-top:0}
-
-.prof-form{
-display:flex;
-gap:10px;
-flex-wrap:wrap
-}
-
-.prof-form input{
-flex:1;
-min-width:180px;
-background:#030b15;
-border:1px solid #21425f;
-color:#fff;
-padding:13px;
-border-radius:10px;
-outline:none
-}
-
-.prof-table{
-width:100%;
-border-collapse:collapse;
-margin-top:15px
-}
-
-.prof-table th,
-.prof-table td{
-padding:12px;
-border-bottom:1px solid #17304a;
-text-align:left
-}
-
-.prof-table th{color:#70baff}
-.prof-table td{color:#a6b9cc}
-
-.delete-btn{
-border:1px solid #773044;
-background:#35101a;
-color:#ff7a90;
-padding:7px 10px;
-border-radius:8px;
-cursor:pointer
-}
-
-.name-control{
-display:flex;
-gap:10px;
-align-items:center;
-flex-wrap:wrap;
-margin-top:15px
-}
-
-.name-status{
-color:#7892ae;
-font-size:13px
-}
-
-.modal{
-position:fixed;
-inset:0;
-z-index:3000;
-display:none;
-align-items:center;
-justify-content:center;
-background:#000b;
-padding:20px
-}
-
-.modal-card{
-width:min(430px,100%);
-background:#071321;
-border:1px solid #214766;
-border-radius:20px;
-padding:25px;
-box-shadow:0 20px 80px #000
-}
-
-.modal-card h2{margin-top:0}
-
-.modal-card input{
-width:100%;
-padding:13px;
-background:#030b15;
-color:#fff;
-border:1px solid #244a69;
-border-radius:10px;
-outline:none;
-margin:10px 0
-}
-
-.modal-actions{
-display:flex;
-gap:10px;
-margin-top:12px
-}
-
-.modal-actions button{flex:1}
-
-.hidden{display:none!important}
-
-@media(max-width:800px){
-
-nav{
-height:auto;
-min-height:70px;
-padding:10px;
-gap:10px
-}
-
-.logo{font-size:15px}
-
-.navlinks{
-gap:4px
-}
-
-.navlinks button,
-.prof-btn{
-padding:8px;
-font-size:11px
-}
-
-.page{
-padding:105px 4% 40px
-}
-
-.stats,
-.result-grid{
-grid-template-columns:1fr
-}
-
-.answers{
-grid-template-columns:1fr
-}
-
-#worldMap,
-#quizMap{
-height:450px
-}
-
-.question-card{
-padding:20px
-}
-
-}
+body{font-family:Arial,Helvetica,sans-serif;background:#02060d;color:#fff;overflow-x:hidden}
+button,input,select{font:inherit}
+:root{--blue:#1683ff;--blue2:#59baff;--red:#ff3154;--green:#50e99b;--yellow:#ffd04d;--panel:#07111f;--panel2:#0a1728;--border:#173653}
+
+nav{position:fixed;top:0;left:0;right:0;height:70px;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 25px;background:rgba(2,6,13,.96);backdrop-filter:blur(15px);border-bottom:1px solid #12304d}
+.logo{font-size:20px;font-weight:1000;white-space:nowrap}.logo span{color:var(--blue)}
+.navlinks{display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.navlinks button,.prof-btn{background:#071525;color:#c9ddf5;border:1px solid #163957;padding:10px 13px;border-radius:10px;cursor:pointer;transition:.2s}
+.navlinks button:hover,.navlinks button.active,.prof-btn:hover{border-color:var(--blue);color:#fff;background:#0a1c30}
+.page{display:none;min-height:100vh;padding:105px 5% 50px;animation:pageIn .18s ease}.page.active{display:block}
+@keyframes pageIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.hero{min-height:calc(100vh - 120px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:radial-gradient(circle at 50% 25%,rgba(22,131,255,.18),transparent 35%),radial-gradient(circle at 80% 80%,rgba(255,49,84,.08),transparent 30%)}
+.hero h1{font-size:clamp(42px,8vw,88px);margin:0;font-weight:1000;letter-spacing:-3px}.hero h1 span{color:var(--blue)}
+.hero p{max-width:760px;color:#91a9c3;font-size:18px;line-height:1.6}
+.big-btn{border:0;border-radius:14px;padding:15px 24px;background:linear-gradient(135deg,#1683ff,#0758c4);color:#fff;font-weight:900;cursor:pointer;box-shadow:0 0 25px rgba(22,131,255,.2);transition:.2s}
+.big-btn:hover{transform:translateY(-2px);filter:brightness(1.1)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;max-width:900px;width:100%;margin:35px auto 0}
+.stat,.result{background:linear-gradient(145deg,#07111f,#050c16);border:1px solid var(--border);border-radius:18px;padding:20px;text-align:center}
+.stat strong,.result strong{display:block;font-size:30px;margin-bottom:5px}.stat span,.result span{color:#7892ae;font-size:13px}
+.dashboard{max-width:1000px;margin:35px auto 0}.result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.profile-btn-wrap{text-align:center;margin-top:20px}
+.title{text-align:center;margin-bottom:30px}.title h2{font-size:42px;margin:0 0 10px}.title p{color:#8199b2}
+.search{width:100%;max-width:600px;display:block;margin:0 auto 25px;background:#071321;color:white;border:1px solid #1b3b5a;border-radius:12px;padding:14px 17px;outline:none}.search:focus{border-color:var(--blue)}
+.country-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:15px}
+.country{background:linear-gradient(145deg,#07111f,#050b14);border:1px solid #163451;border-radius:17px;padding:18px;transition:.2s;position:relative;overflow:hidden}.country:hover{transform:translateY(-4px);border-color:#3977aa}
+.primary-country{box-shadow:inset 3px 0 var(--red)}.secondary-country{box-shadow:inset 3px 0 var(--blue)}.other-country{box-shadow:inset 3px 0 #31475d}
+.flag{font-size:42px}.country h3{margin:10px 0 8px}.country p{color:#91a9c3;line-height:1.6;font-size:14px}
+.country-tag{display:inline-block;border-radius:999px;padding:6px 9px;font-size:11px;font-weight:800}.red-tag{background:#40121d;color:#ff6b83}.blue-tag{background:#092b50;color:#55b7ff}.gray-tag{background:#172331;color:#92a4b7}
+.map-wrap{position:relative;max-width:1300px;margin:auto;background:#030b15;border:1px solid #153652;border-radius:20px;overflow:hidden}
+#worldMap{width:100%;height:650px;display:block;cursor:grab}#worldMap:active{cursor:grabbing}
+.country-path{stroke:#0a2038;stroke-width:.6;cursor:pointer}.country-path:hover{filter:brightness(1.35)}
+.country-path.selected-country{stroke:#fff!important;stroke-width:2.7px!important;filter:drop-shadow(0 0 5px #fff)}
+.map-tooltip{position:fixed;z-index:2000;display:none;pointer-events:none;background:#06111f;border:1px solid #32618b;border-radius:10px;padding:10px 13px;font-size:13px;box-shadow:0 8px 30px #0008}
+.map-controls{display:flex;gap:8px;position:absolute;right:15px;bottom:15px;z-index:10}.map-controls button{width:44px;height:44px;border:1px solid #255277;border-radius:10px;background:#061525;color:#fff;cursor:pointer;font-size:20px}
+.legend{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;padding:15px;color:#9bb0c5;font-size:13px}.legend span{display:flex;align-items:center;gap:6px}.dot{width:13px;height:13px;border-radius:50%;display:inline-block}.dot.red{background:var(--red)}.dot.blue{background:var(--blue)}.dot.gray{background:#173049}
+.quiz-modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;max-width:1100px;margin:auto}
+.mode{background:linear-gradient(145deg,#081525,#040b14);border:1px solid #183754;border-radius:18px;padding:22px;cursor:pointer;transition:.2s}.mode:hover{transform:translateY(-4px);border-color:var(--blue)}.mode .icon{font-size:35px}.mode h3{margin:12px 0 7px}.mode p{color:#8199b2;font-size:13px;line-height:1.5}
+.difficulty-easy{border-color:#26744e}.difficulty-medium{border-color:#7d681e}.difficulty-hard{border-color:#853044}.difficulty-expert{border-color:#a5213e;box-shadow:0 0 20px rgba(255,49,84,.08)}
+.quiz-box{max-width:900px;margin:auto}.quiz-header{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:15px}.quiz-pill{padding:8px 12px;border-radius:999px;background:#0a192b;border:1px solid #1c405f;color:#9fb5ca;font-size:13px}
+.progress{width:100%;height:7px;background:#0a1827;border-radius:99px;overflow:hidden;margin-bottom:20px}.progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--red));transition:.2s}
+.timer{height:9px;background:#0a1827;border-radius:99px;overflow:hidden;margin:15px 0 6px}.timer-fill{height:100%;background:var(--blue);width:100%}.timer-text{text-align:right;color:#59baff;font-weight:900;font-size:13px}
+.question-card{background:linear-gradient(145deg,#081524,#040a12);border:1px solid #183754;border-radius:22px;padding:30px;text-align:center}.level{display:inline-block;padding:7px 12px;border-radius:999px;font-weight:900;font-size:12px}.easy{background:#123a29;color:#50e99b}.medium{background:#413615;color:#ffd04d}.hard{background:#421321;color:#ff7187}.expert{background:#4d0b20;color:#ff4d72}
+.question-card h2{font-size:clamp(22px,4vw,35px);line-height:1.3;margin:25px 0}.answers{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.answer{padding:15px;border-radius:13px;border:1px solid #21425f;background:#071525;color:#eaf4ff;cursor:pointer;transition:.15s}.answer:hover:not(:disabled){border-color:var(--blue);background:#0a1d31}.answer:disabled{cursor:default}.answer.correct{background:#103c2b;border-color:var(--green);color:#8ff5bf}.answer.wrong{background:#451420;border-color:var(--red);color:#ff879a}
+.feedback{min-height:35px;margin:18px 0 4px;color:#a9bdd1}.next-btn{display:none;margin-top:10px}.victory{display:none;max-width:650px;margin:30px auto;text-align:center;background:#071321;border:1px solid #1e4668;border-radius:22px;padding:35px}.victory h2{font-size:45px;margin:0 0 10px}.final-number{font-size:60px;font-weight:1000;color:#59baff}
+.map-quiz{max-width:1200px;margin:auto}.map-quiz-info{background:#071321;border:1px solid #173653;border-radius:16px;padding:18px;margin-bottom:15px;text-align:center;color:#9eb3c8}.map-quiz-tools{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin:15px 0}
+.color-tool{padding:12px 20px;border-radius:10px;border:2px solid #244765;background:#081626;color:#fff;cursor:pointer;font-weight:900}.color-tool.active.red-tool{border-color:var(--red);background:#39111a}.color-tool.active.blue-tool{border-color:var(--blue);background:#09294a}
+#quizMap{width:100%;height:650px;display:block;background:#030b15;border-radius:18px;border:1px solid #183754}.quiz-map-country{stroke:#0c2539;stroke-width:.5;cursor:pointer}.quiz-map-country:hover{stroke:#fff;stroke-width:1.5}
+.professor{max-width:1100px;margin:auto}.prof-panel{background:#071321;border:1px solid #183754;border-radius:18px;padding:22px;margin-bottom:18px}.prof-panel h3{margin-top:0}
+.prof-form{display:flex;gap:10px;flex-wrap:wrap}.prof-form input,.prof-form select{flex:1;min-width:180px;background:#030b15;border:1px solid #21425f;color:#fff;padding:13px;border-radius:10px;outline:none}
+.prof-form select option{background:#071321}.prof-table{width:100%;border-collapse:collapse;margin-top:15px}.prof-table th,.prof-table td{padding:12px;border-bottom:1px solid #17304a;text-align:left}.prof-table th{color:#70baff}.prof-table td{color:#a6b9cc}
+.delete-btn{border:1px solid #773044;background:#35101a;color:#ff7a90;padding:7px 10px;border-radius:8px;cursor:pointer}.name-control{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:15px}.name-status{color:#7892ae;font-size:13px}
+.code-card{background:linear-gradient(145deg,#081525,#040b14);border:1px solid #183754;border-radius:15px;padding:17px;margin-top:10px;display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}.code-value{font-size:22px;font-weight:1000;color:#59baff;letter-spacing:2px}.code-name{color:#9eb3c8}.code-copy{padding:9px 13px;border:1px solid #245277;border-radius:9px;background:#0a1c30;color:#fff;cursor:pointer}
+.danger-panel{background:linear-gradient(145deg,#17070b,#08090e);border:2px solid #ff3154;border-radius:20px;padding:25px;box-shadow:0 0 35px rgba(255,49,84,.12)}.danger-panel h2{color:#ff536f}.danger-button{width:100%;padding:18px;border:0;border-radius:14px;background:#d90000;color:#fff;font-weight:1000;cursor:pointer}.danger-button:hover{background:#ff0000}.danger-warning{color:#a9b9c9;line-height:1.6}
+.modal{position:fixed;inset:0;z-index:3000;display:none;align-items:center;justify-content:center;background:#000b;padding:20px}.modal-card{width:min(430px,100%);background:#071321;border:1px solid #214766;border-radius:20px;padding:25px;box-shadow:0 20px 80px #000}.modal-card h2{margin-top:0}.modal-card input{width:100%;padding:13px;background:#030b15;color:#fff;border:1px solid #244a69;border-radius:10px;outline:none;margin:10px 0}.modal-actions{display:flex;gap:10px;margin-top:12px}.modal-actions button{flex:1}.hidden{display:none!important}
+@media(max-width:800px){nav{height:auto;min-height:70px;padding:10px;gap:10px}.logo{font-size:15px}.navlinks{gap:4px}.navlinks button,.prof-btn{padding:8px;font-size:11px}.page{padding:105px 4% 40px}.stats,.result-grid{grid-template-columns:1fr}.answers{grid-template-columns:1fr}#worldMap,#quizMap{height:450px}.question-card{padding:20px}}
 </style>
 </head>
-
 <body>
 
 <nav>
-
-<div class="logo">
-WORLD <span>ENGLISH</span> EXPLORER
-</div>
-
+<div class="logo">WORLD <span>ENGLISH</span> EXPLORER</div>
 <div class="navlinks">
-
-<button data-page="homePage" onclick="goPage('homePage')">
-Accueil
-</button>
-
-<button data-page="mapPage" onclick="goPage('mapPage')">
-Carte
-</button>
-
-<button data-page="countriesPage" onclick="goPage('countriesPage')">
-Pays
-</button>
-
-<button data-page="quizPage" onclick="goPage('quizPage')">
-Quiz
-</button>
-
-<button data-page="profilePage" onclick="goPage('profilePage')">
-👤 Profil
-</button>
-
-<button class="prof-btn" onclick="openProfessor()">
-👨‍🏫 Prof
-</button>
-
+<button data-page="homePage" onclick="goPage('homePage')">Accueil</button>
+<button data-page="mapPage" onclick="goPage('mapPage')">Carte</button>
+<button data-page="countriesPage" onclick="goPage('countriesPage')">Pays</button>
+<button data-page="quizPage" onclick="goPage('quizPage')">Quiz</button>
+<button data-page="profilePage" onclick="goPage('profilePage')">👤 Profil</button>
+<button class="prof-btn" onclick="openProfessor()">👨‍🏫 Prof</button>
 </div>
 </nav>
 
-<!-- ACCUEIL -->
-
 <main id="homePage" class="page active">
-
 <div class="hero">
-
-<h1>
-WORLD <span>ENGLISH</span> EXPLORER
-</h1>
-
-<p>
-Explore le monde anglophone, découvre les pays,
-leurs capitales et entraîne-toi avec des quiz
-de plus en plus difficiles.
-</p>
-
-<button class="big-btn" onclick="goPage('quizPage')">
-🎯 Commencer les quiz
-</button>
-
+<h1>WORLD <span>ENGLISH</span> EXPLORER</h1>
+<p>Explore le monde anglophone, découvre les pays, leurs capitales et entraîne-toi avec des quiz de plus en plus difficiles.</p>
+<button class="big-btn" onclick="goPage('quizPage')">🎯 Commencer les quiz</button>
 <div class="stats">
-
-<div class="stat">
-<strong id="countryCount">195</strong>
-<span>Pays étudiés</span>
+<div class="stat"><strong id="countryCount">195</strong><span>Pays étudiés</span></div>
+<div class="stat"><strong>🔴</strong><span>Anglais principal</span></div>
+<div class="stat"><strong>🔵</strong><span>Anglais seconde langue / officiel</span></div>
 </div>
-
-<div class="stat">
-<strong>🔴</strong>
-<span>Anglais principal</span>
-</div>
-
-<div class="stat">
-<strong>🔵</strong>
-<span>Anglais seconde langue / officiel</span>
-</div>
-
-</div>
-
 <div class="dashboard">
-
 <h2>📊 Mon score</h2>
-
 <div class="result-grid">
-
-<div class="result">
-<strong id="homeQuizScore">0</strong>
-<span>⭐ Score du quiz</span>
+<div class="result"><strong id="homeQuizScore">0</strong><span>⭐ Score du quiz</span></div>
+<div class="result"><strong id="homeBonusPoints">0</strong><span>➕ Points ajoutés</span></div>
+<div class="result"><strong id="homeFinalScore">0</strong><span>🏆 Score final</span></div>
 </div>
-
-<div class="result">
-<strong id="homeBonusPoints">0</strong>
-<span>➕ Points ajoutés</span>
-</div>
-
-<div class="result">
-<strong id="homeFinalScore">0</strong>
-<span>🏆 Score final</span>
-</div>
-
-</div>
-
 <div class="profile-btn-wrap">
-
-<button
-class="big-btn"
-style="background:#162333"
-onclick="openUsernameChange()">
-✏️ Changer mon nom
-</button>
-
+<button class="big-btn" style="background:#162333" onclick="openUsernameChange()">✏️ Changer mon nom</button>
 </div>
-
 </div>
-
 </div>
-
 </main>
-
-<!-- PROFIL -->
 
 <main id="profilePage" class="page">
-
-<div class="title">
-
-<h2>👤 Mon profil</h2>
-
-<p>
-Modifie ton prénom ou ton pseudo.
-</p>
-
-</div>
-
-<div
-class="prof-panel"
-style="max-width:600px;margin:auto">
-
+<div class="title"><h2>👤 Mon profil</h2><p>Modifie ton prénom, ton pseudo ou ton code élève.</p></div>
+<div class="prof-panel" style="max-width:600px;margin:auto">
 <h3>✏️ Mon nom</h3>
-
-<p style="color:#8199b2">
-Nom actuel :
-<strong id="currentUsernameDisplay">-</strong>
-</p>
-
-<button
-class="big-btn"
-onclick="openUsernameChange()">
-✏️ Modifier mon nom
-</button>
-
+<p style="color:#8199b2">Nom actuel : <strong id="currentUsernameDisplay">-</strong></p>
+<button class="big-btn" onclick="openUsernameChange()">✏️ Modifier mon nom</button>
+<hr style="border-color:#173653;margin:25px 0">
+<h3>🔑 Mon code élève</h3>
+<p style="color:#8199b2">Code actuel : <strong id="currentStudentCodeDisplay">-</strong></p>
+<button class="big-btn" onclick="openStudentCodeChange()">🔑 Changer mon code</button>
 <p id="profileStatus" class="name-status"></p>
-
 </div>
-
 </main>
-
-<!-- CARTE -->
 
 <main id="mapPage" class="page">
-
-<div class="title">
-
-<h2>🗺️ Carte du monde</h2>
-
-<p>
-Clique sur un pays pour afficher un contour blanc.
-</p>
-
-</div>
-
+<div class="title"><h2>🗺️ Carte du monde</h2><p>Clique sur un pays pour afficher un contour blanc.</p></div>
 <div class="legend">
-
-<span>
-<i class="dot red"></i>
-Anglais principal
-</span>
-
-<span>
-<i class="dot blue"></i>
-Anglais seconde langue / officiel
-</span>
-
-<span>
-<i class="dot gray"></i>
-Autre pays
-</span>
-
+<span><i class="dot red"></i>Anglais principal</span>
+<span><i class="dot blue"></i>Anglais seconde langue / officiel</span>
+<span><i class="dot gray"></i>Autre pays</span>
 </div>
-
 <div class="map-wrap">
-
 <svg id="worldMap"></svg>
-
-<div class="map-controls">
-
-<button onclick="changeMapZoom(1)">+</button>
-<button onclick="changeMapZoom(-1)">−</button>
-
+<div class="map-controls"><button onclick="changeMapZoom(1)">+</button><button onclick="changeMapZoom(-1)">−</button></div>
 </div>
-
-</div>
-
 <div id="mapTooltip" class="map-tooltip"></div>
-
 </main>
-
-<!-- PAYS -->
 
 <main id="countriesPage" class="page">
-
-<div class="title">
-
-<h2>🌍 Les pays</h2>
-
-<p>
-Les 195 pays avec leur capitale et leur statut linguistique.
-</p>
-
-</div>
-
-<input
-id="countrySearch"
-class="search"
-placeholder="🔎 Rechercher un pays..."
->
-
+<div class="title"><h2>🌍 Les pays</h2><p>Les 195 pays avec leur capitale et leur statut linguistique.</p></div>
+<input id="countrySearch" class="search" placeholder="🔎 Rechercher un pays...">
 <div id="countryGrid" class="country-grid"></div>
-
 </main>
 
-<!-- QUIZ -->
-
 <main id="quizPage" class="page">
-
 <div id="quizStart">
-
-<div class="title">
-
-<h2>🎯 Quiz</h2>
-
-<p>
-Choisis ton mode.
-Les niveaux difficiles rapportent beaucoup plus.
-</p>
-
-</div>
-
+<div class="title"><h2>🎯 Quiz</h2><p>Choisis ton mode. Les niveaux difficiles rapportent beaucoup plus.</p></div>
 <div class="quiz-modes">
-
-<div class="mode difficulty-easy" onclick="startQuiz('easy')">
-<div class="icon">🟢</div>
-<h3>Facile</h3>
-<p>Questions simples pour commencer.</p>
-</div>
-
-<div class="mode difficulty-medium" onclick="startQuiz('medium')">
-<div class="icon">🟡</div>
-<h3>Moyen</h3>
-<p>Questions intermédiaires.</p>
-</div>
-
-<div class="mode difficulty-hard" onclick="startQuiz('hard')">
-<div class="icon">🔴</div>
-<h3>Difficile</h3>
-<p>Questions plus complexes.</p>
-</div>
-
-<div class="mode difficulty-expert" onclick="startQuiz('expert')">
-<div class="icon">💀</div>
-<h3>Expert</h3>
-<p>Le niveau le plus difficile.</p>
-</div>
-
-<div class="mode" onclick="startQuiz('classic')">
-<div class="icon">🌎</div>
-<h3>Classique</h3>
-<p>Un mélange de difficultés.</p>
-</div>
-
-<div class="mode" onclick="startQuiz('capitals')">
-<div class="icon">🏛️</div>
-<h3>Capitales</h3>
-<p>Retrouve le pays correspondant à une capitale.</p>
-</div>
-
-<div class="mode" onclick="startQuiz('countries')">
-<div class="icon">🌍</div>
-<h3>Pays</h3>
-<p>Identifie le pays à partir de sa capitale.</p>
-</div>
-
-<div class="mode" onclick="startQuiz('challenge')">
-<div class="icon">🔥</div>
-<h3>Challenge</h3>
-<p>Un mélange plus corsé.</p>
-</div>
-
-<div class="mode" onclick="startMapQuiz()">
-<div class="icon">🗺️</div>
-<h3>Carte Quiz</h3>
-<p>Colorie les pays anglophones.</p>
-</div>
-
+<div class="mode difficulty-easy" onclick="startQuiz('easy')"><div class="icon">🟢</div><h3>Facile</h3><p>Questions simples pour commencer.</p></div>
+<div class="mode difficulty-medium" onclick="startQuiz('medium')"><div class="icon">🟡</div><h3>Moyen</h3><p>Questions intermédiaires.</p></div>
+<div class="mode difficulty-hard" onclick="startQuiz('hard')"><div class="icon">🔴</div><h3>Difficile</h3><p>Questions plus complexes.</p></div>
+<div class="mode difficulty-expert" onclick="startQuiz('expert')"><div class="icon">💀</div><h3>Expert</h3><p>Le niveau le plus difficile.</p></div>
+<div class="mode" onclick="startQuiz('classic')"><div class="icon">🌎</div><h3>Classique</h3><p>Un mélange de difficultés.</p></div>
+<div class="mode" onclick="startQuiz('capitals')"><div class="icon">🏛️</div><h3>Capitales</h3><p>Retrouve le pays correspondant à une capitale.</p></div>
+<div class="mode" onclick="startQuiz('countries')"><div class="icon">🌍</div><h3>Pays</h3><p>Identifie le pays à partir de sa capitale.</p></div>
+<div class="mode" onclick="startQuiz('challenge')"><div class="icon">🔥</div><h3>Challenge</h3><p>Un mélange plus corsé.</p></div>
+<div class="mode" onclick="startMapQuiz()"><div class="icon">🗺️</div><h3>Carte Quiz</h3><p>Colorie les pays anglophones.</p></div>
 </div>
 </div>
 
 <div id="quizGame" style="display:none">
-
 <div class="quiz-box">
-
-<div class="quiz-header">
-
-<span id="questionNumber" class="quiz-pill"></span>
-<span id="difficultyText" class="quiz-pill"></span>
-
-</div>
-
-<div class="progress">
-<div id="progressFill" class="progress-fill"></div>
-</div>
-
+<div class="quiz-header"><span id="questionNumber" class="quiz-pill"></span><span id="difficultyText" class="quiz-pill"></span></div>
+<div class="progress"><div id="progressFill" class="progress-fill"></div></div>
 <div class="question-card">
-
 <span id="levelBadge" class="level easy"></span>
-
 <h2 id="questionText"></h2>
-
-<div class="timer">
-<div id="timerFill" class="timer-fill"></div>
-</div>
-
+<div class="timer"><div id="timerFill" class="timer-fill"></div></div>
 <div id="timerText" class="timer-text">15s</div>
-
 <div id="answers" class="answers"></div>
-
 <div id="feedback" class="feedback"></div>
-
-<button
-id="nextBtn"
-class="big-btn next-btn">
-Question suivante →
-</button>
-
+<button id="nextBtn" class="big-btn next-btn">Question suivante →</button>
 </div>
-
 </div>
-
 </div>
 
 <div id="victory" class="victory">
-
-<div style="font-size:55px">🏆</div>
-
-<h2>Quiz terminé !</h2>
-
-<p>Ton score :</p>
-
+<div style="font-size:55px">🏆</div><h2>Quiz terminé !</h2><p>Ton score :</p>
 <div id="finalQuizScore" class="final-number">0</div>
-
 <p id="resultMessage" style="color:#8fa8bf"></p>
-
-<button class="big-btn" onclick="backToQuizMenu()">
-↩️ Retour aux quiz
-</button>
-
+<button class="big-btn" onclick="backToQuizMenu()">↩️ Retour aux quiz</button>
 </div>
 
 <div id="mapQuizArea" style="display:none">
-
 <div class="map-quiz">
-
-<div class="title">
-
-<h2>🗺️ Carte Quiz</h2>
-
-<p>
-Colorie les pays anglophones selon leur catégorie.
-</p>
-
-</div>
-
-<div class="map-quiz-info">
-
-🔴 <b>Rouge</b> = anglais principal
-
-&nbsp;&nbsp;&nbsp;
-
-🔵 <b>Bleu</b> = anglais seconde langue / officiel
-
-<br><br>
-
-Les autres pays restent neutres.
-
-</div>
-
+<div class="title"><h2>🗺️ Carte Quiz</h2><p>Colorie les pays anglophones selon leur catégorie.</p></div>
+<div class="map-quiz-info">🔴 <b>Rouge</b> = anglais principal &nbsp;&nbsp;&nbsp; 🔵 <b>Bleu</b> = anglais seconde langue / officiel<br><br>Les autres pays restent neutres.</div>
 <div class="map-quiz-tools">
-
-<button
-id="redTool"
-class="color-tool red-tool active"
-onclick="selectMapColor('primary')">
-🔴 Rouge
-</button>
-
-<button
-id="blueTool"
-class="color-tool blue-tool"
-onclick="selectMapColor('secondary')">
-🔵 Bleu
-</button>
-
-<button
-class="color-tool"
-onclick="resetMapQuiz()">
-↩️ Recommencer
-</button>
-
-<button
-class="big-btn"
-onclick="validateMapQuiz()">
-✅ Valider
-</button>
-
+<button id="redTool" class="color-tool red-tool active" onclick="selectMapColor('primary')">🔴 Rouge</button>
+<button id="blueTool" class="color-tool blue-tool" onclick="selectMapColor('secondary')">🔵 Bleu</button>
+<button class="color-tool" onclick="resetMapQuiz()">↩️ Recommencer</button>
+<button class="big-btn" onclick="validateMapQuiz()">✅ Valider</button>
 </div>
-
 <svg id="quizMap"></svg>
-
 <div id="mapQuizResult" class="victory">
-
-<div style="font-size:55px">🗺️</div>
-
-<h2 id="mapQuizTitle">Carte terminée</h2>
-
-<div id="mapQuizScore" class="final-number">0</div>
-
-<p id="mapQuizMessage"></p>
-
-<button class="big-btn" onclick="backToQuizMenu()">
-🎯 Retour aux quiz
-</button>
-
+<div style="font-size:55px">🗺️</div><h2 id="mapQuizTitle">Carte terminée</h2>
+<div id="mapQuizScore" class="final-number">0</div><p id="mapQuizMessage"></p>
+<button class="big-btn" onclick="backToQuizMenu()">🎯 Retour aux quiz</button>
 </div>
-
 </div>
-
 </div>
-
 </main>
-
-<!-- =====================================================
-     PROFESSEUR POINTS
-===================================================== -->
 
 <main id="professorPointsPage" class="page">
-
 <div class="professor">
-
-<div class="title">
-
-<h2>👨‍🏫 Gestion des points</h2>
-
-<p>
-Ajoute uniquement des points aux élèves.
-</p>
-
-</div>
-
+<div class="title"><h2>👨‍🏫 Gestion des points</h2><p>Ajoute uniquement des points aux élèves.</p></div>
 <div class="prof-panel">
-
 <h3>➕ Ajouter des points</h3>
-
 <div class="prof-form">
-
-<input
-id="pointStudent"
-placeholder="Nom de l'élève"
->
-
-<input
-id="pointAmount"
-type="number"
-placeholder="Nombre de points"
->
-
-<button
-class="big-btn"
-onclick="addProfessorPoints()">
-Ajouter
-</button>
-
+<input id="pointStudent" placeholder="Nom de l'élève">
+<input id="pointAmount" type="number" placeholder="Nombre de points">
+<button class="big-btn" onclick="addProfessorPoints()">Ajouter</button>
 </div>
-
 <p id="pointsStatus" class="name-status"></p>
-
 </div>
-
+<div class="prof-panel">
+<button class="big-btn" onclick="goPage('professorResultsPage');loadProfessorResults()">📊 Notes</button>
+<button class="big-btn" style="background:#162333" onclick="goPage('professorCodesPage')">🔑 Créer un code</button>
 </div>
-
+</div>
 </main>
-
-<!-- =====================================================
-     PROFESSEUR NOTES
-===================================================== -->
 
 <main id="professorResultsPage" class="page">
-
 <div class="professor">
+<div class="title"><h2>👨‍🏫 Gestion des notes</h2><p>Consulte les résultats des quiz.</p></div>
 
-<div class="title">
-
-<h2>👨‍🏫 Gestion des notes</h2>
-
-<p>
-Consulte uniquement les résultats des quiz.
-</p>
-
+<div class="prof-panel">
+<h3>⚙️ Outils professeur</h3>
+<div class="prof-form">
+<button class="big-btn" onclick="goPage('professorCodesPage')">🔑 Créer un code</button>
+<button class="big-btn" onclick="goPage('professorCodeResultsPage');loadProfessorCodeSelect()">📊 Notes par code</button>
+</div>
 </div>
 
 <div class="prof-panel">
-
 <h3>👁️ Visibilité des noms</h3>
-
-<p style="color:#8199b2">
-Tu peux masquer tous les noms affichés dans les résultats.
-Les vrais noms restent enregistrés dans Firebase.
-</p>
-
+<p style="color:#8199b2">Tu peux masquer tous les noms affichés dans les résultats. Les vrais noms restent enregistrés dans Firebase.</p>
 <div class="name-control">
-
-<button
-id="toggleNamesBtn"
-class="big-btn"
-onclick="toggleNamesVisibility()">
-🙈 Masquer tous les noms
-</button>
-
-<span
-id="nameVisibilityStatus"
-class="name-status">
-</span>
-
+<button id="toggleNamesBtn" class="big-btn" onclick="toggleNamesVisibility()">🙈 Masquer tous les noms</button>
+<span id="nameVisibilityStatus" class="name-status"></span>
 </div>
-
 </div>
 
 <div class="prof-panel">
-
-<h3>📊 Résultats</h3>
-
-<button
-class="big-btn"
-onclick="loadProfessorResults()">
-🔄 Actualiser
-</button>
-
+<h3>📊 Tous les résultats</h3>
+<button class="big-btn" onclick="loadProfessorResults()">🔄 Actualiser</button>
 <div style="overflow-x:auto">
-
-<table class="prof-table">
-
-<thead>
-
-<tr>
-<th>Élève</th>
-<th>Quiz</th>
-<th>Score final</th>
-<th>Date</th>
-<th></th>
-</tr>
-
-</thead>
-
-<tbody id="resultsTable"></tbody>
-
-</table>
-
+<table class="prof-table"><thead><tr><th>Élève</th><th>Quiz</th><th>Score final</th><th>Date</th><th></th></tr></thead><tbody id="resultsTable"></tbody></table>
+</div>
+</div>
+</div>
+</main><main id="professorCodesPage" class="page">
+<div class="professor">
+<div class="title">
+<h2>🔑 Créer un code élève</h2>
+<p>Chaque code permet de retrouver uniquement les notes des élèves qui l'ont utilisé.</p>
 </div>
 
+<div class="prof-panel">
+<h3>➕ Nouveau code</h3>
+<div class="prof-form">
+<input id="newCodeName" placeholder="Nom du groupe, ex : 5A Quiz 1">
+<button class="big-btn" onclick="createProfessorCode()">🔑 Créer le code</button>
+</div>
+<div id="createdCodeBox" style="margin-top:15px"></div>
 </div>
 
+<div class="prof-panel">
+<h3>🔐 Codes créés</h3>
+<div id="codesList"><p class="name-status">Chargement...</p></div>
 </div>
 
+<div class="prof-panel">
+<button class="big-btn" onclick="goPage('professorResultsPage');loadProfessorResults()">← Retour aux notes</button>
+</div>
+</div>
 </main>
 
-<!-- NOM PREMIÈRE CONNEXION -->
-
-<div id="usernameModal" class="modal">
-
-<div class="modal-card">
-
-<h2>👋 Bienvenue</h2>
-
-<p style="color:#8da4bb">
-Entre ton prénom ou ton pseudo pour enregistrer tes résultats.
-</p>
-
-<input
-id="usernameInput"
-placeholder="Ton prénom / pseudo"
-onkeydown="if(event.key==='Enter')saveUsername()"
->
-
-<button
-class="big-btn"
-style="width:100%"
-onclick="saveUsername()">
-Continuer
-</button>
-
+<main id="professorCodeResultsPage" class="page">
+<div class="professor">
+<div class="title">
+<h2>📊 Notes par code</h2>
+<p>Seuls les élèves ayant utilisé le code sélectionné apparaissent.</p>
 </div>
 
+<div class="prof-panel">
+<h3>🔑 Choisir un code</h3>
+<div class="prof-form">
+<select id="professorCodeSelect" onchange="loadProfessorResultsByCode()">
+<option value="">Choisir un code...</option>
+</select>
+<button class="big-btn" onclick="loadProfessorResultsByCode()">🔄 Actualiser</button>
+</div>
+</div>
+
+<div class="prof-panel">
+<h3 id="selectedCodeTitle">📊 Résultats</h3>
+<div style="overflow-x:auto">
+<table class="prof-table">
+<thead><tr><th>Élève</th><th>Quiz</th><th>Score final</th><th>Date</th><th></th></tr></thead>
+<tbody id="codeResultsTable"></tbody>
+</table>
+</div>
+</div>
+
+<div class="prof-panel">
+<button class="big-btn" onclick="goPage('professorResultsPage');loadProfessorResults()">← Retour aux notes</button>
+</div>
+</div>
+</main>
+
+<!-- ZONE ADMIN WEX -->
+<main id="professorDangerPage" class="page">
+<div class="professor">
+<div class="title">
+<h2>⚠️ Zone WEX</h2>
+<p>Administration des données de World English Explorer.</p>
+</div>
+
+<div class="danger-panel">
+<h2>🔴 Suppression complète</h2>
+<p class="danger-warning">
+Cette action supprimera définitivement les données des collections Firebase :
+</p>
+<ul class="danger-warning">
+<li>👤 tous les prénoms enregistrés dans les résultats</li>
+<li>📝 toutes les notes / tous les résultats</li>
+<li>⭐ tous les points</li>
+<li>🔑 tous les codes élèves créés</li>
+</ul>
+<p class="danger-warning"><b>⚠️ Cette action est irréversible.</b></p>
+<button class="danger-button" onclick="deleteEverythingWEX()">🔴 TOUT SUPPRIMER</button>
+</div>
+
+<div class="prof-panel" style="margin-top:18px">
+<button class="big-btn" onclick="goPage('professorResultsPage');loadProfessorResults()">← Retour</button>
+</div>
+</div>
+</main>
+
+<!-- PREMIÈRE CONNEXION -->
+<div id="usernameModal" class="modal">
+<div class="modal-card">
+<h2>👋 Bienvenue</h2>
+<p style="color:#8da4bb">Entre ton prénom ou ton pseudo et le code donné par ton professeur.</p>
+<input id="usernameInput" placeholder="Ton prénom / pseudo">
+<input id="studentCodeInput" placeholder="Code donné par le professeur" onkeydown="if(event.key==='Enter')saveUsername()">
+<button class="big-btn" style="width:100%" onclick="saveUsername()">Continuer</button>
+</div>
 </div>
 
 <!-- CHANGEMENT NOM -->
-
 <div id="changeUsernameModal" class="modal">
-
 <div class="modal-card">
-
 <h2>✏️ Changer mon nom</h2>
-
-<p style="color:#8da4bb">
-Tous tes anciens scores et tes points seront transférés vers ton nouveau nom.
-</p>
-
-<input
-id="changeUsernameInput"
-placeholder="Nouveau prénom / pseudo"
-onkeydown="if(event.key==='Enter')changeUsername()"
->
-
+<p style="color:#8da4bb">Tous tes anciens scores et tes points seront transférés vers ton nouveau nom. Le code des résultats reste conservé.</p>
+<input id="changeUsernameInput" placeholder="Nouveau prénom / pseudo" onkeydown="if(event.key==='Enter')changeUsername()">
 <div class="modal-actions">
-
-<button class="big-btn" onclick="changeUsername()">
-💾 Enregistrer
-</button>
-
-<button
-class="big-btn"
-style="background:#162333"
-onclick="closeModal('changeUsernameModal')">
-Annuler
-</button>
-
+<button class="big-btn" onclick="changeUsername()">💾 Enregistrer</button>
+<button class="big-btn" style="background:#162333" onclick="closeModal('changeUsernameModal')">Annuler</button>
+</div>
+</div>
 </div>
 
+<!-- CHANGEMENT CODE ÉLÈVE -->
+<div id="studentCodeModal" class="modal">
+<div class="modal-card">
+<h2>🔑 Changer mon code</h2>
+<p style="color:#8da4bb">Entre le nouveau code donné par ton professeur.</p>
+<input id="changeStudentCodeInput" placeholder="Code élève" onkeydown="if(event.key==='Enter')changeStudentCode()">
+<div class="modal-actions">
+<button class="big-btn" onclick="changeStudentCode()">💾 Enregistrer</button>
+<button class="big-btn" style="background:#162333" onclick="closeModal('studentCodeModal')">Annuler</button>
 </div>
-
+</div>
 </div>
 
 <!-- CODE PROF -->
-
 <div id="profCodeModal" class="modal">
-
 <div class="modal-card">
-
 <h2>👨‍🏫 Accès professeur</h2>
-
-<p style="color:#8da4bb">
-Entre le code professeur.
-</p>
-
-<input
-id="profCodeInput"
-type="password"
-placeholder="Code"
-onkeydown="if(event.key==='Enter')checkProfessorCode()"
->
-
+<p style="color:#8da4bb">Entre le code professeur.</p>
+<input id="profCodeInput" type="password" placeholder="Code" onkeydown="if(event.key==='Enter')checkProfessorCode()">
 <div class="modal-actions">
-
-<button class="big-btn" onclick="checkProfessorCode()">
-Entrer
-</button>
-
-<button
-class="big-btn"
-style="background:#162333"
-onclick="closeModal('profCodeModal')">
-Annuler
-</button>
-
+<button class="big-btn" onclick="checkProfessorCode()">Entrer</button>
+<button class="big-btn" style="background:#162333" onclick="closeModal('profCodeModal')">Annuler</button>
 </div>
-
 </div>
-
 </div>
-
-<!-- FIREBASE -->
 
 <script type="module">
-
 const firebaseConfig={
 apiKey:"AIzaSyAxf_h-uxZcWBXgdkUy6CCyr6yS-mUzdFM",
 authDomain:"world-english-explorer.firebaseapp.com",
@@ -1470,27 +398,10 @@ measurementId:"G-SJSZ5KCDQS"
 };
 
 window.firebaseReady=(async()=>{
-
-const {initializeApp}=await import(
-"https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js"
-);
-
-const {
-getFirestore,
-collection,
-addDoc,
-getDocs,
-serverTimestamp,
-deleteDoc,
-doc,
-updateDoc
-}=await import(
-"https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js"
-);
-
+const {initializeApp}=await import("https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js");
+const {getFirestore,collection,addDoc,getDocs,serverTimestamp,deleteDoc,doc,updateDoc}=await import("https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js");
 const app=initializeApp(firebaseConfig);
 const db=getFirestore(app);
-
 window.firebaseDB=db;
 window.firebaseCollection=collection;
 window.firebaseAddDoc=addDoc;
@@ -1499,21 +410,12 @@ window.firebaseServerTimestamp=serverTimestamp;
 window.firebaseDeleteDoc=deleteDoc;
 window.firebaseDoc=doc;
 window.firebaseUpdateDoc=updateDoc;
-
 return db;
-
 })();
-
 </script>
 
 <script>
-
-/* =====================================================
-   DONNÉES PAYS
-===================================================== */
-
 const rawCountries=`
-
 004|AF|Afghanistan|Kaboul|Asie|other
 008|AL|Albanie|Tirana|Europe|other
 012|DZ|Algérie|Alger|Afrique|other
@@ -1716,365 +618,101 @@ const [id,code,name,capital,continent,type]=line.split("|");
 return{id,code,name,capital,continent,type};
 });
 
-/* VARIABLES */
-
-let username=localStorage.getItem("wexUsername")||"";
-let namesHidden=localStorage.getItem("wexHideNames")==="true";
-
-let mapLoaded=false;
-let mapZoomBehavior=null;
-let mapZoomLevel=1;
-
-let quizQuestions=[];
-let currentQuestion=0;
-let score=0;
-let combo=0;
-let maxCombo=0;
-let correctAnswers=0;
-
-let timeLeft=15;
-let maxTime=15;
-let timerInterval=null;
-
-let currentMode="classic";
-let answered=false;
-
-let quizMapLoaded=false;
-let quizMapColor="primary";
-let mapQuizColors={};
-
-const primaryIDs=new Set(
-countries.filter(c=>c.type==="primary").map(c=>c.id)
-);
-
-const secondaryIDs=new Set(
-countries.filter(c=>c.type==="secondary").map(c=>c.id)
-);
-
-const byId=new Map(countries.map(c=>[c.id,c]));
-
-function flag(code){
-return [...code].map(c=>
-String.fromCodePoint(127397+c.charCodeAt(0))
-).join("");
-}
-
-countries.forEach(c=>c.flag=flag(c.code));
-
+countries.forEach(c=>c.flag=[...c.code].map(x=>String.fromCodePoint(127397+x.charCodeAt(0))).join(""));
 document.getElementById("countryCount").textContent=countries.length;
 
-/* NAVIGATION */
+let username=localStorage.getItem("wexUsername")||"";
+let studentCode=localStorage.getItem("wexStudentCode")||"";
+let namesHidden=localStorage.getItem("wexHideNames")==="true";
+let mapLoaded=false,mapZoomBehavior=null,mapZoomLevel=1;
+let quizQuestions=[],currentQuestion=0,score=0,combo=0,maxCombo=0,correctAnswers=0;
+let timeLeft=15,maxTime=15,timerInterval=null,currentMode="classic",answered=false;
+let quizMapLoaded=false,quizMapColor="primary",mapQuizColors={};
+
+const primaryIDs=new Set(countries.filter(c=>c.type==="primary").map(c=>c.id));
+const secondaryIDs=new Set(countries.filter(c=>c.type==="secondary").map(c=>c.id));
+const byId=new Map(countries.map(c=>[c.id,c]));
+
+function normalizeCode(v){return String(v||"").trim().toUpperCase()}
 
 function goPage(pageId){
-
 clearInterval(timerInterval);
-
-document.querySelectorAll(".page").forEach(page=>{
-page.classList.remove("active");
-});
-
-const page=document.getElementById(pageId);
-if(!page)return;
-
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+const page=document.getElementById(pageId);if(!page)return;
 page.classList.add("active");
-
-document.querySelectorAll(".navlinks button[data-page]")
-.forEach(button=>{
-button.classList.toggle(
-"active",
-button.dataset.page===pageId
-);
-});
-
-if(pageId==="mapPage"){
-setTimeout(drawMap,50);
+document.querySelectorAll(".navlinks button[data-page]").forEach(b=>b.classList.toggle("active",b.dataset.page===pageId));
+if(pageId==="mapPage")setTimeout(drawMap,50);
+if(pageId==="countriesPage")renderCountries(countries);
+if(pageId==="profilePage")updateProfileDisplay();
+if(pageId==="professorResultsPage")updateNamesButton();
+if(pageId==="professorCodesPage")loadProfessorCodes();
+if(pageId==="professorCodeResultsPage")loadProfessorCodeSelect();
 }
-
-if(pageId==="countriesPage"){
-renderCountries(countries);
-}
-
-if(pageId==="profilePage"){
-updateProfileDisplay();
-}
-
-if(pageId==="professorResultsPage"){
-updateNamesButton();
-}
-
-}
-
-/* PROFESSEUR */
 
 function openProfessor(){
-
 document.getElementById("profCodeInput").value="";
 document.getElementById("profCodeModal").style.display="flex";
-
 }
 
 function updateNamesButton(){
-
-const button=document.getElementById("toggleNamesBtn");
-const status=document.getElementById("nameVisibilityStatus");
-
-if(!button)return;
-
-if(namesHidden){
-
-button.textContent="👁️ Afficher les noms";
-
-if(status){
-status.textContent="Les noms sont actuellement masqués.";
-}
-
-}else{
-
-button.textContent="🙈 Masquer tous les noms";
-
-if(status){
-status.textContent="Les noms sont actuellement visibles.";
-}
-
-}
-
+const b=document.getElementById("toggleNamesBtn"),s=document.getElementById("nameVisibilityStatus");
+if(!b)return;
+b.textContent=namesHidden?"👁️ Afficher les noms":"🙈 Masquer tous les noms";
+if(s)s.textContent=namesHidden?"Les noms sont actuellement masqués.":"Les noms sont actuellement visibles.";
 }
 
 function toggleNamesVisibility(){
-
 namesHidden=!namesHidden;
-
-localStorage.setItem(
-"wexHideNames",
-namesHidden
-);
-
+localStorage.setItem("wexHideNames",namesHidden);
 updateNamesButton();
 loadProfessorResults();
-
 }
-
-/* PAYS */
 
 function renderCountries(list){
-
-const grid=document.getElementById("countryGrid");
-
-grid.innerHTML="";
-
+const grid=document.getElementById("countryGrid");grid.innerHTML="";
 list.forEach(c=>{
-
 const d=document.createElement("div");
-
-d.className=
-"country "+
-(
-c.type==="primary"
-?"primary-country"
-:c.type==="secondary"
-?"secondary-country"
-:"other-country"
-);
-
-const label=
-c.type==="primary"
-?"🔴 Anglais principal"
-:c.type==="secondary"
-?"🔵 Anglais seconde langue / officiel"
-:"⚫ Autre pays";
-
-const tag=
-c.type==="primary"
-?"red-tag"
-:c.type==="secondary"
-?"blue-tag"
-:"gray-tag";
-
-d.innerHTML=`
-
-<div class="flag">${c.flag}</div>
-
-<h3>${c.name}</h3>
-
-<p>
-🏛️ Capitale :
-<strong>${c.capital}</strong>
-<br>
-🌍 Continent :
-${c.continent}
-</p>
-
-<span class="country-tag ${tag}">
-${label}
-</span>
-`;
-
+d.className="country "+(c.type==="primary"?"primary-country":c.type==="secondary"?"secondary-country":"other-country");
+const label=c.type==="primary"?"🔴 Anglais principal":c.type==="secondary"?"🔵 Anglais seconde langue / officiel":"⚫ Autre pays";
+const tag=c.type==="primary"?"red-tag":c.type==="secondary"?"blue-tag":"gray-tag";
+d.innerHTML=`<div class="flag">${c.flag}</div><h3>${escapeHTML(c.name)}</h3><p>🏛️ Capitale : <strong>${escapeHTML(c.capital)}</strong><br>🌍 Continent : ${escapeHTML(c.continent)}</p><span class="country-tag ${tag}">${label}</span>`;
 grid.appendChild(d);
-
 });
-
 }
 
-document.getElementById("countrySearch")
-.addEventListener("input",e=>{
-
-const value=e.target.value.toLowerCase().trim();
-
-renderCountries(
-countries.filter(c=>
-c.name.toLowerCase().includes(value)||
-c.capital.toLowerCase().includes(value)||
-c.continent.toLowerCase().includes(value)
-)
-);
-
+document.getElementById("countrySearch").addEventListener("input",e=>{
+const v=e.target.value.toLowerCase().trim();
+renderCountries(countries.filter(c=>c.name.toLowerCase().includes(v)||c.capital.toLowerCase().includes(v)||c.continent.toLowerCase().includes(v)));
 });
-
-/* CARTE */
 
 function drawMap(){
-
 if(mapLoaded)return;
-
-const container=document.getElementById("worldMap");
-const width=container.clientWidth;
-const height=container.clientHeight;
-
+const container=document.getElementById("worldMap"),width=container.clientWidth,height=container.clientHeight;
 if(width<100)return;
-
-const svg=d3.select("#worldMap");
-
-svg.attr("viewBox",`0 0 ${width} ${height}`);
-svg.selectAll("*").remove();
-
-const projection=d3.geoNaturalEarth1()
-.fitSize([width,height],{type:"Sphere"});
-
-const path=d3.geoPath().projection(projection);
-
-const content=svg.append("g")
-.attr("class","map-content");
-
-content.append("path")
-.datum({type:"Sphere"})
-.attr("fill","#061a30")
-.attr("stroke","#28537c")
-.attr("stroke-width","1")
-.attr("d",path);
-
-d3.json(
-"https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json"
-)
-.then(world=>{
-
-const land=topojson.feature(
-world,
-world.objects.countries
-);
-
-const tooltip=document.getElementById("mapTooltip");
-
-content
-.selectAll(".country-path")
-.data(land.features)
-.enter()
-.append("path")
-.attr("class","country-path")
-.attr("d",path)
-.attr("fill",d=>{
-
-const id=String(d.id).padStart(3,"0");
-
-if(primaryIDs.has(id))return "#ff3154";
-if(secondaryIDs.has(id))return "#1683ff";
-
-return "#173049";
-
-})
-.on("click",(event,d)=>{
-
-event.stopPropagation();
-
-content.selectAll(".country-path")
-.classed("selected-country",false);
-
-d3.select(event.currentTarget)
-.classed("selected-country",true);
-
-})
-.on("mousemove",(event,d)=>{
-
-const id=String(d.id).padStart(3,"0");
-const c=byId.get(id);
-
-if(!c)return;
-
-tooltip.style.display="block";
-
-tooltip.innerHTML=`
-<strong>${c.flag} ${c.name}</strong>
-<br>
-Capitale : ${c.capital}
-<br>
-${
-c.type==="primary"
-?"🔴 Anglais principal"
-:c.type==="secondary"
-?"🔵 Anglais seconde langue / officiel"
-:"⚫ Autre pays"
-}
-`;
-
-tooltip.style.left=(event.clientX+15)+"px";
-tooltip.style.top=(event.clientY+15)+"px";
-
-})
-.on("mouseleave",()=>{
-tooltip.style.display="none";
+const svg=d3.select("#worldMap");svg.attr("viewBox",`0 0 ${width} ${height}`);svg.selectAll("*").remove();
+const projection=d3.geoNaturalEarth1().fitSize([width,height],{type:"Sphere"}),path=d3.geoPath().projection(projection);
+const content=svg.append("g").attr("class","map-content");
+content.append("path").datum({type:"Sphere"}).attr("fill","#061a30").attr("stroke","#28537c").attr("stroke-width","1").attr("d",path);
+d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(world=>{
+const land=topojson.feature(world,world.objects.countries),tooltip=document.getElementById("mapTooltip");
+content.selectAll(".country-path").data(land.features).enter().append("path").attr("class","country-path").attr("d",path)
+.attr("fill",d=>{const id=String(d.id).padStart(3,"0");return primaryIDs.has(id)?"#ff3154":secondaryIDs.has(id)?"#1683ff":"#173049"})
+.on("click",(event)=>{content.selectAll(".country-path").classed("selected-country",false);d3.select(event.currentTarget).classed("selected-country",true)})
+.on("mousemove",(event,d)=>{const id=String(d.id).padStart(3,"0"),c=byId.get(id);if(!c)return;tooltip.style.display="block";tooltip.innerHTML=`<strong>${c.flag} ${escapeHTML(c.name)}</strong><br>Capitale : ${escapeHTML(c.capital)}<br>${c.type==="primary"?"🔴 Anglais principal":c.type==="secondary"?"🔵 Anglais seconde langue / officiel":"⚫ Autre pays"}`;tooltip.style.left=event.clientX+15+"px";tooltip.style.top=event.clientY+15+"px"})
+.on("mouseleave",()=>tooltip.style.display="none");
+mapZoomBehavior=d3.zoom().scaleExtent([1,8]).on("zoom",event=>content.attr("transform",event.transform));
+svg.call(mapZoomBehavior);svg.on("dblclick.zoom",null);mapZoomLevel=1;mapLoaded=true;
 });
-
-mapZoomBehavior=d3.zoom()
-.scaleExtent([1,8])
-.on("zoom",event=>{
-content.attr("transform",event.transform);
-});
-
-svg.call(mapZoomBehavior);
-svg.on("dblclick.zoom",null);
-
-mapZoomLevel=1;
-mapLoaded=true;
-
-});
-
 }
 
 function changeMapZoom(direction){
-
 if(!mapLoaded)return;
-
-mapZoomLevel=Math.max(
-1,
-Math.min(
-8,
-mapZoomLevel*(direction>0?1.35:1/1.35)
-)
-);
-
-d3.select("#worldMap")
-.transition()
-.duration(180)
-.call(
-mapZoomBehavior.scaleTo,
-mapZoomLevel
-);
-
+mapZoomLevel=Math.max(1,Math.min(8,mapZoomLevel*(direction>0?1.35:1/1.35)));
+d3.select("#worldMap").transition().duration(180).call(mapZoomBehavior.scaleTo,mapZoomLevel);
 }
 
 /* QUESTIONS */
-
 const questionPools={
-
 easy:[
 ["Quelle est la capitale du Royaume-Uni ?","Londres",["Londres","Dublin","Paris","Madrid"],1],
 ["Quelle est la capitale du Canada ?","Ottawa",["Toronto","Ottawa","Vancouver","Montréal"],1],
@@ -2089,7 +727,6 @@ easy:[
 ["Quelle est la capitale de la Jamaïque ?","Kingston",["Kingston","Nassau","Bridgetown","Georgetown"],1],
 ["Quel pays a Kingston comme capitale ?","Jamaïque",["Jamaïque","Bahamas","Barbade","Belize"],1]
 ],
-
 medium:[
 ["Quelle est la capitale du Bangladesh ?","Dacca",["Dacca","Chittagong","Sylhet","Rajshahi"],2],
 ["Quelle est la capitale de l’Inde ?","New Delhi",["Mumbai","New Delhi","Kolkata","Chennai"],2],
@@ -2107,7 +744,6 @@ medium:[
 ["Quel pays a Kampala comme capitale ?","Ouganda",["Ouganda","Kenya","Rwanda","Ghana"],2],
 ["Quel pays a Islamabad comme capitale ?","Pakistan",["Pakistan","Inde","Bangladesh","Malaisie"],2]
 ],
-
 hard:[
 ["Quelle est la capitale des Bahamas ?","Nassau",["Nassau","Kingston","Bridgetown","Belmopan"],3],
 ["Quelle est la capitale de la Barbade ?","Bridgetown",["Bridgetown","Nassau","Kingston","Roseau"],3],
@@ -2125,7 +761,6 @@ hard:[
 ["Quelle est la capitale du Lesotho ?","Maseru",["Maseru","Mbabane","Gaborone","Maseru"],3],
 ["Quelle est la capitale de la Micronésie ?","Palikir",["Palikir","Majuro","Tarawa-Sud","Ngerulmud"],3]
 ],
-
 expert:[
 ["Quel pays a Ngerulmud comme capitale ?","Palaos",["Palaos","Micronésie","Îles Marshall","Kiribati"],4],
 ["Quel pays a Tarawa-Sud comme capitale ?","Kiribati",["Kiribati","Tuvalu","Samoa","Tonga"],4],
@@ -2140,7 +775,6 @@ expert:[
 ["Quel pays a Kingstown comme capitale ?","Saint-Vincent-et-les-Grenadines",["Saint-Vincent-et-les-Grenadines","Sainte-Lucie","Grenade","Bahamas"],4],
 ["Quel pays a Saint-Georges comme capitale ?","Grenade",["Grenade","Dominique","Sainte-Lucie","Barbade"],4]
 ],
-
 classic:[
 ["Quelle est la capitale de l’Angleterre ?","Londres",["Londres","Manchester","Liverpool","Birmingham"],1],
 ["Quelle est la capitale des États-Unis ?","Washington D.C.",["New York","Washington D.C.","Chicago","Boston"],1],
@@ -2155,7 +789,6 @@ classic:[
 ["Quelle est la capitale des Bahamas ?","Nassau",["Nassau","Kingston","Bridgetown","Belmopan"],3],
 ["Quel pays a Wellington comme capitale ?","Nouvelle-Zélande",["Nouvelle-Zélande","Australie","Irlande","Fidji"],1]
 ],
-
 capitals:[
 ["Londres est la capitale de quel pays ?","Royaume-Uni",["Royaume-Uni","Canada","Australie","Irlande"],1],
 ["Washington D.C. est la capitale de quel pays ?","États-Unis",["États-Unis","Canada","Royaume-Uni","Australie"],1],
@@ -2170,7 +803,6 @@ capitals:[
 ["Nassau est la capitale de quel pays ?","Bahamas",["Bahamas","Jamaïque","Barbade","Belize"],3],
 ["Suva est la capitale de quel pays ?","Fidji",["Fidji","Samoa","Tonga","Vanuatu"],3]
 ],
-
 countries:[
 ["Quel pays a Londres comme capitale ?","Royaume-Uni",["Royaume-Uni","Irlande","Canada","Australie"],1],
 ["Quel pays a Canberra comme capitale ?","Australie",["Australie","Nouvelle-Zélande","Fidji","Canada"],1],
@@ -2185,7 +817,6 @@ countries:[
 ["Quel pays a Suva comme capitale ?","Fidji",["Fidji","Samoa","Tonga","Vanuatu"],3],
 ["Quel pays a Georgetown comme capitale ?","Guyana",["Guyana","Suriname","Belize","Bahamas"],3]
 ],
-
 challenge:[
 ["Dans quel pays l’anglais et le français sont-ils langues officielles ?","Canada",["Canada","Australie","Jamaïque","Ghana"],1],
 ["Quel pays d’Océanie a Suva pour capitale ?","Fidji",["Fidji","Australie","Nouvelle-Zélande","Samoa"],1],
@@ -2200,1301 +831,455 @@ challenge:[
 ["Quel pays a Bridgetown pour capitale ?","Barbade",["Barbade","Bahamas","Jamaïque","Belize"],3],
 ["Quel pays a Port-Louis pour capitale ?","Maurice",["Maurice","Seychelles","Comores","Maldives"],3]
 ]
-};
+};function shuffle(a){const x=[...a];for(let i=x.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]]}return x}
 
-/* MÉLANGE */
-
-function shuffle(array){
-
-const arr=[...array];
-
-for(let i=arr.length-1;i>0;i--){
-
-const j=Math.floor(Math.random()*(i+1));
-
-[arr[i],arr[j]]=[arr[j],arr[i]];
-
+function levelData(l){
+if(l===1)return{name:"FACILE",icon:"🟢",time:15,base:40,cls:"easy"};
+if(l===2)return{name:"MOYEN",icon:"🟡",time:12,base:100,cls:"medium"};
+if(l===3)return{name:"DIFFICILE",icon:"🔴",time:10,base:250,cls:"hard"};
+return{name:"EXPERT",icon:"💀",time:9,base:500,cls:"expert"};
 }
 
-return arr;
-
-}
-
-/* BARÈME */
-
-function levelData(level){
-
-if(level===1){
-return{
-name:"FACILE",
-icon:"🟢",
-time:15,
-base:40,
-cls:"easy"
-};
-}
-
-if(level===2){
-return{
-name:"MOYEN",
-icon:"🟡",
-time:12,
-base:100,
-cls:"medium"
-};
-}
-
-if(level===3){
-return{
-name:"DIFFICILE",
-icon:"🔴",
-time:10,
-base:250,
-cls:"hard"
-};
-}
-
-return{
-name:"EXPERT",
-icon:"💀",
-time:9,
-base:500,
-cls:"expert"
-};
-
-}
-
-/* MULTIPLICATEUR */
-
-function getMultiplier(){
-
-if(combo>=8)return 4;
-if(combo>=6)return 3;
-if(combo>=4)return 2;
-if(combo>=2)return 1.5;
-
-return 1;
-
-}
-
-/* START QUIZ */
+function getMultiplier(){if(combo>=8)return 4;if(combo>=6)return 3;if(combo>=4)return 2;if(combo>=2)return 1.5;return 1}
 
 function startQuiz(mode){
-
-currentMode=mode;
-
-clearInterval(timerInterval);
-
-score=0;
-combo=0;
-maxCombo=0;
-correctAnswers=0;
-currentQuestion=0;
-
-quizQuestions=
-shuffle(questionPools[mode]||questionPools.classic)
-.slice(0,10)
-.map(x=>({
-q:x[0],
-a:x[1],
-options:x[2],
-level:x[3]
-}));
-
-document.getElementById("quizStart").style.display="none";
-document.getElementById("quizGame").style.display="block";
-document.getElementById("mapQuizArea").style.display="none";
-document.getElementById("victory").style.display="none";
-
-loadQuestion();
-
+currentMode=mode;clearInterval(timerInterval);score=0;combo=0;maxCombo=0;correctAnswers=0;currentQuestion=0;
+quizQuestions=shuffle(questionPools[mode]||questionPools.classic).slice(0,10).map(x=>({q:x[0],a:x[1],options:x[2],level:x[3]}));
+document.getElementById("quizStart").style.display="none";document.getElementById("quizGame").style.display="block";document.getElementById("mapQuizArea").style.display="none";document.getElementById("victory").style.display="none";loadQuestion();
 }
-
-/* QUESTION */
 
 function loadQuestion(){
-
-clearInterval(timerInterval);
-
-answered=false;
-
-const q=quizQuestions[currentQuestion];
-const d=levelData(q.level);
-
-maxTime=d.time;
-timeLeft=maxTime;
-
-document.getElementById("questionNumber")
-.textContent=`Question ${currentQuestion+1}/${quizQuestions.length}`;
-
-document.getElementById("difficultyText")
-.textContent=d.name;
-
-const badge=document.getElementById("levelBadge");
-
-badge.textContent=`${d.icon} ${d.name}`;
-badge.className=`level ${d.cls}`;
-
-document.getElementById("questionText").textContent=q.q;
-document.getElementById("feedback").innerHTML="";
-document.getElementById("nextBtn").style.display="none";
-
-document.getElementById("progressFill").style.width=
-`${currentQuestion/quizQuestions.length*100}%`;
-
-const box=document.getElementById("answers");
-box.innerHTML="";
-
-shuffle(q.options).forEach(option=>{
-
-const button=document.createElement("button");
-
-button.className="answer";
-button.textContent=option;
-
-button.onclick=()=>{
-answerQuestion(option,button);
-};
-
-box.appendChild(button);
-
-});
-
+clearInterval(timerInterval);answered=false;
+const q=quizQuestions[currentQuestion],d=levelData(q.level);maxTime=d.time;timeLeft=maxTime;
+document.getElementById("questionNumber").textContent=`Question ${currentQuestion+1}/${quizQuestions.length}`;
+document.getElementById("difficultyText").textContent=d.name;
+const badge=document.getElementById("levelBadge");badge.textContent=`${d.icon} ${d.name}`;badge.className=`level ${d.cls}`;
+document.getElementById("questionText").textContent=q.q;document.getElementById("feedback").innerHTML="";document.getElementById("nextBtn").style.display="none";
+document.getElementById("progressFill").style.width=`${currentQuestion/quizQuestions.length*100}%`;
+const box=document.getElementById("answers");box.innerHTML="";
+shuffle(q.options).forEach(option=>{const b=document.createElement("button");b.className="answer";b.textContent=option;b.onclick=()=>answerQuestion(option,b);box.appendChild(b)});
 updateTimer();
-
-timerInterval=setInterval(()=>{
-
-timeLeft=Math.max(0,timeLeft-.1);
-
-updateTimer();
-
-if(timeLeft<=0){
-
-clearInterval(timerInterval);
-timeoutQuestion();
-
+timerInterval=setInterval(()=>{timeLeft=Math.max(0,timeLeft-.1);updateTimer();if(timeLeft<=0){clearInterval(timerInterval);timeoutQuestion()}},100);
 }
-
-},100);
-
-}
-
-/* TIMER */
 
 function updateTimer(){
-
-const p=timeLeft/maxTime*100;
-
-document.getElementById("timerFill").style.width=p+"%";
-document.getElementById("timerText").textContent=Math.ceil(timeLeft)+"s";
-
-const fill=document.getElementById("timerFill");
-const text=document.getElementById("timerText");
-
-if(p<=30){
-
-fill.style.background="#ff3154";
-text.style.color="#ff637d";
-
-}else if(p<=60){
-
-fill.style.background="#ffd04d";
-text.style.color="#ffd04d";
-
-}else{
-
-fill.style.background="#1683ff";
-text.style.color="#59baff";
-
+const p=timeLeft/maxTime*100,fill=document.getElementById("timerFill"),text=document.getElementById("timerText");
+fill.style.width=p+"%";text.textContent=Math.ceil(timeLeft)+"s";
+if(p<=30){fill.style.background="#ff3154";text.style.color="#ff637d"}else if(p<=60){fill.style.background="#ffd04d";text.style.color="#ffd04d"}else{fill.style.background="#1683ff";text.style.color="#59baff"}
 }
-
-}
-
-/* RÉPONSE */
 
 function answerQuestion(selected,button){
-
-if(answered)return;
-
-answered=true;
-
-clearInterval(timerInterval);
-
+if(answered)return;answered=true;clearInterval(timerInterval);
 const q=quizQuestions[currentQuestion];
-
-document.querySelectorAll(".answer").forEach(b=>{
-
-b.disabled=true;
-
-if(b.textContent===q.a)
-b.classList.add("correct");
-
-});
-
+document.querySelectorAll(".answer").forEach(b=>{b.disabled=true;if(b.textContent===q.a)b.classList.add("correct")});
 if(selected===q.a){
-
-button.classList.add("correct");
-
-correctAnswers++;
-combo++;
-
-maxCombo=Math.max(maxCombo,combo);
-
-const d=levelData(q.level);
-const mult=getMultiplier();
-
-const timeBonus=Math.round(timeLeft/maxTime*20);
-
-const points=Math.round(d.base*mult)+timeBonus;
-
-score+=points;
-
-document.getElementById("feedback").innerHTML=
-"✅ Correct !";
-
-}else{
-
-button.classList.add("wrong");
-
-combo=0;
-
-document.getElementById("feedback").innerHTML=
-`❌ Raté ! La bonne réponse était <strong>${q.a}</strong>`;
-
-}
-
+button.classList.add("correct");correctAnswers++;combo++;maxCombo=Math.max(maxCombo,combo);
+const d=levelData(q.level),mult=getMultiplier(),timeBonus=Math.round(timeLeft/maxTime*20),points=Math.round(d.base*mult)+timeBonus;
+score+=points;document.getElementById("feedback").innerHTML="✅ Correct !";
+}else{button.classList.add("wrong");combo=0;document.getElementById("feedback").innerHTML=`❌ Raté ! La bonne réponse était <strong>${escapeHTML(q.a)}</strong>`}
 document.getElementById("nextBtn").style.display="inline-block";
-
 }
 
 function timeoutQuestion(){
-
-if(answered)return;
-
-answered=true;
-combo=0;
-
+if(answered)return;answered=true;combo=0;
 const q=quizQuestions[currentQuestion];
-
-document.querySelectorAll(".answer").forEach(b=>{
-
-b.disabled=true;
-
-if(b.textContent===q.a)
-b.classList.add("correct");
-
-});
-
-document.getElementById("feedback").innerHTML=
-`⏰ Temps écoulé ! La réponse était <strong>${q.a}</strong>`;
-
+document.querySelectorAll(".answer").forEach(b=>{b.disabled=true;if(b.textContent===q.a)b.classList.add("correct")});
+document.getElementById("feedback").innerHTML=`⏰ Temps écoulé ! La réponse était <strong>${escapeHTML(q.a)}</strong>`;
 document.getElementById("nextBtn").style.display="inline-block";
-
 }
 
-/* SUIVANT */
-
-document.getElementById("nextBtn").onclick=()=>{
-
-currentQuestion++;
-
-if(currentQuestion>=quizQuestions.length){
-
-finishQuiz();
-
-}else{
-
-loadQuestion();
-
-}
-
-};
-
-/* FIN QUIZ */
+document.getElementById("nextBtn").onclick=()=>{currentQuestion++;if(currentQuestion>=quizQuestions.length)finishQuiz();else loadQuestion()};
 
 async function finishQuiz(){
-
-clearInterval(timerInterval);
-
-document.getElementById("quizGame").style.display="none";
-document.getElementById("victory").style.display="block";
-
-document.getElementById("finalQuizScore").textContent=score;
-
-document.getElementById("resultMessage").textContent=
-`${correctAnswers}/${quizQuestions.length} bonnes réponses`;
-
+clearInterval(timerInterval);document.getElementById("quizGame").style.display="none";document.getElementById("victory").style.display="block";
+document.getElementById("finalQuizScore").textContent=score;document.getElementById("resultMessage").textContent=`${correctAnswers}/${quizQuestions.length} bonnes réponses`;
 if(username){
-
 try{
-
 await window.firebaseReady;
-
-await window.firebaseAddDoc(
-window.firebaseCollection(
-window.firebaseDB,
-"results"
-),
-{
-username,
-mode:currentMode,
-score,
-timestamp:window.firebaseServerTimestamp()
+await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDB,"results"),{
+username,code:studentCode||"",mode:currentMode,score,timestamp:window.firebaseServerTimestamp()
+});
+}catch(e){console.error("Firebase résultat:",e)}
 }
-);
-
-}catch(error){
-
-console.error("Firebase résultat:",error);
-
-}
-
-}
-
 await refreshStudentDashboard();
-
 }
 
-/* RETOUR */
-
-function backToQuizMenu(){
-
-clearInterval(timerInterval);
-
-document.getElementById("quizGame").style.display="none";
-document.getElementById("victory").style.display="none";
-document.getElementById("mapQuizArea").style.display="none";
-document.getElementById("quizStart").style.display="block";
-
-}
-
-/* CARTE QUIZ */
+function backToQuizMenu(){clearInterval(timerInterval);document.getElementById("quizGame").style.display="none";document.getElementById("victory").style.display="none";document.getElementById("mapQuizArea").style.display="none";document.getElementById("quizStart").style.display="block"}
 
 function startMapQuiz(){
-
-clearInterval(timerInterval);
-
-mapQuizColors={};
-
-document.getElementById("quizStart").style.display="none";
-document.getElementById("quizGame").style.display="none";
-document.getElementById("victory").style.display="none";
-document.getElementById("mapQuizArea").style.display="block";
-
+clearInterval(timerInterval);mapQuizColors={};
+document.getElementById("quizStart").style.display="none";document.getElementById("quizGame").style.display="none";document.getElementById("victory").style.display="none";document.getElementById("mapQuizArea").style.display="block";
 setTimeout(drawQuizMap,50);
-
 }
 
-function selectMapColor(color){
-
-quizMapColor=color;
-
-document.getElementById("redTool")
-.classList.toggle("active",color==="primary");
-
-document.getElementById("blueTool")
-.classList.toggle("active",color==="secondary");
-
-}
+function selectMapColor(color){quizMapColor=color;document.getElementById("redTool").classList.toggle("active",color==="primary");document.getElementById("blueTool").classList.toggle("active",color==="secondary")}
 
 function drawQuizMap(){
-
-const svg=d3.select("#quizMap");
-const element=document.getElementById("quizMap");
-
-const width=element.clientWidth;
-const height=element.clientHeight;
-
+const svg=d3.select("#quizMap"),element=document.getElementById("quizMap"),width=element.clientWidth,height=element.clientHeight;
 if(width<100)return;
-
-svg.attr("viewBox",`0 0 ${width} ${height}`);
-svg.selectAll("*").remove();
-
-const projection=d3.geoNaturalEarth1()
-.fitSize([width,height],{type:"Sphere"});
-
-const path=d3.geoPath().projection(projection);
-
-svg.append("path")
-.datum({type:"Sphere"})
-.attr("fill","#061a30")
-.attr("stroke","#28537c")
-.attr("d",path);
-
-d3.json(
-"https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json"
-)
-.then(world=>{
-
-const land=topojson.feature(
-world,
-world.objects.countries
-);
-
-svg.selectAll(".quiz-map-country")
-.data(land.features)
-.enter()
-.append("path")
-.attr("class","quiz-map-country")
-.attr("d",path)
-.attr("fill",d=>{
-
-const id=String(d.id).padStart(3,"0");
-
-if(mapQuizColors[id]==="primary")
-return "#ff3154";
-
-if(mapQuizColors[id]==="secondary")
-return "#1683ff";
-
-return "#173049";
-
-})
-.on("click",(event,d)=>{
-
-const id=String(d.id).padStart(3,"0");
-
-mapQuizColors[id]=quizMapColor;
-
-d3.select(event.currentTarget)
-.attr(
-"fill",
-quizMapColor==="primary"
-?"#ff3154"
-:"#1683ff"
-);
-
-});
-
+svg.attr("viewBox",`0 0 ${width} ${height}`);svg.selectAll("*").remove();
+const projection=d3.geoNaturalEarth1().fitSize([width,height],{type:"Sphere"}),path=d3.geoPath().projection(projection);
+svg.append("path").datum({type:"Sphere"}).attr("fill","#061a30").attr("stroke","#28537c").attr("d",path);
+d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(world=>{
+const land=topojson.feature(world,world.objects.countries);
+svg.selectAll(".quiz-map-country").data(land.features).enter().append("path").attr("class","quiz-map-country").attr("d",path)
+.attr("fill",d=>{const id=String(d.id).padStart(3,"0");return mapQuizColors[id]==="primary"?"#ff3154":mapQuizColors[id]==="secondary"?"#1683ff":"#173049"})
+.on("click",(event,d)=>{const id=String(d.id).padStart(3,"0");mapQuizColors[id]=quizMapColor;d3.select(event.currentTarget).attr("fill",quizMapColor==="primary"?"#ff3154":"#1683ff")});
 quizMapLoaded=true;
-
 });
-
 }
 
-function resetMapQuiz(){
-
-mapQuizColors={};
-
-document.getElementById("mapQuizResult")
-.style.display="none";
-
-drawQuizMap();
-
-}
-
-/* VALIDATION CARTE */
+function resetMapQuiz(){mapQuizColors={};document.getElementById("mapQuizResult").style.display="none";drawQuizMap()}
 
 async function validateMapQuiz(){
-
-let errors=0;
-let correct=0;
-
-countries.forEach(c=>{
-
-const selected=mapQuizColors[c.id]||null;
-
-const expected=
-(c.type==="primary"||c.type==="secondary")
-?c.type
-:null;
-
-if(selected===expected){
-
-correct++;
-
-}else{
-
-errors++;
-
+let errors=0,correct=0;
+countries.forEach(c=>{const selected=mapQuizColors[c.id]||null,expected=(c.type==="primary"||c.type==="secondary")?c.type:null;if(selected===expected)correct++;else errors++});
+const perfect=errors===0,earned=perfect?1500:0;
+document.getElementById("mapQuizResult").style.display="block";document.getElementById("mapQuizScore").textContent=earned;
+document.getElementById("mapQuizTitle").textContent=perfect?"🎉 Carte parfaite !":"🗺️ Carte terminée";
+document.getElementById("mapQuizMessage").textContent=perfect?"Tous les pays ont été correctement coloriés.":`${correct}/${countries.length} pays correctement coloriés.`;
+if(perfect)await saveMapQuizResult();
 }
-
-});
-
-const perfect=errors===0;
-const earned=perfect?1500:0;
-
-document.getElementById("mapQuizResult").style.display="block";
-
-document.getElementById("mapQuizScore").textContent=earned;
-
-document.getElementById("mapQuizTitle").textContent=
-perfect
-?"🎉 Carte parfaite !"
-:"🗺️ Carte terminée";
-
-document.getElementById("mapQuizMessage").textContent=
-perfect
-?"Tous les pays ont été correctement coloriés."
-:`${correct}/${countries.length} pays correctement coloriés.`;
-
-if(perfect){
-
-await saveMapQuizResult();
-
-}
-
-}
-
-/* SAVE CARTE */
 
 async function saveMapQuizResult(){
-
 if(!username)return;
-
 try{
-
 await window.firebaseReady;
-
-await window.firebaseAddDoc(
-window.firebaseCollection(
-window.firebaseDB,
-"results"
-),
-{
-username,
-mode:"Carte Quiz",
-score:1500,
-timestamp:window.firebaseServerTimestamp()
-}
-);
-
+await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDB,"results"),{
+username,code:studentCode||"",mode:"Carte Quiz",score:1500,timestamp:window.firebaseServerTimestamp()
+});
 await refreshStudentDashboard();
-
-}catch(error){
-
-console.error("Erreur Carte Quiz:",error);
-
+}catch(e){console.error("Erreur Carte Quiz:",e)}
 }
 
+/* CODES ÉLÈVES */
+
+async function codeExists(code){
+try{
+await window.firebaseReady;
+const snap=await window.firebaseGetDocs(window.firebaseCollection(window.firebaseDB,"quizCodes"));
+const target=normalizeCode(code);
+let exists=false;
+snap.forEach(d=>{if(normalizeCode(d.data().code)===target)exists=true});
+return exists;
+}catch(e){console.error(e);return false}
+}
+
+async function saveUsername(){
+const value=document.getElementById("usernameInput").value.trim();
+const code=normalizeCode(document.getElementById("studentCodeInput").value);
+if(!value){alert("Entre un prénom ou un pseudo.");return}
+if(value.length<2){alert("Le nom doit contenir au moins 2 caractères.");return}
+if(!code){alert("Entre le code donné par ton professeur.");return}
+if(!(await codeExists(code))){alert("❌ Code élève incorrect. Demande le code à ton professeur.");return}
+username=value;studentCode=code;
+localStorage.setItem("wexUsername",username);localStorage.setItem("wexStudentCode",studentCode);
+updateProfileDisplay();closeModal("usernameModal");refreshStudentDashboard();
+}
+
+function openStudentCodeChange(){
+if(!username){alert("Aucun nom enregistré.");return}
+document.getElementById("changeStudentCodeInput").value=studentCode;
+document.getElementById("studentCodeModal").style.display="flex";
+}
+
+async function changeStudentCode(){
+const code=normalizeCode(document.getElementById("changeStudentCodeInput").value);
+if(!code){alert("Entre un code.");return}
+if(!(await codeExists(code))){alert("❌ Ce code n'existe pas.");return}
+studentCode=code;localStorage.setItem("wexStudentCode",studentCode);
+updateProfileDisplay();document.getElementById("profileStatus").textContent="✅ Code élève modifié.";closeModal("studentCodeModal");
 }
 
 /* NOM */
 
-function saveUsername(){
-
-const value=
-document.getElementById("usernameInput")
-.value.trim();
-
-if(!value){
-
-alert("Entre un prénom ou un pseudo.");
-return;
-
-}
-
-username=value;
-
-localStorage.setItem("wexUsername",username);
-
-updateProfileDisplay();
-
-closeModal("usernameModal");
-
-refreshStudentDashboard();
-
-}
-
 function openUsernameChange(){
-
-if(!username){
-
-alert("Aucun nom enregistré.");
-return;
-
+if(!username){alert("Aucun nom enregistré.");return}
+const input=document.getElementById("changeUsernameInput");input.value=username;
+document.getElementById("changeUsernameModal").style.display="flex";
+setTimeout(()=>{input.focus();input.select()},50);
 }
-
-const input=document.getElementById("changeUsernameInput");
-
-input.value=username;
-
-document.getElementById("changeUsernameModal")
-.style.display="flex";
-
-setTimeout(()=>{
-input.focus();
-input.select();
-},50);
-
-}
-
-/* =====================================================
-   CHANGEMENT DE NOM
-   TRANSFÈRE NOTES + POINTS
-===================================================== */
 
 async function changeUsername(){
-
-const input=document.getElementById("changeUsernameInput");
-
-const newUsername=input.value.trim();
-
-if(!newUsername){
-
-alert("Entre un prénom ou un pseudo.");
-return;
-
-}
-
-if(newUsername.length<2){
-
-alert("Le nom doit contenir au moins 2 caractères.");
-return;
-
-}
-
-const oldUsername=username;
-
-const oldKey=oldUsername.trim().toLowerCase();
-const newKey=newUsername.trim().toLowerCase();
-
-if(oldKey===newKey){
-
-username=newUsername;
-
-localStorage.setItem("wexUsername",username);
-
-updateProfileDisplay();
-
-closeModal("changeUsernameModal");
-
-return;
-
-}
-
+const newUsername=document.getElementById("changeUsernameInput").value.trim();
+if(!newUsername){alert("Entre un prénom ou un pseudo.");return}
+if(newUsername.length<2){alert("Le nom doit contenir au moins 2 caractères.");return}
+const oldKey=username.trim().toLowerCase(),newKey=newUsername.trim().toLowerCase();
+if(oldKey===newKey){username=newUsername;localStorage.setItem("wexUsername",username);updateProfileDisplay();closeModal("changeUsernameModal");return}
 try{
-
 await window.firebaseReady;
-
 const db=window.firebaseDB;
-
-/* NOTES */
-
-const resultsSnap=
-await window.firebaseGetDocs(
-window.firebaseCollection(db,"results")
-);
-
-const resultUpdates=[];
-
-resultsSnap.forEach(docSnap=>{
-
-const data=docSnap.data();
-
-const user=
-String(data.username||"")
-.trim()
-.toLowerCase();
-
-if(user===oldKey){
-
-resultUpdates.push(
-window.firebaseUpdateDoc(
-docSnap.ref,
-{username:newUsername}
-)
-);
-
+const resultsSnap=await window.firebaseGetDocs(window.firebaseCollection(db,"results"));
+const pointsSnap=await window.firebaseGetDocs(window.firebaseCollection(db,"points"));
+const updates=[];
+resultsSnap.forEach(d=>{const u=String(d.data().username||"").trim().toLowerCase();if(u===oldKey)updates.push(window.firebaseUpdateDoc(d.ref,{username:newUsername}))});
+pointsSnap.forEach(d=>{const u=String(d.data().username||"").trim().toLowerCase();if(u===oldKey)updates.push(window.firebaseUpdateDoc(d.ref,{username:newUsername}))});
+await Promise.all(updates);
+username=newUsername;localStorage.setItem("wexUsername",username);updateProfileDisplay();
+document.getElementById("profileStatus").textContent="✅ Nom modifié. Tes scores et tes points ont été transférés.";
+closeModal("changeUsernameModal");await refreshStudentDashboard();
+}catch(e){console.error(e);alert("Impossible de transférer les scores et les points.")}
 }
-
-});
-
-/* POINTS */
-
-const pointsSnap=
-await window.firebaseGetDocs(
-window.firebaseCollection(db,"points")
-);
-
-const pointUpdates=[];
-
-pointsSnap.forEach(docSnap=>{
-
-const data=docSnap.data();
-
-const user=
-String(data.username||"")
-.trim()
-.toLowerCase();
-
-if(user===oldKey){
-
-pointUpdates.push(
-window.firebaseUpdateDoc(
-docSnap.ref,
-{username:newUsername}
-)
-);
-
-}
-
-});
-
-await Promise.all([
-...resultUpdates,
-...pointUpdates
-]);
-
-username=newUsername;
-
-localStorage.setItem("wexUsername",username);
-
-updateProfileDisplay();
-
-document.getElementById("profileStatus")
-.textContent=
-"✅ Nom modifié. Tous tes scores et tes points ont été transférés.";
-
-closeModal("changeUsernameModal");
-
-await refreshStudentDashboard();
-
-}catch(error){
-
-console.error("Erreur changement de nom:",error);
-
-alert(
-"Impossible de transférer les scores et les points. Vérifie ta connexion puis réessaie."
-);
-
-}
-
-}
-
-/* PROFIL */
 
 function updateProfileDisplay(){
-
-const element=
-document.getElementById("currentUsernameDisplay");
-
-if(element){
-element.textContent=username||"-";
+document.getElementById("currentUsernameDisplay").textContent=username||"-";
+document.getElementById("currentStudentCodeDisplay").textContent=studentCode||"Aucun code";
 }
 
-}
+function closeModal(id){const m=document.getElementById(id);if(m)m.style.display="none"}
 
-/* MODALES */
-
-function closeModal(id){
-
-const modal=document.getElementById(id);
-
-if(modal){
-modal.style.display="none";
-}
-
-}
-
-/* =====================================================
-   CODE PROFESSEUR
-===================================================== */
+/* PROFESSEUR */
 
 function checkProfessorCode(){
-
-const code=
-document.getElementById("profCodeInput")
-.value.trim();
-
+const code=document.getElementById("profCodeInput").value.trim().toUpperCase();
 closeModal("profCodeModal");
 
-/* ESPACE POINTS */
-
-if(code==="WEX-POINTS-2026"){
-
-goPage("professorPointsPage");
-
+if(code==="WEX"){
+goPage("professorDangerPage");
 return;
-
 }
-
-/* ESPACE NOTES */
-
-if(code==="WEX-RESULTS-2026"){
-
-goPage("professorResultsPage");
-
-updateNamesButton();
-
-loadProfessorResults();
-
-return;
-
-}
-
+if(code==="WEX-POINTS-2026"){goPage("professorPointsPage");return}
+if(code==="WEX-RESULTS-2026"){goPage("professorResultsPage");updateNamesButton();loadProfessorResults();return}
 alert("Code professeur incorrect.");
-
 }
-
-/* =====================================================
-   AJOUT POINTS
-   COLLECTION : points
-===================================================== */
 
 async function addProfessorPoints(){
-
-const student=
-document.getElementById("pointStudent")
-.value.trim();
-
-const amount=
-Number(
-document.getElementById("pointAmount").value
-);
-
-if(!student){
-
-alert("Entre le nom de l'élève.");
-return;
-
-}
-
-if(!Number.isFinite(amount)||amount<=0){
-
-alert("Entre un nombre de points valide.");
-return;
-
-}
-
+const student=document.getElementById("pointStudent").value.trim(),amount=Number(document.getElementById("pointAmount").value);
+if(!student){alert("Entre le nom de l'élève.");return}
+if(!Number.isFinite(amount)||amount<=0){alert("Entre un nombre de points valide.");return}
 try{
-
 await window.firebaseReady;
-
-await window.firebaseAddDoc(
-window.firebaseCollection(
-window.firebaseDB,
-"points"
-),
-{
-username:student,
-points:amount,
-timestamp:window.firebaseServerTimestamp()
-}
-);
-
-document.getElementById("pointsStatus")
-.textContent=
-`✅ ${amount} points ajoutés à ${student}.`;
-
-document.getElementById("pointAmount").value="";
-document.getElementById("pointStudent").value="";
-
+await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDB,"points"),{username:student,points:amount,timestamp:window.firebaseServerTimestamp()});
+document.getElementById("pointsStatus").textContent=`✅ ${amount} points ajoutés à ${student}.`;
+document.getElementById("pointAmount").value="";document.getElementById("pointStudent").value="";
 await refreshStudentDashboard();
-
-}catch(error){
-
-console.error("Erreur ajout points:",error);
-
-alert("Impossible d'ajouter les points.");
-
+}catch(e){console.error(e);alert("Impossible d'ajouter les points.")}
 }
 
+/* CRÉATION DES CODES */
+
+function randomQuizCode(){
+const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+let code="WEX-";
+for(let i=0;i<5;i++)code+=chars[Math.floor(Math.random()*chars.length)];
+return code;
 }
 
-/* =====================================================
-   RÉSULTATS PROF
-   COLLECTION : results
-===================================================== */
+async function generateUniqueQuizCode(){
+await window.firebaseReady;
+const snap=await window.firebaseGetDocs(window.firebaseCollection(window.firebaseDB,"quizCodes"));
+const used=new Set();
+snap.forEach(d=>used.add(normalizeCode(d.data().code)));
+let code;
+do{code=randomQuizCode()}while(used.has(code));
+return code;
+}
+
+async function createProfessorCode(){
+const name=document.getElementById("newCodeName").value.trim();
+if(!name){alert("Entre un nom pour ce code.");return}
+try{
+const code=await generateUniqueQuizCode();
+await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDB,"quizCodes"),{
+code,name,createdAt:window.firebaseServerTimestamp()
+});
+document.getElementById("newCodeName").value="";
+document.getElementById("createdCodeBox").innerHTML=`
+<div class="code-card">
+<div><div class="code-name">✅ Code créé : ${escapeHTML(name)}</div><div class="code-value">${escapeHTML(code)}</div></div>
+<button class="code-copy" onclick="copyCode('${code}')">📋 Copier</button>
+</div>`;
+await loadProfessorCodes();
+}catch(e){console.error(e);alert("Impossible de créer le code.")}
+}
+
+async function copyCode(code){
+try{await navigator.clipboard.writeText(code);alert("✅ Code copié !")}
+catch(e){prompt("Copie ce code :",code)}
+}
+
+async function loadProfessorCodes(){
+const box=document.getElementById("codesList");if(!box)return;
+box.innerHTML='<p class="name-status">Chargement...</p>';
+try{
+await window.firebaseReady;
+const snap=await window.firebaseGetDocs(window.firebaseCollection(window.firebaseDB,"quizCodes"));
+const arr=[];
+snap.forEach(d=>{const x=d.data();arr.push({id:d.id,code:x.code||"",name:x.name||"Code sans nom",createdAt:x.createdAt})});
+arr.sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+box.innerHTML="";
+if(!arr.length){box.innerHTML='<p class="name-status">Aucun code créé.</p>';return}
+arr.forEach(x=>{
+const div=document.createElement("div");div.className="code-card";
+div.innerHTML=`<div><div class="code-name">${escapeHTML(x.name)}</div><div class="code-value">${escapeHTML(x.code)}</div></div><button class="code-copy">📋 Copier</button>`;
+div.querySelector("button").onclick=()=>copyCode(x.code);box.appendChild(div);
+});
+}catch(e){console.error(e);box.innerHTML='<p class="name-status">Impossible de charger les codes.</p>'}
+}
+
+async function loadProfessorCodeSelect(){
+const select=document.getElementById("professorCodeSelect");if(!select)return;
+select.innerHTML='<option value="">Choisir un code...</option>';
+try{
+await window.firebaseReady;
+const snap=await window.firebaseGetDocs(window.firebaseCollection(window.firebaseDB,"quizCodes"));
+const arr=[];snap.forEach(d=>{const x=d.data();arr.push({code:x.code||"",name:x.name||x.code||""})});
+arr.sort((a,b)=>a.name.localeCompare(b.name));
+arr.forEach(x=>{const o=document.createElement("option");o.value=normalizeCode(x.code);o.textContent=`${x.name} — ${x.code}`;select.appendChild(o)});
+}catch(e){console.error(e)}
+}
+
+async function buildBonusMap(){
+const snap=await window.firebaseGetDocs(window.firebaseCollection(window.firebaseDB,"points"));
+const map={};
+snap.forEach(d=>{const x=d.data(),key=String(x.username||"").trim().toLowerCase();map[key]=(map[key]||0)+Number(x.points||0)});
+return map;
+}
+
+function resultDate(ts){return ts?.seconds?new Date(ts.seconds*1000).toLocaleString("fr-FR"):""}
+
+function getDisplayedName(result,uniqueNames){
+const key=String(result.username||"").trim().toLowerCase(),index=uniqueNames.indexOf(key)+1;
+return namesHidden?`Élève ${index}`:escapeHTML(result.username);
+}
+
+async function fetchResults(){
+const snap=await window.firebaseGetDocs(window.firebaseCollection(window.firebaseDB,"results"));
+const arr=[];
+snap.forEach(d=>{const x=d.data();arr.push({id:d.id,username:x.username||"",code:normalizeCode(x.code||""),mode:x.mode||"",score:Number(x.score||0),timestamp:x.timestamp})});
+arr.sort((a,b)=>(b.timestamp?.seconds||0)-(a.timestamp?.seconds||0));
+return arr;
+}
 
 async function loadProfessorResults(){
-
-const table=document.getElementById("resultsTable");
-
-if(!table)return;
-
-table.innerHTML=
-`<tr>
-<td colspan="5">Chargement...</td>
-</tr>`;
-
+const table=document.getElementById("resultsTable");if(!table)return;
+table.innerHTML='<tr><td colspan="5">Chargement...</td></tr>';
 try{
-
 await window.firebaseReady;
-
-const snap=
-await window.firebaseGetDocs(
-window.firebaseCollection(
-window.firebaseDB,
-"results"
-)
-);
-
-const results=[];
-
-snap.forEach(docSnap=>{
-
-const data=docSnap.data();
-
-results.push({
-
-id:docSnap.id,
-
-username:data.username||"",
-
-mode:data.mode||"",
-
-score:Number(data.score||0),
-
-timestamp:data.timestamp
-
-});
-
-});
-
-results.sort(
-(a,b)=>
-(b.timestamp?.seconds||0)-
-(a.timestamp?.seconds||0)
-);
-
-/*
-   Les points restent séparés dans Firebase.
-   Ils sont seulement additionnés à l'affichage
-   du score final.
-*/
-
-const pointsSnap=
-await window.firebaseGetDocs(
-window.firebaseCollection(
-window.firebaseDB,
-"points"
-)
-);
-
-const bonusMap={};
-
-pointsSnap.forEach(docSnap=>{
-
-const data=docSnap.data();
-
-const key=
-String(data.username||"")
-.trim()
-.toLowerCase();
-
-bonusMap[key]=
-(bonusMap[key]||0)+
-Number(data.points||0);
-
-});
-
+const results=await fetchResults(),bonusMap=await buildBonusMap();
 table.innerHTML="";
-
-if(!results.length){
-
-table.innerHTML=
-`<tr>
-<td colspan="5">Aucun résultat.</td>
-</tr>`;
-
-return;
-
-}
-
-/* NOMS ANONYMES */
-
-const uniqueNames=[];
-
-results.forEach(result=>{
-
-const key=
-String(result.username||"")
-.trim()
-.toLowerCase();
-
-if(!uniqueNames.includes(key)){
-uniqueNames.push(key);
-}
-
-});
-
-/* AFFICHAGE */
-
-results.forEach(result=>{
-
-const key=
-String(result.username||"")
-.trim()
-.toLowerCase();
-
-const bonus=bonusMap[key]||0;
-
-const finalScore=
-result.score+bonus;
-
-const tr=document.createElement("tr");
-
-let date="";
-
-if(result.timestamp?.seconds){
-
-date=new Date(
-result.timestamp.seconds*1000
-).toLocaleString("fr-FR");
-
-}
-
-const studentIndex=
-uniqueNames.indexOf(key)+1;
-
-const displayedName=
-namesHidden
-?`Élève ${studentIndex}`
-:escapeHTML(result.username);
-
-tr.innerHTML=`
-
-<td>${displayedName}</td>
-
-<td>${escapeHTML(result.mode)}</td>
-
-<td>
-<strong style="color:#59baff">
-${finalScore}
-</strong>
-</td>
-
-<td>${date}</td>
-
-<td>
-
-<button
-class="delete-btn"
-onclick="deleteProfessorResult('${result.id}')">
-Supprimer
-</button>
-
-</td>
-
-`;
-
+if(!results.length){table.innerHTML='<tr><td colspan="5">Aucun résultat.</td></tr>';return}
+const unique=[];results.forEach(r=>{const k=String(r.username).trim().toLowerCase();if(!unique.includes(k))unique.push(k)});
+results.forEach(r=>{
+const key=String(r.username).trim().toLowerCase(),finalScore=r.score+(bonusMap[key]||0),tr=document.createElement("tr");
+tr.innerHTML=`<td>${getDisplayedName(r,unique)}</td><td>${escapeHTML(r.mode)}</td><td><strong style="color:#59baff">${finalScore}</strong></td><td>${resultDate(r.timestamp)}</td><td><button class="delete-btn">Supprimer</button></td>`;
+tr.querySelector("button").onclick=()=>deleteProfessorResult(r.id);
 table.appendChild(tr);
-
 });
-
-}catch(error){
-
-console.error("Résultats:",error);
-
-table.innerHTML=
-`<tr>
-<td colspan="5">
-Impossible de charger les résultats.
-</td>
-</tr>`;
-
+}catch(e){console.error(e);table.innerHTML='<tr><td colspan="5">Impossible de charger les résultats.</td></tr>'}
 }
 
+async function loadProfessorResultsByCode(){
+const table=document.getElementById("codeResultsTable"),select=document.getElementById("professorCodeSelect");
+if(!table||!select)return;
+const selected=normalizeCode(select.value);
+if(!selected){table.innerHTML='<tr><td colspan="5">Sélectionne un code.</td></tr>';document.getElementById("selectedCodeTitle").textContent="📊 Résultats";return}
+table.innerHTML='<tr><td colspan="5">Chargement...</td></tr>';
+try{
+await window.firebaseReady;
+const results=(await fetchResults()).filter(r=>r.code===selected),bonusMap=await buildBonusMap();
+document.getElementById("selectedCodeTitle").textContent=`📊 Résultats — ${selected}`;
+table.innerHTML="";
+if(!results.length){table.innerHTML='<tr><td colspan="5">Aucune note pour ce code.</td></tr>';return}
+const unique=[];results.forEach(r=>{const k=String(r.username).trim().toLowerCase();if(!unique.includes(k))unique.push(k)});
+results.forEach(r=>{
+const key=String(r.username).trim().toLowerCase(),finalScore=r.score+(bonusMap[key]||0),tr=document.createElement("tr");
+tr.innerHTML=`<td>${getDisplayedName(r,unique)}</td><td>${escapeHTML(r.mode)}</td><td><strong style="color:#59baff">${finalScore}</strong></td><td>${resultDate(r.timestamp)}</td><td><button class="delete-btn">Supprimer</button></td>`;
+tr.querySelector("button").onclick=()=>deleteProfessorCodeResult(r.id);
+table.appendChild(tr);
+});
+}catch(e){console.error(e);table.innerHTML='<tr><td colspan="5">Impossible de charger les résultats.</td></tr>'}
 }
-
-/* =====================================================
-   SUPPRIMER UNE NOTE
-   IMPORTANT :
-   NE SUPPRIME PAS LES POINTS
-===================================================== */
 
 async function deleteProfessorResult(id){
+if(!confirm("Supprimer uniquement cette note ? Les points seront conservés."))return;
+try{
+await window.firebaseReady;
+await window.firebaseDeleteDoc(window.firebaseDoc(window.firebaseDB,"results",id));
+await refreshStudentDashboard();await loadProfessorResults();
+}catch(e){console.error(e);alert("Impossible de supprimer cette note.")}
+}
 
-if(!confirm(
-"Supprimer uniquement cette note ? Les points de l'élève seront conservés."
-))return;
+async function deleteProfessorCodeResult(id){
+if(!confirm("Supprimer uniquement cette note ? Les points seront conservés."))return;
+try{
+await window.firebaseReady;
+await window.firebaseDeleteDoc(window.firebaseDoc(window.firebaseDB,"results",id));
+await loadProfessorResultsByCode();
+}catch(e){console.error(e);alert("Impossible de supprimer cette note.")}
+}
+
+/* SUPPRESSION TOTALE WEX */
+
+async function deleteEverythingWEX(){
+const first=prompt(
+"⚠️ ATTENTION ⚠️\n\nCette action supprimera définitivement :\n• toutes les notes\n• tous les points\n• tous les prénoms présents dans les résultats\n• tous les codes élèves\n\nÉcris exactement : SUPPRIMER"
+);
+if(first!=="SUPPRIMER"){alert("Suppression annulée.");return}
+if(!confirm("DERNIÈRE CONFIRMATION ⚠️\n\nToutes les données WEX vont être supprimées définitivement.")){alert("Suppression annulée.");return}
 
 try{
-
 await window.firebaseReady;
-
-const db=window.firebaseDB;
-
-await window.firebaseDeleteDoc(
-window.firebaseDoc(
-db,
-"results",
-id
-)
-);
-
-await refreshStudentDashboard();
-
-await loadProfessorResults();
-
-}catch(error){
-
-console.error("Erreur suppression note:",error);
-
-alert("Impossible de supprimer cette note.");
-
+let total=0;
+for(const collectionName of ["results","points","quizCodes"]){
+const snap=await window.firebaseGetDocs(window.firebaseCollection(window.firebaseDB,collectionName));
+for(const d of snap.docs){
+await window.firebaseDeleteDoc(window.firebaseDoc(window.firebaseDB,collectionName,d.id));
+total++;
+}
+}
+localStorage.removeItem("wexUsername");
+localStorage.removeItem("wexStudentCode");
+alert(`✅ SUPPRESSION TERMINÉE\n\n${total} éléments supprimés.`);
+location.reload();
+}catch(e){
+console.error("Suppression totale:",e);
+alert("❌ Erreur pendant la suppression. Certaines données peuvent ne pas avoir été supprimées.");
+}
 }
 
-}
-
-/* =====================================================
-   DASHBOARD
-===================================================== */
+/* DASHBOARD */
 
 async function refreshStudentDashboard(){
-
 if(!username)return;
-
 try{
-
 await window.firebaseReady;
-
-const normalized=
-username.trim().toLowerCase();
-
-const resultsSnap=
-await window.firebaseGetDocs(
-window.firebaseCollection(
-window.firebaseDB,
-"results"
-)
-);
-
+const normalized=username.trim().toLowerCase();
+const results=await fetchResults();
 let latest=null;
-
-resultsSnap.forEach(docSnap=>{
-
-const data=docSnap.data();
-
-const user=
-String(data.username||"")
-.trim()
-.toLowerCase();
-
-if(user!==normalized)return;
-
-const seconds=
-data.timestamp?.seconds||0;
-
-if(
-!latest||
-seconds>(latest.timestamp?.seconds||0)
-){
-
-latest={
-score:Number(data.score||0),
-timestamp:data.timestamp
-};
-
-}
-
+results.forEach(r=>{
+if(String(r.username).trim().toLowerCase()!==normalized)return;
+if(!latest||(r.timestamp?.seconds||0)>(latest.timestamp?.seconds||0))latest=r;
 });
-
-const pointsSnap=
-await window.firebaseGetDocs(
-window.firebaseCollection(
-window.firebaseDB,
-"points"
-)
-);
-
-let bonus=0;
-
-pointsSnap.forEach(docSnap=>{
-
-const data=docSnap.data();
-
-const user=
-String(data.username||"")
-.trim()
-.toLowerCase();
-
-if(user===normalized){
-
-bonus+=Number(data.points||0);
-
+const bonusMap=await buildBonusMap(),bonus=bonusMap[normalized]||0,quizScore=latest?latest.score:0;
+document.getElementById("homeQuizScore").textContent=quizScore;
+document.getElementById("homeBonusPoints").textContent=bonus;
+document.getElementById("homeFinalScore").textContent=quizScore+bonus;
+}catch(e){console.error("Dashboard:",e)}
 }
-
-});
-
-const quizScore=latest?latest.score:0;
-const finalScore=quizScore+bonus;
-
-document.getElementById(
-"homeQuizScore"
-).textContent=quizScore;
-
-document.getElementById(
-"homeBonusPoints"
-).textContent=bonus;
-
-document.getElementById(
-"homeFinalScore"
-).textContent=finalScore;
-
-}catch(error){
-
-console.error("Dashboard:",error);
-
-}
-
-}
-
-/* ESCAPE */
 
 function escapeHTML(value){
-
-return String(value)
-.replaceAll("&","&amp;")
-.replaceAll("<","&lt;")
-.replaceAll(">","&gt;")
-.replaceAll('"',"&quot;")
-.replaceAll("'","&#039;");
-
+return String(value).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
 }
 
-/* INITIALISATION */
+/* INIT */
 
 renderCountries(countries);
-
 updateNamesButton();
 updateProfileDisplay();
 
 if(!username){
-
-setTimeout(()=>{
-document.getElementById("usernameModal")
-.style.display="flex";
-},400);
-
+setTimeout(()=>document.getElementById("usernameModal").style.display="flex",400);
 }else{
-
 refreshStudentDashboard();
-
 }
 
-setInterval(
-refreshStudentDashboard,
-3000
-);
-
-/* RESIZE */
+setInterval(refreshStudentDashboard,3000);
 
 window.addEventListener("resize",()=>{
-
-if(
-document.getElementById("mapPage")
-.classList.contains("active")
-){
-
-mapLoaded=false;
-drawMap();
-
-}
-
-if(
-document.getElementById("mapQuizArea")
-.style.display==="block"
-){
-
-quizMapLoaded=false;
-drawQuizMap();
-
-}
-
+if(document.getElementById("mapPage").classList.contains("active")){mapLoaded=false;drawMap()}
+if(document.getElementById("mapQuizArea").style.display==="block"){quizMapLoaded=false;drawQuizMap()}
 });
-
 </script>
 
 </body>
