@@ -1,0 +1,1771 @@
+// ============================================================
+// NOVASHOP - APP.JS (version pro : FR/EN + catalogue complet
+// + notes/avis + badges + logo)
+// Firebase Auth + Firestore + Catalogue + Commandes + Admin
+// ============================================================
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+
+import {
+  getAuth,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where,
+  serverTimestamp,
+  deleteDoc,
+  doc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
+// ============================================================
+// FIREBASE
+// ============================================================
+
+const firebaseConfig = {
+  apiKey:"AIzaSyAZ5vAkAEfIBpfLyhxgO7uvNdJ67KYKWD0",
+  authDomain:"novashop-4ee63.firebaseapp.com",
+  projectId:"novashop-4ee63",
+  storageBucket:"novashop-4ee63.firebasestorage.app",
+  messagingSenderId:"1044964015809",
+  appId:"1:1044964015809:web:4eafe0b1aede48f8539e40",
+  measurementId:"G-XNY5X2VMY9"
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+const auth = getAuth(firebaseApp);
+const db = getFirestore(firebaseApp);
+
+const ADMIN_EMAIL = "pc2alex.les@gmail.com";
+const ADMIN_CODE = "NOVA-ADMIN-2026";
+const ADMIN_ACCESS_KEY = "novaAdminAuthorized";
+const TEST_CARD_STORAGE_KEY = "novaTestCard";
+const LANG_KEY = "novaLang";
+
+
+// ============================================================
+// LOGO (SVG inline, injecté dans l'en-tête)
+// ============================================================
+
+const NOVA_LOGO_SVG = `
+<svg viewBox="0 0 48 48" width="34" height="34" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="NovaShop">
+  <defs>
+    <linearGradient id="novaLogoGrad" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2d8cff"/>
+      <stop offset="1" stop-color="#22e0d6"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="44" height="44" rx="13" fill="url(#novaLogoGrad)"/>
+  <path d="M15 34V14.6c0-.9 1.1-1.35 1.74-.7L32 30" stroke="#04101f" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <path d="M33 14v19.4c0 .9-1.1 1.35-1.74.7L16 18" stroke="#ffffff" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity=".001"/>
+  <circle cx="33.5" cy="14.5" r="3.1" fill="#04101f"/>
+  <circle cx="33.5" cy="14.5" r="1.35" fill="#7be9ff"/>
+</svg>
+`.trim();
+
+function injectLogo(){
+
+  document.querySelectorAll(".logo-mark").forEach(node => {
+    node.innerHTML = NOVA_LOGO_SVG;
+  });
+
+}
+
+
+// ============================================================
+// TRADUCTIONS FR / EN
+// ============================================================
+
+const I18N = {
+
+  fr:{
+    searchPlaceholder:"Rechercher un produit, une marque...",
+    titleSettings:"Paramètres",
+    titleAccount:"Compte",
+    titleOrders:"Commandes",
+    titleAdmin:"Administration",
+    titleCart:"Panier",
+    titleLang:"Changer de langue",
+    heroTitle:"Bienvenue sur <span>NovaShop</span>",
+    heroText:"Composants PC, périphériques gaming, smartphones, écrans, accessoires et bien plus — livrés vite, garantis, au meilleur prix.",
+    heroCart:"🛒 Voir mon panier",
+    heroDiscover:"Découvrir les produits",
+    trustFast:"Livraison rapide",
+    trustFastSub:"Expédié sous 24h",
+    trustSecure:"Paiement sécurisé",
+    trustSecureSub:"Chiffrement SSL",
+    trustReturns:"Retours faciles",
+    trustReturnsSub:"30 jours pour changer d'avis",
+    trustSupport:"Support réactif",
+    trustSupportSub:"Une équipe à votre écoute",
+    products:"Produits",
+    sortDefault:"Trier par défaut",
+    sortAsc:"Prix croissant",
+    sortDesc:"Prix décroissant",
+    sortName:"Nom A-Z",
+    sortNew:"Nouveautés",
+    whyTitle:"Pourquoi NovaShop ?",
+    f1t:"⚡ Catalogue gaming",
+    f1p:"Retrouvez composants PC, périphériques, écrans, consoles et accessoires.",
+    f2t:"🛒 Panier simple",
+    f2p:"Ajoutez vos produits et gérez facilement les quantités directement depuis le panier.",
+    f3t:"🔐 Compte",
+    f3p:"Connectez-vous avec votre compte NovaShop pour retrouver vos informations.",
+    f4t:"📦 Commandes",
+    f4p:"Retrouvez vos commandes et leur statut depuis votre espace personnel.",
+    reviewsTitle:"Avis clients",
+    r1:"Catalogue clair et produits faciles à trouver.",
+    r2:"Le panier est rapide et simple à utiliser.",
+    r3:"Bonne présentation des produits et des catégories.",
+    returnsTitle:"Retours & informations",
+    returnsText:`Pour toute question concernant une commande, contactez NovaShop via l'adresse : <strong style="display:inline">helpy.nova.sh0p@gmail.com</strong>`,
+    faqTitle:"FAQ",
+    q1:"Comment ajouter un produit au panier ?",
+    a1:"Cliquez simplement sur le bouton Ajouter au panier depuis la fiche du produit.",
+    q2:"Comment modifier la quantité ?",
+    a2:"Ouvrez votre panier puis utilisez les boutons + et -.",
+    q3:"Comment retrouver mes commandes ?",
+    a3:"Utilisez le bouton 📦 dans l'en-tête.",
+    q4:"Comment contacter NovaShop ?",
+    a4:"Vous pouvez contacter NovaShop à helpy.nova.sh0p@gmail.com.",
+    myCart:"Mon panier",
+    total:"Total",
+    checkout:"Commander",
+    footerTag:"Gaming • PC • Tech",
+
+    prodOne:"{n} produit",
+    prodMany:"{n} produits",
+    noProduct:"Aucun produit trouvé",
+    noProductHint:"Essaie une autre recherche ou une autre catégorie.",
+    newBadge:"NOUVEAU",
+    bestBadge:"BEST-SELLER",
+    freeShipBadge:"Livraison gratuite",
+    favLabel:"Favori",
+    view:"Voir",
+    add:"🛒 Ajouter",
+    favRemoved:"Retiré des favoris.",
+    favAdded:"Ajouté aux favoris ❤️",
+    productNotFound:"Produit introuvable.",
+    addedCart:"Produit ajouté au panier 🛒",
+    cartEmpty:"Ton panier est vide",
+    cartEmptyHint:"Ajoute des produits pour commencer.",
+    addCart:"🛒 Ajouter au panier",
+    favAdd:"Ajouter aux favoris",
+    favRemove:"Retirer des favoris",
+    ratingsCount:"({n} avis)",
+    inStock:"En stock",
+    shipsFree:"🚚 Livraison gratuite",
+    shipsStd:"🚚 Livraison dès 4,90 €",
+
+    loginTitle:"Connexion",
+    email:"Email",
+    password:"Mot de passe",
+    signIn:"Se connecter",
+    createAccount:"Créer un compte",
+    createMyAccount:"Créer mon compte",
+    haveAccount:"J'ai déjà un compte",
+    loginOk:"Connexion réussie 👋",
+    registerOk:"Compte créé avec succès 🎉",
+    myAccount:"Mon compte",
+    connectedAccount:"👤 Compte connecté",
+    myOrders:"📦 Mes commandes",
+    logout:"🚪 Se déconnecter",
+    logoutOk:"Déconnexion réussie.",
+    authInvalidCred:"Email ou mot de passe incorrect.",
+    authInvalidEmail:"Adresse email invalide.",
+    authEmailUsed:"Cette adresse email est déjà utilisée.",
+    authWeak:"Le mot de passe est trop faible.",
+    authNoUser:"Compte introuvable.",
+    authWrongPwd:"Mot de passe incorrect.",
+    authTooMany:"Trop de tentatives. Réessaie plus tard.",
+    authGeneric:"Une erreur est survenue.",
+
+    ordersLogin:"Connecte-toi pour voir tes commandes.",
+    ordersTitle:"Mes commandes",
+    ordersLoading:"Chargement des commandes...",
+    ordersFail:"Impossible de charger les commandes.",
+    noOrders:"Aucune commande",
+    noOrdersHint:"Tes commandes apparaîtront ici.",
+    orderWord:"Commande",
+    statusLbl:"Statut",
+    deliveryWord:"Livraison",
+    trackingWord:"Suivi",
+    seeDetail:"📦 Voir le détail",
+    currentStatus:"Statut actuel",
+    destination:"📍 Destination :",
+    estDelivery:"🚚 Livraison estimée :",
+    trackingLine:"🔎 Suivi :",
+    deliveryLine:"🚚 Livraison :",
+    orderTracking:"Suivi de la commande",
+    productsWord:"Produits",
+    addressMissing:"Adresse non renseignée",
+    seeInvoice:"🧾 Voir la facture",
+    backOrders:"← Retour aux commandes",
+    productWord:"Produit",
+
+    checkoutTitle:"Finaliser la commande",
+    cartEmptyToast:"Ton panier est vide 🛒",
+    loginToOrder:"Connecte-toi pour commander.",
+    firstName:"Prénom",
+    lastName:"Nom",
+    firstNamePh:"Ton prénom",
+    lastNamePh:"Ton nom",
+    address:"Adresse de livraison",
+    addressPh:"Adresse complète",
+    subtotal:"Sous-total",
+    payMethod:"Mode de paiement",
+    paypal:"🅿️ PayPal",
+    card:"💳 Carte bancaire",
+    continue:"Continuer",
+    paypalInfo:"Tu seras redirigé vers PayPal pour effectuer le paiement.",
+    cardInfoTitle:"💳 Informations de carte",
+    cardNumber:"Numéro de carte",
+    cardHolder:"Nom sur la carte",
+    expiry:"Expiration",
+    cardHint:"Entre les informations de la carte créée depuis l'administration.",
+    errFirst:"Indique ton prénom.",
+    errLast:"Indique ton nom.",
+    errAddr:"Indique ton adresse de livraison.",
+    errPay:"Choisis un moyen de paiement.",
+    creating:"Création...",
+    errAmount:"Le montant de la commande est invalide.",
+    errNoCard:"Aucune carte n'a été créée dans l'administration.",
+    errCardWrong:"Les informations de carte sont incorrectes.",
+    errEmptyCart:"Le panier est vide.",
+    orderCreated:"Commande #{id} créée 🎉",
+    errorPrefix:"Erreur : ",
+    unknown:"inconnue",
+
+    invoiceTitle:"Facture NovaShop",
+    invoice:"FACTURE",
+    gameShop:"Boutique gaming",
+    client:"Client",
+    qty:"Qté",
+    price:"Prix",
+    invoiceBlocked:"La fenêtre de facture a été bloquée.",
+
+    adminDenied:"Accès administrateur refusé.",
+    adminCodePrompt:"Code administrateur NovaShop :",
+    adminCodeWrong:"Code administrateur incorrect.",
+    adminTitle:"Administration NovaShop",
+    loading:"Chargement...",
+    adminFirestoreErr:"Erreur Firestore :",
+    adminHeader:"🛡️ Administration",
+    ordCountOne:"{n} commande",
+    ordCountMany:"{n} commandes",
+    cardTitle:"💳 Carte",
+    cardOnly:"Carte utilisable uniquement sur NovaShop.",
+    refresh:"🔄 Actualiser",
+    quitAdmin:"🔐 Quitter admin",
+    nameMissing:"Nom non renseigné",
+    unknownWord:"Inconnu",
+    cityPh:"Ville de destination",
+    trackingPh:"Numéro de suivi",
+    deliveryPh:"Livraison estimée",
+    save:"💾 Enregistrer",
+    markPaid:"💰 Marquer payé",
+    invoiceBtn:"🧾 Facture",
+    del:"🗑️ Supprimer",
+    adminClosed:"Mode admin fermé.",
+    updated:"Commande mise à jour ✅",
+    paidMarked:"Paiement marqué comme payé 💰",
+    confirmDelete:"Supprimer définitivement cette commande ?",
+    deleted:"Commande supprimée 🗑️",
+    generateCard:"✨ Générer une carte",
+    regenerateCard:"🔁 Régénérer une carte",
+    cardNone:"Aucune carte générée.",
+    cardNumberLbl:"Numéro",
+    cardHolderLbl:"Titulaire",
+    cardGenerated:"Carte générée ✅",
+
+    settingsTitle:"⚙️ Paramètres",
+    appearance:"Apparence",
+    dark:"🌙 Mode sombre",
+    light:"☀️ Mode clair",
+    darkOn:"Mode sombre activé.",
+    lightOn:"Mode clair activé.",
+    language:"Langue",
+    version:"Version actuelle de NovaShop.",
+    langChanged:"Langue : Français",
+
+    loadErr:"❌ Erreur de chargement",
+    loadErrText:"Les produits n'ont pas pu être chargés.",
+    errWord:"Erreur",
+    unknownErr:"Erreur inconnue"
+  },
+
+  en:{
+    searchPlaceholder:"Search for a product, a brand...",
+    titleSettings:"Settings",
+    titleAccount:"Account",
+    titleOrders:"Orders",
+    titleAdmin:"Administration",
+    titleCart:"Cart",
+    titleLang:"Change language",
+    heroTitle:"Welcome to <span>NovaShop</span>",
+    heroText:"PC components, gaming peripherals, smartphones, monitors, accessories and much more — fast delivery, warranty included, best prices.",
+    heroCart:"🛒 View my cart",
+    heroDiscover:"Discover our products",
+    trustFast:"Fast delivery",
+    trustFastSub:"Shipped within 24h",
+    trustSecure:"Secure payment",
+    trustSecureSub:"SSL encryption",
+    trustReturns:"Easy returns",
+    trustReturnsSub:"30 days to change your mind",
+    trustSupport:"Responsive support",
+    trustSupportSub:"A team that listens",
+    sortDefault:"Default sorting",
+    sortAsc:"Price: low to high",
+    sortDesc:"Price: high to low",
+    sortName:"Name A-Z",
+    sortNew:"New arrivals",
+    whyTitle:"Why NovaShop?",
+    f1t:"⚡ Gaming catalog",
+    f1p:"Find PC components, peripherals, monitors, consoles and accessories.",
+    f2t:"🛒 Simple cart",
+    f2p:"Add your products and easily manage quantities right from the cart.",
+    f3t:"🔐 Account",
+    f3p:"Sign in with your NovaShop account to find your information.",
+    f4t:"📦 Orders",
+    f4p:"Find your orders and their status from your personal area.",
+    reviewsTitle:"Customer reviews",
+    r1:"Clear catalog and products that are easy to find.",
+    r2:"The cart is fast and simple to use.",
+    r3:"Nice presentation of products and categories.",
+    returnsTitle:"Returns & information",
+    returnsText:`For any question about an order, contact NovaShop at: <strong style="display:inline">helpy.nova.sh0p@gmail.com</strong>`,
+    faqTitle:"FAQ",
+    q1:"How do I add a product to my cart?",
+    a1:"Simply click the Add to cart button on the product page.",
+    q2:"How do I change the quantity?",
+    a2:"Open your cart then use the + and - buttons.",
+    q3:"How do I find my orders?",
+    a3:"Use the 📦 button in the header.",
+    q4:"How do I contact NovaShop?",
+    a4:"You can contact NovaShop at helpy.nova.sh0p@gmail.com.",
+    myCart:"My cart",
+    total:"Total",
+    checkout:"Checkout",
+    footerTag:"Gaming • PC • Tech",
+
+    prodOne:"{n} product",
+    prodMany:"{n} products",
+    noProduct:"No product found",
+    noProductHint:"Try another search or another category.",
+    newBadge:"NEW",
+    bestBadge:"BEST SELLER",
+    freeShipBadge:"Free shipping",
+    favLabel:"Favorite",
+    view:"View",
+    add:"🛒 Add",
+    favRemoved:"Removed from favorites.",
+    favAdded:"Added to favorites ❤️",
+    productNotFound:"Product not found.",
+    addedCart:"Product added to cart 🛒",
+    cartEmpty:"Your cart is empty",
+    cartEmptyHint:"Add products to get started.",
+    addCart:"🛒 Add to cart",
+    favAdd:"Add to favorites",
+    favRemove:"Remove from favorites",
+    ratingsCount:"({n} reviews)",
+    inStock:"In stock",
+    shipsFree:"🚚 Free shipping",
+    shipsStd:"🚚 Shipping from $4.90",
+
+    loginTitle:"Sign in",
+    email:"Email",
+    password:"Password",
+    signIn:"Sign in",
+    createAccount:"Create an account",
+    createMyAccount:"Create my account",
+    haveAccount:"I already have an account",
+    loginOk:"Signed in successfully 👋",
+    registerOk:"Account created successfully 🎉",
+    myAccount:"My account",
+    connectedAccount:"👤 Signed-in account",
+    myOrders:"📦 My orders",
+    logout:"🚪 Sign out",
+    logoutOk:"Signed out successfully.",
+    authInvalidCred:"Incorrect email or password.",
+    authInvalidEmail:"Invalid email address.",
+    authEmailUsed:"This email address is already in use.",
+    authWeak:"The password is too weak.",
+    authNoUser:"Account not found.",
+    authWrongPwd:"Incorrect password.",
+    authTooMany:"Too many attempts. Please try again later.",
+    authGeneric:"Something went wrong.",
+
+    ordersLogin:"Sign in to see your orders.",
+    ordersTitle:"My orders",
+    ordersLoading:"Loading orders...",
+    ordersFail:"Unable to load orders.",
+    noOrders:"No orders",
+    noOrdersHint:"Your orders will appear here.",
+    orderWord:"Order",
+    statusLbl:"Status",
+    deliveryWord:"Delivery",
+    trackingWord:"Tracking",
+    seeDetail:"📦 View details",
+    currentStatus:"Current status",
+    destination:"📍 Destination:",
+    estDelivery:"🚚 Estimated delivery:",
+    trackingLine:"🔎 Tracking:",
+    deliveryLine:"🚚 Delivery:",
+    orderTracking:"Order tracking",
+    productsWord:"Products",
+    addressMissing:"No address provided",
+    seeInvoice:"🧾 View invoice",
+    backOrders:"← Back to orders",
+    productWord:"Product",
+
+    checkoutTitle:"Complete your order",
+    cartEmptyToast:"Your cart is empty 🛒",
+    loginToOrder:"Sign in to place an order.",
+    firstName:"First name",
+    lastName:"Last name",
+    firstNamePh:"Your first name",
+    lastNamePh:"Your last name",
+    address:"Delivery address",
+    addressPh:"Full address",
+    subtotal:"Subtotal",
+    payMethod:"Payment method",
+    paypal:"🅿️ PayPal",
+    card:"💳 Bank card",
+    continue:"Continue",
+    paypalInfo:"You will be redirected to PayPal to complete the payment.",
+    cardInfoTitle:"💳 Card details",
+    cardNumber:"Card number",
+    cardHolder:"Name on card",
+    expiry:"Expiry",
+    cardHint:"Enter the details of the card created from the administration.",
+    errFirst:"Enter your first name.",
+    errLast:"Enter your last name.",
+    errAddr:"Enter your delivery address.",
+    errPay:"Choose a payment method.",
+    creating:"Creating...",
+    errAmount:"The order amount is invalid.",
+    errNoCard:"No card has been created in the administration.",
+    errCardWrong:"The card details are incorrect.",
+    errEmptyCart:"The cart is empty.",
+    orderCreated:"Order #{id} created 🎉",
+    errorPrefix:"Error: ",
+    unknown:"unknown",
+
+    invoiceTitle:"NovaShop Invoice",
+    invoice:"INVOICE",
+    gameShop:"Gaming shop",
+    client:"Customer",
+    qty:"Qty",
+    price:"Price",
+    invoiceBlocked:"The invoice window was blocked.",
+
+    adminDenied:"Administrator access denied.",
+    adminCodePrompt:"NovaShop administrator code:",
+    adminCodeWrong:"Incorrect administrator code.",
+    adminTitle:"NovaShop Administration",
+    loading:"Loading...",
+    adminFirestoreErr:"Firestore error:",
+    adminHeader:"🛡️ Administration",
+    ordCountOne:"{n} order",
+    ordCountMany:"{n} orders",
+    cardTitle:"💳 Card",
+    cardOnly:"Card usable only on NovaShop.",
+    refresh:"🔄 Refresh",
+    quitAdmin:"🔐 Exit admin",
+    nameMissing:"Name not provided",
+    unknownWord:"Unknown",
+    cityPh:"Destination city",
+    trackingPh:"Tracking number",
+    deliveryPh:"Estimated delivery",
+    save:"💾 Save",
+    markPaid:"💰 Mark as paid",
+    invoiceBtn:"🧾 Invoice",
+    del:"🗑️ Delete",
+    adminClosed:"Admin mode closed.",
+    updated:"Order updated ✅",
+    paidMarked:"Payment marked as paid 💰",
+    confirmDelete:"Permanently delete this order?",
+    deleted:"Order deleted 🗑️",
+    generateCard:"✨ Generate a card",
+    regenerateCard:"🔁 Generate a new card",
+    cardNone:"No card generated.",
+    cardNumberLbl:"Number",
+    cardHolderLbl:"Holder",
+    cardGenerated:"Card generated ✅",
+
+    settingsTitle:"⚙️ Settings",
+    appearance:"Appearance",
+    dark:"🌙 Dark mode",
+    light:"☀️ Light mode",
+    darkOn:"Dark mode enabled.",
+    lightOn:"Light mode enabled.",
+    language:"Language",
+    version:"Current version of NovaShop.",
+    langChanged:"Language: English",
+
+    loadErr:"❌ Loading error",
+    loadErrText:"Products could not be loaded.",
+    errWord:"Error",
+    unknownErr:"Unknown error"
+  }
+
+};
+
+// Catégories (affichage seulement, les valeurs internes restent en français)
+const CAT_EN = {
+  "Toutes":"All",
+  "Composants":"Components",
+  "Composants PC":"PC components",
+  "PC Gamer":"Gaming PCs",
+  "PC Gamer préconstruits":"Pre-built gaming PCs",
+  "PC portables Gaming & Travail":"Gaming & work laptops",
+  "Casques":"Headsets",
+  "Claviers":"Keyboards",
+  "Souris":"Mice",
+  "Tapis de souris":"Mouse pads",
+  "Stockage":"Storage",
+  "Alimentations":"Power supplies",
+  "Boîtiers":"Cases",
+  "Refroidissement":"Cooling",
+  "Écrans":"Monitors",
+  "Streaming":"Streaming",
+  "Manettes":"Controllers",
+  "Chaises gaming":"Gaming chairs",
+  "Bureaux gaming":"Gaming desks",
+  "Microphones":"Microphones",
+  "Éclairage RGB":"RGB lighting",
+  "Cartes graphiques":"Graphics cards",
+  "Smartphones":"Smartphones",
+  "Imprimantes 3D":"3D printers",
+  "Logiciels & licences":"Software & licenses",
+  "Accessoires composants PC":"PC component accessories",
+  "Adaptateurs / câbles / chargeurs":"Adapters / cables / chargers",
+  "Caméras & webcams":"Cameras & webcams"
+};
+
+// Statuts (stockés en français dans Firestore, affichés selon la langue)
+const STATUS_EN = {
+  "Enregistrée":"Registered",
+  "Acceptée":"Accepted",
+  "Préparation":"Preparing",
+  "En transit":"In transit",
+  "Livraison proche":"Out for delivery",
+  "Livrée":"Delivered",
+  "Annulée":"Cancelled",
+  "Remboursement en cours":"Refund in progress",
+  "Payé":"Paid",
+  "En attente":"Pending"
+};
+
+// Options produits (affichage seulement)
+const OPTION_EN = {
+  "Couleur":"Color",
+  "Rouge":"Red",
+  "Blanc":"White",
+  "Noir":"Black",
+  "Bleu":"Blue"
+};
+
+let lang = "fr";
+
+try{
+
+  const savedLang = localStorage.getItem(LANG_KEY);
+
+  if(savedLang && I18N[savedLang]){
+    lang = savedLang;
+  }
+
+}catch(error){
+  lang = "fr";
+}
+
+
+function t(key, vars = {}){
+
+  let text =
+    I18N[lang]?.[key] ??
+    I18N.fr[key] ??
+    key;
+
+  Object.keys(vars).forEach(name => {
+    text = text.split(`{${name}}`).join(vars[name]);
+  });
+
+  return text;
+
+}
+
+function catLabel(category){
+  return lang === "en" ? (CAT_EN[category] || category) : category;
+}
+
+function statusLabel(status){
+  return lang === "en" ? (STATUS_EN[status] || status) : status;
+}
+
+function optionLabel(text){
+
+  if(lang !== "en" || !text){
+    return text || "";
+  }
+
+  return String(text)
+    .split(" | ")
+    .map(part =>
+      part
+        .split(": ")
+        .map(word => OPTION_EN[word] || word)
+        .join(": ")
+    )
+    .join(" | ");
+
+}
+
+function paymentLabel(method){
+
+  if(method === "paypal"){
+    return "PayPal";
+  }
+
+  if(method === "card"){
+    return lang === "en" ? "Card" : "Carte";
+  }
+
+  return method || "N/A";
+
+}
+
+
+// ============================================================
+// PRODUITS (catalogue complet)
+// ============================================================
+
+const products = [
+
+  { id:"p1", name:"Gigabyte B650 AORUS Elite AX", category:"Composants", price:189.99, image:"https://m.media-amazon.com/images/I/81JFKzNyl+L._AC_SL1500_.jpg" },
+  { id:"p2", name:"PC Gamer AMD Ryzen 7 7800X3D | RX 9070 XT | 32 Go DDR5", category:"PC Gamer", price:2237.65, image:"https://www.memorypc.fr/thumbnail/53/79/73/1786604635/019f8f1c2c6972a8a3ea1ee9516a0652_1784812416_800x800.png" },
+  { id:"p3", name:"HyperX Cloud II", category:"Casques", price:49.99, image:"https://fr.hyperx.com/cdn/shop/files/hyperx_cloud_ii_red_1_main.jpg?v=1764129756" },
+  { id:"p4", name:"TECORS Clavier Gamer Mécanique 60% AZERTY", category:"Claviers", price:30, image:"https://m.media-amazon.com/images/I/71-lhAU97VL._AC_SL1500_.jpg" },
+  { id:"p5", name:"Clavier Magnétique 65% Celshading Noir", category:"Claviers", price:120.90, image:"https://tryhard-gear.com/cdn/shop/files/TestCelshadingnoirV2.webp?v=1762273866&width=832" },
+  { id:"p6", name:"Ajazz AJ199 MAX Carbon Fiber Wireless Gaming Mouse", category:"Souris", price:49.99, image:"https://ae-pic-a1.aliexpress-media.com/kf/S1e981b53ccfe4e1391cd5b5deb4fce87o.png_960x960.png_.avif" },
+  { id:"p7", name:"Logitech G PRO X2 Superstrike Blanc et Noir", category:"Souris", price:150.99, image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/7a/34/bc/29111418/1540-1.jpg" },
+  { id:"p8", name:"Samsung 990 PRO 1TB", category:"Stockage", price:249.99, image:"https://content.pearl.fr/media/cache/default/article_ultralarge_high_nocrop/shared/images/articles/M/MW1/disque-dur-interne-ssd-990-pro-pcie-nvme-m-2-2280-1-to-ref_MW1148_2.jpg" },
+  { id:"p9", name:"Samsung 990 PRO 2TB", category:"Stockage", price:199.93, image:"https://pc.comparer.fr/500x500/310191422.webp" },
+  { id:"p10", name:"CORSAIR RM1000x EU", category:"Alimentations", price:159.90, image:"https://assets.corsair.com/image/upload/c_pad,q_85,h_608,w_608,f_auto/products/Power-Supply-Units/base-rmx-2024-config/gallery/black/1000/RM1000x_2024_01.webp" },
+  { id:"p11", name:"CORSAIR RM850x EU", category:"Alimentations", price:134.90, image:"https://assets.corsair.com/image/upload/c_pad,q_85,h_608,w_608,f_auto/products/Power-Supply-Units/base-rmx-2024-config/gallery/black/850/RM850x_2024_01.webp" },
+  { id:"p12", name:"Corsair Frame 5000D RS ARGB Noir", category:"Boîtiers", price:159.90, image:"https://media.ldlc.com/r1600/ld/products/00/06/26/05/LD0006260502.jpg" },
+  { id:"p13", name:"ARCTIC Liquid Freezer III Pro 360 A-RGB Black", category:"Refroidissement", price:129.90, image:"https://cdn.idealo.com/folder/Product/206182/0/206182034/s4_produktbild_gross/arctic-liquid-freezer-iii-pro-360-a-rgb-black.jpg" },
+  { id:"p14", name:"Samsung 27 QD-OLED Odyssey G6", category:"Écrans", price:399.95, image:"https://media.ldlc.com/r705/ld/products/00/06/32/99/LD0006329977.jpg" },
+  { id:"p15", name:"ELGATO Wave Mic Arm Pro", category:"Streaming", price:229.90, image:"https://www.digit-photo.com/images/produits/ELGATO10AAT9901/1.jpg" },
+  { id:"p16", name:"Sony DualSense PS5/PC", category:"Manettes", price:74.90, image:"https://media.carrefour.fr/media/referential/media/cc07d7de4b9e4bea8c063e8f9bb46d94/p_200x200/0711719023005_0.jpg", options:{ Couleur:["Rouge","Blanc","Noir","Bleu"] } },
+  { id:"p17", name:"ASUS TUF Gaming B650-PLUS", category:"Composants", price:179.90, image:"https://media.materiel.net/r550/products/MN0005986139.jpg" },
+  { id:"p18", name:"MSI MAG B650 Tomahawk WiFi", category:"Composants", price:189.90, image:"https://m.media-amazon.com/images/I/71TYAcZ4J8L._AC_SL1200_.jpg" },
+  { id:"p19", name:"KOORUI Ecran PC Gamer 27 Pouces 200Hz IPS QHD HDR400 1ms", category:"Écrans", price:74.99, image:"https://m.media-amazon.com/images/I/71CJ1DF-8sL._AC_SL1500_.jpg" },
+  { id:"p20", name:'iiyama 23.8" LED - G-Master GB2471HS-B1 Red Eagle', category:"Écrans", price:65.99, image:"https://media.ldlc.com/r1600/ld/products/00/06/34/20/LD0006342033.jpg" },
+  { id:"p21", name:"SONGMICS Chaise de jeu ergonomique avec repose-pieds 150 kg gris ardoise", category:"Chaises gaming", price:129.99, image:"https://static.songmics.fr/fit-in/1000x1000/image/Product/B34OBG077G01/B34OBG077G01-1.jpg" },
+  { id:"p22", name:"Dowinx Série Luxe Suède LS-66D68E Blanc", category:"Chaises gaming", price:79.99, image:"https://eu.dowinx.com/cdn/shop/files/11_5f72b693-5f79-4d06-b48a-7cb2b2f0244a.png?v=1752139814&width=1220" },
+  { id:"p23", name:"Chaise GTPLAYER Ergonomique Gaming Soutien Lombaire Repose-pieds", category:"Chaises gaming", price:109.99, image:"https://thumb.pccomponentes.com/w-530-530/articles/1118/11186247/167-silla-gaming-gtplayer-ergonomica-con-reposapies-y-soporte-lumbar-4d.jpg" },
+  { id:"p24", name:"Desk Lite - Height-Adjustable Desk", category:"Bureaux gaming", price:110.99, image:"https://yaasa.com/cdn/shop/files/yaasa-desk-lite_nr01_black_100_01-04545-01_1200x.jpg?v=1753169928" },
+  { id:"p25", name:"EUREKA ERGONOMIC Bureau Gaming LED 182x76cm en Forme d'Aile", category:"Bureaux gaming", price:86.99, image:"https://m.media-amazon.com/images/I/71Gd5G3wRsL._AC_SL1500_.jpg" },
+  { id:"p26", name:"Bureau gaming d'angle HOMCOM réversible support écran", category:"Bureaux gaming", price:44.99, image:"https://cdn.manomano.com/pim-media/images/medium/74eca1cb1cefa063c8f600ee293ae6ee826794f8.jpg" },
+  { id:"p27", name:"Logitech G Pro X 2 Lightspeed Noir + Repose casque", category:"Casques", price:99.99, image:"https://static.fnac-static.com/multimedia/Images/FR/MDMFR/MDM/6d/e9/6e/24045933/1540-1/tsp20260429154901/Casque-PC-gaming-sans-fil-Logitech-G-Pro-X-2-Lightspeed-Noir-Repose-casque.jpg" },
+  { id:"p28", name:"Razer BlackShark V2 Pro 2023 Noir", category:"Casques", price:75.99, image:"https://media.ldlc.com/r1600/ld/products/00/06/07/71/LD0006077125.jpg" },
+  { id:"p29", name:"beyerdynamic DT-990 Pro 250 Ohm", category:"Casques", price:60.99, image:"https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_10/106865/18443258_800.jpg" },
+  { id:"p30", name:"Logitech PRO X TKL Rapid Noir, filaire AZERTY", category:"Claviers", price:78.99, image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/6a/89/8f/26184042/1540-1.jpg" },
+  { id:"p31", name:"QwertyKey75 HE Striker, Magnetic Hall Effect, Rapid Trigger, Snap Tap", category:"Claviers", price:56.99, image:"https://cdn.shopify.com/s/files/1/0814/2530/1746/files/QK75-HE-STRIKER-qwertykey-tastatura-mecanica-gaming-hotswap-2025_1eee355b-72ca-46e6-a458-751384d0595c_1800x.webp?v=1771799537" },
+  { id:"p32", name:"GravaStar Mercury K1 Clavier Gamer sans Fil en Aluminium, Noir Dégradé", category:"Claviers", price:91.99, image:"https://m.media-amazon.com/images/I/6144lt2l5JL._AC_SL1200_.jpg" },
+  { id:"p33", name:"ATTACK SHARK R11 Ultra, fibre de carbone, 8000Hz, 49g, 42000 DPI", category:"Souris", price:26.99, image:"https://m.media-amazon.com/images/I/71bMz15SqcL._AC_SL1500_.jpg" },
+  { id:"p34", name:"HyperX QuadCast 2 – Microphone USB – RGB", category:"Microphones", price:98.99, image:"https://fr.hyperx.com/cdn/shop/files/hyperx_quadcast_2_872v1aa_main_1_2d47a555-f537-457b-9002-8b9e9010dc00.jpg?v=1763067608" },
+  { id:"p35", name:"Shure SM7 dB", category:"Microphones", price:121.99, image:"https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_57/573672/18492412_800.jpg" },
+  { id:"p36", name:"Razer Seiren V3 Chroma Noir", category:"Microphones", price:13.99, image:"https://media.ldlc.com/r1600/ld/products/00/06/13/25/LD0006132588.jpg" },
+  { id:"p37", name:"Stairville LED Pixel Rail 40 RGB MKII", category:"Éclairage RGB", price:18.90, image:"https://thumbs.static-thomann.de/thumb/padthumb600x600/pics/bdb/_44/449739/14448905_800.jpg" },
+  { id:"p38", name:"Govee LED Strip Light RGBIC Wi-Fi + Bluetooth 5m Matter", category:"Éclairage RGB", price:8, image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/ab/7a/9d/27097771/1520-2/tsp20260429155350/Ruban-LED-Govee-LED-Strip-Light-RGBIC-Wi-Fi-avec-BT-5M-Matter.jpg" },
+  { id:"p39", name:"Lampe de plafond hexagone nid d'abeille LED 2.4m x 4.8m contour bleu", category:"Éclairage RGB", price:91.10, image:"https://www.discount-autosport.com/wp-content/webp-express/webp-images/uploads/2025/02/lampe-hexagone-plafond-led-4m80-contour-bleu-.jpg.webp" },
+  { id:"p40", name:"GIGABYTE GeForce RTX 5050 WINDFORCE OC 8G", category:"Cartes graphiques", price:147, image:"https://m.media-amazon.com/images/I/41kmHFMFPOL._SL500_.jpg" },
+  { id:"p41", name:"MSI GeForce RTX 3050 LP E 6G OC", category:"Cartes graphiques", price:100, image:"https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcTCe_rha_tAAHPWnQ8VV7GIvF-uSqUaEyU61TSnwgM4CK8g3-x_3Hq4wOgH36Ri63eAiWHsvhmRJHzVrUQR9-IwMx31WH0w" },
+  { id:"p42", name:"ASUS Dual Radeon RX 7600 EVO OC Edition 8GB GDDR6", category:"Cartes graphiques", price:140, image:"https://m.media-amazon.com/images/I/81QItJufypL._AC_SL1500_.jpg" },
+  { id:"p43", name:"PC Gamer Fixe, Ryzen 7 5700G, Vega 8, 16G DDR4, 1T SSD", category:"PC Gamer", price:650, image:"https://m.media-amazon.com/images/I/81M3iU5S4QL._AC_SL1500_.jpg", new:true },
+  { id:"p44", name:'Apple iPhone 14 Pro 6,1" 5G Double SIM 128 Go Argent', category:"Smartphones", price:400, image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/07/3b/32/20069127/1540-1/tsp20260630131025/Apple-iPhone-14-Pro-6-1-5G-Double-SIM-128-Go-Argent.jpg" },
+  { id:"p45", name:'Apple iPhone 15 6,1" 5G Double SIM 128 Go Noir', category:"Smartphones", price:750, image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/cd/f0/52/22212813/1540-1/tsp20260914144304/Apple-iPhone-15-6-1-5G-Double-SIM-128-Go-Noir.jpg" },
+  { id:"p46", name:'Apple iPhone 16 6,1" 5G 128 Go Double SIM Noir', category:"Smartphones", price:949.99, image:"https://static.fnac-static.com/multimedia/Images/FR/MDMFR/MDM/fe/47/66/23480318/3756-1/tsp20260920085557/Apple-iPhone-16-6-1-5G-128-Go-Double-SIM-Noir.jpg" },
+  { id:"p47", name:'Apple iPhone 17 6,3" 5G Double SIM 256 Go Noir', category:"Smartphones", price:1000, image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/19/86/b6/28739097/3756-1/tsp20260909180923/Apple-iPhone-17-6-3-5G-Double-SIM-256-Go-Noir.jpg" },
+  { id:"p48", name:'Apple iPhone 18 Pro 6,3" 5G Double SIM 256 Go Noir', category:"Smartphones", price:1199.99, image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/62/73/c7/29848418/1540-1/tsp20260920091102/Apple-iPhone-18-Pro-6-3-5G-Double-SIM-256-Go-Noir.jpg" },
+  { id:"p49", name:'Samsung Galaxy S23 6,1" 5G 8 Go RAM 256 Go Noir', category:"Smartphones", price:230, image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/0d/c0/44/21282829/1540-1/tsp20260829031739/Smartphone-Samsung-Galaxy-S23-6-1-Nano-SIM-5G-8-Go-RAM-256-Go-Noir.jpg" },
+  { id:"p50", name:'Samsung Galaxy S24 6,2" 5G 256 Go Noir', category:"Smartphones", price:449.90, image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/a6/f6/5a/22738598/1540-1/tsp20260319135101/Smartphone-Samsung-Galaxy-S24-6-2-5G-Nano-SIM-256-Go-Noir.jpg" },
+  { id:"p51", name:'Samsung Galaxy S25 Edge 6,7" 5G 256 Go Noir absolu Titane', category:"Smartphones", price:469.99, image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/42/7b/ab/28015426/1540-1/tsp20260909180103/Smartphone-Samsung-Galaxy-S25-Edge-6-7-5G-Nano-SIM-256-Go-Noir-absolu-Titane.jpg" },
+  { id:"p52", name:'Samsung Galaxy S26 6,3" 5G 256 Go Noir + Buds4 Noir', category:"Smartphones", price:650.99, image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/e8/a2/c7/29860584/1540-1/tsp20260903144909/Pack-Smartphone-Samsung-Galaxy-S26-6-3-5G-Nano-SIM-256-Go-Noir-Buds4-Noir.jpg" },
+  { id:"p53", name:'Google Pixel 8 6,2" 5G Double SIM 128 Go Vert Sauge', category:"Smartphones", price:200, image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/37/bc/52/22199351/1540-1/tsp20260722081937/Smartphone-Google-Pixel-8-6-2-5G-Double-SIM-128-Go-Vert-Sauge.jpg" },
+  { id:"p54", name:'Google Pixel 9 6,3" 5G Double nano-SIM 128 Go Noir Obsidienne', category:"Smartphones", price:400, image:"https://static.fnac-static.com/multimedia/Images/FR/MDMFR/MDM/f6/00/6d/23920886/1540-1/tsp20260914084700/Smartphone-Google-Pixel-9-6-3-5G-Double-nano-SIM-128-Go-Noir-Obsidienne.jpg" },
+  { id:"p56", name:"Flashforge Adventurer 5M Pro", category:"Imprimantes 3D", price:115, image:"https://www.makershop.fr/cdn/shop/files/13458.jpg?v=1760745366&width=150" },
+  { id:"p57", name:"Elegoo Centauri 2", category:"Imprimantes 3D", price:200, image:"https://fr.elegoo.com/cdn/shop/files/C2-_-260811.jpg?crop=center&v=1786696280&width=345" },
+  { id:"p58", name:"Anycubic Photon P1 Max", category:"Imprimantes 3D", price:600, image:"https://fr.anycubic.com/cdn/shop/files/P1M_8bd4d344-b751-4497-a535-4e647ecef572.jpg?v=1784100048&width=150" },
+  { id:"p59", name:"GTA VI Key PlayStation", category:"Logiciels & licences", price:69.99, image:"https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcQ9VsG_IxAanmrCSqCyACtuyCqCD5rwiQ3P3Iylexch3XnCT4sevDBCz-vnqlVCBvZroOpYIX9T0Flc8EzGSZuyPMibCcQm" },
+  { id:"p60", name:"Microsoft Windows 11 Pro Key", category:"Logiciels & licences", price:24.99, image:"https://imgproxy.eneba.games/0A9PW8DP7_YSTA-WUru4IVJnFXsKikaoYM5RHNb3nHQ/rs:fit:300/ar:1/czM6Ly9wcm9kdWN0/cy5lbmViYS5nYW1l/cy9wcm9kdWN0cy93/YUFhcnZicFhzSm8y/NjZSZ3hKSVpuYjVX/ZzRkVWY3a3YyUDQx/bm1nakJjLnBuZw" },
+  { id:"p61", name:"AsiaHorse Aurora-CO Gaines de Câble ARGB", category:"Accessoires composants PC", price:15.99, image:"https://m.media-amazon.com/images/I/71NF0H-6FXL._SL1500_.jpg" },
+  { id:"p62", name:"Câble vidéo Accsup HDMI 2.0 4K UHD avec Ethernet 5 m Noir", category:"Adaptateurs / câbles / chargeurs", price:12.99, image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/db/90/4a/21663963/1540-1/tsp20260909104107/Cable-video-Accsup-HDMI-2-0-4K-UHD-avec-Ethernet-5-m-Noir.jpg" },
+  { id:"p63", name:"Cable Relier ecran pour pc Certifié Câble DP vers DP 10K 240Hz", category:"Adaptateurs / câbles / chargeurs", price:19.99, image:"https://m.media-amazon.com/images/I/71BeNtX7nuL._SL1500_.jpg" },
+  { id:"p64", name:"Câble USB-C ESSENTIELB vers USB-C 1M Noir", category:"Adaptateurs / câbles / chargeurs", price:1, image:"https://boulanger.scene7.com/is/image/Boulanger/3497674179939_h_f_l_2?wid=2140&hei=2140&resMode=sharp2&op_usm=1.75,0.3,2,0&fmt=png-alpha" },
+  { id:"p65", name:"Cables USB Accsup CABLE USB-C VERS USB-A 1M NOIR", category:"Adaptateurs / câbles / chargeurs", price:1, image:"https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcRTbZBP9B2ZFpEsUD0AvNVwSq0_B-6_0GsDu3IetIMN8RMZJ2lyTDuYx7bb9GPIQjXhISHbaR4aEk-SzagBrynePs6wAuNpNgtJ3t4ZQj0FS9_oBKzFpPBG7Q" },
+  { id:"p66", name:"Câble USB-C vers Lightning pour Apple iPhone/iPad/iPod 1m Blanc", category:"Adaptateurs / câbles / chargeurs", price:1, image:"https://static.fnac-static.com/multimedia/Images/FR/MDM/a6/b8/07/17283238/1540-1/tsp20260617130730/Cable-USB-C-vers-Lightning-pour-Apple-iPhone-iPad-iPod-1m-Blanc.jpg" },
+  { id:"p67", name:"BSTOEM pour Apple Watch Chargeur, Station de Charge USB C Magnétique 1M", category:"Adaptateurs / câbles / chargeurs", price:2.99, image:"https://m.media-amazon.com/images/I/61rGkIZqqCL._SL1500_.jpg" },
+  { id:"p68", name:"StarTech Cordon d'alimentation PC de 1m - CEE 7/7 à C13", category:"Adaptateurs / câbles / chargeurs", price:4.50, image:"https://m.media-amazon.com/images/I/81b1fyIWcOL._AC_SL1500_.jpg" },
+  { id:"p69", name:"Unicavu Webcam PC 2K 30 FPS Full HD 1080P", category:"Caméras & webcams", price:10, image:"https://m.media-amazon.com/images/I/61CJsbKfonL._AC_SL1500_.jpg" },
+  { id:"p70", name:"eMeet Nova 4K Webcam 4K Ultra HD avec 2 Microphones", category:"Caméras & webcams", price:23.99, image:"https://m.media-amazon.com/images/I/61bCeQBjUwL._AC_SL1500_.jpg" },
+
+  // ---------- NOUVEAUX PRODUITS ----------
+
+  { id:"p85", name:"AMD Ryzen 7 7800X3D Processeur avec La Technologie 3D V-Cache", category:"Composants PC", price:210, image:"https://m.media-amazon.com/images/I/51HqC0rU9HL._AC_SL1500_.jpg" },
+  { id:"p86", name:"Gigabyte GeForce RTX 5060 Gaming OC 8 GB GDDR7 Carte Graphique", category:"Composants PC", price:370, image:"https://owp.klarna.com/product/3255091236/Gigabyte-GeForce-RTX-5060-Gaming-OC-8-GB-GDDR7-Carte-Graphique.jpg" },
+  { id:"p87", name:"Kingston Fury Beast 16 Go (kit de 2 x 8 Go) DDR4 3200 MHz CL16", category:"Composants PC", price:130, image:"https://media.carrefour.fr/medias/200b40feb62d42f6a4c771cda396d77b/p_1500x1500/243be29db1e34fc180ed7c680853713a_image.jpg" },
+  { id:"p88", name:"Kingston Fury Beast RGB - 2 x 8 Go (16 Go) - DDR5 5600 MHz - CL40", category:"Composants PC", price:224.99, image:"https://media.materiel.net/r1600/products/MN0005959138_0005959149_0005959155.jpg" },
+  { id:"p89", name:"PC de bureau gaming NitroPC Avancé - AMD Ryzen 5 3400G, Radeon Graphics, 16 GB RAM, 480 GB SSD, Windows 11 Pro", category:"PC Gamer préconstruits", price:400, image:"https://media.cdn.kaufland.de/product-images/1024x1024/57311bd00475df1753bd85ef932af8d2.webp" },
+  { id:"p90", name:"PC Gamer FIREFLY", category:"PC Gamer préconstruits", price:500, image:"https://powerlab.fr/24081-large_default/pc-gamer-firefly-rtx-5060-ti.jpg" },
+  { id:"p91", name:"PC - CSL Sprint 5700 (Ryzen 7)", category:"PC Gamer préconstruits", price:700, image:"https://www.csl-computer.com/fr/media/catalog/product/cache/5/image/3000x3000/9df78eab33525d08d6e5fb8d27136e95/c/s/csl_aerovision-haupt_c40_nvidia_rot_3000px_3.webp" },
+  { id:"p92", name:"STGsivir PC Gamer Fixe, Ryzen 5 3400G, Vega 11, 16G DDR4, 512G SSD", category:"PC Gamer préconstruits", price:499.99, image:"https://m.media-amazon.com/images/I/71klP2vcMEL._AC_SL1500_.jpg" },
+  { id:"p93", name:"Unité centrale Gamer MSI EDM0009-R5/RTX 5060/16Go/480Go", category:"PC Gamer préconstruits", price:565.99, image:"https://www.electrodepot.fr/media/catalog/product/cache/207e23213cf636ccdef205098cf3c8a3/P10019951.jpg" },
+  { id:"p94", name:"ROG Strix G16 (2025) G615", category:"PC portables Gaming & Travail", price:1200, image:"https://dlcdnwebimgs.asus.com/gain/E20134EE-F6B3-4AB7-A1B5-73795E91011D/w717/h525/fwebp" },
+  { id:"p95", name:"PC Portable HP OmniBook 3 17-dk0006nf", category:"PC portables Gaming & Travail", price:600, image:"https://www.hp.com/fr-fr/shop/media/catalog/product/c/o/costa_17_dfplus_ob3_cs_glaciersilver_t_nt_fhd_ir_non-backlit_freedos_catalog_front_5964372_cus_1.png?store=fr-fr&image-type=image&auto=avif&quality=100&format=jpg&bg-color=ffffff&type=image-product&width=100p&fit=bounds" },
+  { id:"p96", name:"PC portable HP Victus by HP Laptop 16-d1148nf", category:"PC portables Gaming & Travail", price:500, image:"https://image.darty.com/darty?type=image&source=photos/2022/10/26/7081693A_163303179.jpg&height=457" },
+  { id:"p97", name:"Razer BlackWidow V4 Pro (Switches Jaune) - Clavier Gamer Mécanique Snap Tap, 8 Touches Macro, Repose-Poignet, AZERTY FR", category:"Claviers", price:76.99, image:"https://m.media-amazon.com/images/I/81az+Oft-qL._AC_SL1500_.jpg" },
+  { id:"p98", name:"SteelSeries Apex Pro TKL Gen 3 – Commutateurs magnétiques analogiques OmniPoint 3.0, OLED, RGB, USB-C, FR AZERTY", category:"Claviers", price:44.90, image:"https://m.media-amazon.com/images/I/719h65mTOEL._AC_SL1500_.jpg" },
+  { id:"p99", name:"ROG Strix Scope II 96 WL - Clavier gaming 96%, switches mécaniques, AZERTY", category:"Claviers", price:40, image:"https://m.media-amazon.com/images/I/71zmZbiUeAL._AC_SL1500_.jpg" },
+  { id:"p100", name:"CORSAIR K70 PRO TKL - Clavier gaming programmable à effet Hall hautes performances avec déclenchement rapide (FR)", category:"Claviers", price:56, image:"https://assets.corsair.com/image/upload/c_pad,q_85,h_1100,w_1100/products/Gaming-Keyboards/K70-PRO-TKL-APAC/Gallery/CH-911911G-JP/K70_PRO_TKL_BLACK_03.webp" },
+  { id:"p101", name:"Razer Viper V3 Pro", category:"Souris", price:42, image:"https://assets3.razerzone.com/02qK-glNv1jIlWfqTGAu7tkinI8=/1500x1000/https%3A%2F%2Fmedias-p1.phoenix.razer.com%2Fsys-master-phoenix-images-container%2Fhf0%2Fhba%2F9926492422174%2F250630-viper-v3-pro-faker-1500x1000-1.jpg" },
+  { id:"p102", name:"SteelSeries Aerox 5 Wireless", category:"Souris", price:50, image:"https://images.ctfassets.net/hmm5mo4qf4mf/Y5b4NuEOsLlGhzxCjj9Vf/697e03b1c784f66cb82b3a529964666f/aerox_5_wl_black_img_buy_01.png__1920x1080_crop-fit_optimize_subsampling-2-900.png?fm=webp&q=90&fit=scale&w=1200" },
+  { id:"p103", name:"Razer Gigantus V2 XXL - Tapis de souris gaming souple 940 x 410 x 4mm", category:"Tapis de souris", price:15, image:"https://m.media-amazon.com/images/I/61HtU7NkHQL._AC_SL1500_.jpg" },
+  { id:"p104", name:"Logitech G840 Tapis de Souris de Jeu Extra Large - 900 x 400 x 3 mm", category:"Tapis de souris", price:30, image:"https://m.media-amazon.com/images/I/51jlC3sL0BL._AC_SL1500_.jpg" },
+  { id:"p105", name:"SteelSeries QcK Heavy XXL - Tapis de souris gaming en tissu - Base antidérapante 6mm", category:"Tapis de souris", price:15, image:"https://m.media-amazon.com/images/I/41HRqeeyZ0L._AC_SL1500_.jpg" }
+
+];
+
+// Best-sellers mis en avant sur les fiches produit
+const BESTSELLERS = new Set(["p2","p14","p40","p7","p82","p98","p101"]);
+
+
+// ============================================================
+// AVIS / NOTES (déterministes à partir de l'id produit, pour un rendu pro et stable)
+// ============================================================
+
+function hashSeed(text){
+
+  let hash = 0;
+
+  for(let i = 0; i < text.length; i++){
+    hash = (hash * 31 + text.charCodeAt(i)) >>> 0;
+  }
+
+  return hash;
+
+}
+
+function getProductRating(id){
+
+  const seed = hashSeed(String(id));
+
+  const rating = Math.round((3.6 + (seed % 130) / 100) * 10) / 10;
+  const count = 12 + (seed % 480);
+
+  return {
+    rating:Math.min(rating, 5),
+    count
+  };
+
+}
+
+function starsHTML(rating){
+
+  const full = Math.round(rating);
+
+  let html = "";
+
+  for(let i = 1; i <= 5; i++){
+    html += i <= full ? "★" : "☆";
+  }
+
+  return html;
+
+}
+
+
+// ============================================================
+// ETAT
+// ============================================================
+
+let currentUser = null;
+let cart = loadStorage("nova_cart", []);
+let favorites = loadStorage("nova_favorites", []);
+
+const state = {
+  search:"",
+  category:"Toutes",
+  sort:"default"
+};
+
+
+// ============================================================
+// DOM
+// ============================================================
+
+const $ = id => document.getElementById(id);
+
+const searchInput = $("searchInput");
+const sortSelect = $("sortSelect");
+const categoriesContainer = $("categories");
+const productGrid = $("productGrid");
+const productCount = $("productCount");
+const cartBtn = $("cartBtn");
+const heroCartBtn = $("heroCartBtn");
+const cartBadge = $("cartBadge");
+const cartDrawer = $("cartDrawer");
+const overlay = $("overlay");
+const closeCartBtn = $("closeCart");
+const cartItems = $("cartItems");
+const cartTotal = $("cartTotal");
+const checkoutBtn = $("checkoutBtn");
+const settingsBtn = $("settingsBtn");
+const accountBtn = $("accountBtn");
+const ordersBtn = $("ordersBtn");
+const adminBtn = $("adminBtn");
+const langBtn = $("langBtn");
+const modal = $("modalLayer");
+const modalTitle = $("modalTitle");
+const modalContent = $("modalContent");
+const modalClose = $("modalClose");
+const toastElement = $("toast");
+
+
+// ============================================================
+// STORAGE
+// ============================================================
+
+function loadStorage(key, fallback){
+
+  try{
+
+    const value = localStorage.getItem(key);
+
+    if(!value){
+      return fallback;
+    }
+
+    return JSON.parse(value);
+
+  }catch(error){
+
+    console.error("Storage error:", error);
+    return fallback;
+
+  }
+
+}
+
+function saveStorage(key, value){
+
+  try{
+    localStorage.setItem(key, JSON.stringify(value));
+  }catch(error){
+    console.error("Storage save error:", error);
+  }
+
+}
+
+function saveCart(){
+  saveStorage("nova_cart", cart);
+}
+
+function saveFavorites(){
+  saveStorage("nova_favorites", favorites);
+}
+
+
+// ============================================================
+// UTILITAIRES
+// ============================================================
+
+function money(value){
+
+  const number = Number(value);
+
+  return (
+    Number.isFinite(number) ? number : 0
+  ).toLocaleString(
+    lang === "en" ? "en-GB" : "fr-FR",
+    {
+      minimumFractionDigits:2,
+      maximumFractionDigits:2
+    }
+  ) + " €";
+
+}
+
+function escapeHTML(value){
+
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+function escapeAttr(value){
+  return escapeHTML(value);
+}
+
+function getProduct(id){
+  return products.find(product => product.id === id);
+}
+
+function toast(message, type = "info"){
+
+  if(!toastElement){
+    console.log(message);
+    return;
+  }
+
+  toastElement.textContent = message;
+  toastElement.className = `toast ${type}`;
+  toastElement.classList.add("show");
+
+  clearTimeout(toastElement._timer);
+
+  toastElement._timer = setTimeout(() => {
+    toastElement.classList.remove("show");
+    toastElement.className = "";
+    toastElement.textContent = "";
+  }, 3000);
+
+}
+
+
+// ============================================================
+// LANGUE
+// ============================================================
+
+function applyStaticTranslations(){
+
+  document.documentElement.lang = lang;
+
+  document.querySelectorAll("[data-i18n]").forEach(element => {
+    element.textContent = t(element.dataset.i18n);
+  });
+
+  document.querySelectorAll("[data-i18n-html]").forEach(element => {
+    element.innerHTML = t(element.dataset.i18nHtml);
+  });
+
+  document.querySelectorAll("[data-i18n-placeholder]").forEach(element => {
+    element.placeholder = t(element.dataset.i18nPlaceholder);
+  });
+
+  document.querySelectorAll("[data-i18n-title]").forEach(element => {
+    element.title = t(element.dataset.i18nTitle);
+  });
+
+  if(langBtn){
+    langBtn.title = t("titleLang");
+  }
+
+}
+
+function setLanguage(newLang){
+
+  if(!I18N[newLang]){
+    return;
+  }
+
+  lang = newLang;
+
+  try{
+    localStorage.setItem(LANG_KEY, lang);
+  }catch(error){
+    console.error("Lang save error:", error);
+  }
+
+  applyStaticTranslations();
+  renderCategories();
+  renderProducts();
+  renderCart();
+  updateAccountButton();
+
+}
+
+function toggleLanguage(){
+
+  setLanguage(lang === "fr" ? "en" : "fr");
+
+  closeModal();
+
+  toast(t("langChanged"), "success");
+
+}
+
+langBtn?.addEventListener("click", toggleLanguage);
+
+
+// ============================================================
+// IMAGE PRODUIT
+// ============================================================
+
+function productImageHTML(product){
+
+  if(!product?.image){
+    return "";
+  }
+
+  return `
+    <img
+      src="${escapeAttr(product.image)}"
+      alt="${escapeAttr(product.name)}"
+      loading="lazy"
+      onerror="this.onerror=null;this.style.display='none';"
+    >
+  `;
+
+}
+
+
+// ============================================================
+// CATEGORIES
+// ============================================================
+
+function getCategories(){
+
+  return [
+    "Toutes",
+    ...new Set(products.map(product => product.category))
+  ];
+
+}
+
+function renderCategories(){
+
+  if(!categoriesContainer){
+    return;
+  }
+
+  categoriesContainer.innerHTML =
+    getCategories()
+      .map(category => `
+        <button
+          type="button"
+          class="category category-btn ${state.category === category ? "active" : ""}"
+          data-category="${escapeAttr(category)}"
+        >
+          ${escapeHTML(catLabel(category))}
+        </button>
+      `)
+      .join("");
+
+  categoriesContainer
+    .querySelectorAll(".category-btn")
+    .forEach(button => {
+
+      button.addEventListener("click", () => {
+
+        state.category = button.dataset.category || "Toutes";
+
+        renderCategories();
+        renderProducts();
+
+      });
+
+    });
+
+}
+
+
+// ============================================================
+// FILTRAGE
+// ============================================================
+
+function getFilteredProducts(){
+
+  let result = [...products];
+
+  const search = state.search.trim().toLowerCase();
+
+  if(search){
+
+    result = result.filter(product =>
+      product.name.toLowerCase().includes(search) ||
+      product.category.toLowerCase().includes(search) ||
+      catLabel(product.category).toLowerCase().includes(search)
+    );
+
+  }
+
+  if(state.category !== "Toutes"){
+    result = result.filter(product => product.category === state.category);
+  }
+
+  if(state.sort === "price-asc" || state.sort === "price-low"){
+    result.sort((a, b) => Number(a.price) - Number(b.price));
+  }
+
+  if(state.sort === "price-desc" || state.sort === "price-high"){
+    result.sort((a, b) => Number(b.price) - Number(a.price));
+  }
+
+  if(state.sort === "name"){
+    result.sort((a, b) => a.name.localeCompare(b.name, lang));
+  }
+
+  if(state.sort === "new"){
+    result.sort((a, b) => Number(Boolean(b.new)) - Number(Boolean(a.new)));
+  }
+
+  return result;
+
+}
+
+
+// ============================================================
+// PRODUITS
+// ============================================================
+
+function renderProducts(){
+
+  if(!productGrid){
+    return;
+  }
+
+  const result = getFilteredProducts();
+
+  if(productCount){
+
+    productCount.textContent =
+      t(result.length > 1 ? "prodMany" : "prodOne", { n:result.length });
+
+  }
+
+  if(!result.length){
+
+    productGrid.innerHTML = `
+
+      <div class="empty" style="grid-column:1/-1;">
+
+        <div style="font-size:50px;margin-bottom:15px;">🔎</div>
+
+        <h3>${escapeHTML(t("noProduct"))}</h3>
+
+        <p style="opacity:.65;margin-top:8px;">
+          ${escapeHTML(t("noProductHint"))}
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+  productGrid.innerHTML =
+    result.map(product => {
+
+      const isFavorite = favorites.includes(product.id);
+      const isBest = BESTSELLERS.has(product.id);
+      const { rating, count } = getProductRating(product.id);
+      const freeShip = Number(product.price) >= 50;
+
+      return `
+
+        <article class="product" data-id="${escapeAttr(product.id)}">
+
+          <div class="product-img">
+
+            <div class="badge-stack">
+              ${
+                product.new
+                  ? `<span class="badge badge-new">${escapeHTML(t("newBadge"))}</span>`
+                  : ""
+              }
+              ${
+                isBest
+                  ? `<span class="badge badge-best">${escapeHTML(t("bestBadge"))}</span>`
+                  : ""
+              }
+            </div>
+
+            <button
+              type="button"
+              class="favorite favorite-btn ${isFavorite ? "active" : ""}"
+              data-favorite="${escapeAttr(product.id)}"
+              aria-label="${escapeAttr(t("favLabel"))}"
+            >
+              ${isFavorite ? "♥" : "♡"}
+            </button>
+
+            ${productImageHTML(product)}
+
+          </div>
+
+          <div class="product-body">
+
+            <div class="product-category">
+              ${escapeHTML(catLabel(product.category))}
+            </div>
+
+            <h3>${escapeHTML(product.name)}</h3>
+
+            <div class="product-rating">
+              <span class="stars" aria-hidden="true">${starsHTML(rating)}</span>
+              <span class="rating-value">${rating.toFixed(1)}</span>
+              <span class="rating-count">${escapeHTML(t("ratingsCount", { n:count }))}</span>
+            </div>
+
+            <div class="price">${money(product.price)}</div>
+
+            <div class="ship-line">
+              ${freeShip ? escapeHTML(t("shipsFree")) : escapeHTML(t("shipsStd"))}
+            </div>
+
+            <div class="product-actions">
+
+              <button
+                type="button"
+                class="view-btn product-view"
+                data-id="${escapeAttr(product.id)}"
+              >
+                ${escapeHTML(t("view"))}
+              </button>
+
+              <button
+                type="button"
+                class="add-btn product-add"
+                data-id="${escapeAttr(product.id)}"
+              >
+                ${escapeHTML(t("add"))}
+              </button>
+
+            </div>
+
+          </div>
+
+        </article>
+
+      `;
+
+    }).join("");
+
+  productGrid.querySelectorAll(".product-add").forEach(button => {
+    button.addEventListener("click", () => {
+
+      const product = getProduct(button.dataset.id);
+
+      // Produit avec options : ouvrir la fiche pour choisir l'option
+      if(product?.options){
+        openProduct(button.dataset.id);
+        return;
+      }
+
+      addToCart(button.dataset.id);
+
+    });
+  });
+
+  productGrid.querySelectorAll(".product-view").forEach(button => {
+    button.addEventListener("click", () => openProduct(button.dataset.id));
+  });
+
+  productGrid.querySelectorAll(".favorite-btn").forEach(button => {
+
+    button.addEventListener("click", event => {
+      event.stopPropagation();
+      toggleFavorite(button.dataset.favorite);
+    });
+
+  });
+
+}
+
+
+// ============================================================
+// FAVORIS
+// ============================================================
+
+function toggleFavorite(id){
+
+  if(!id){
+    return;
+  }
+
+  if(favorites.includes(id)){
+
+    favorites = favorites.filter(item => item !== id);
+
+    toast(t("favRemoved"));
+
+  }else{
+
+    favorites.push(id);
+
+    toast(t("favAdded"), "success");
+
+  }
+
+  saveFavorites();
+  renderProducts();
+
+}
+
+
+// ============================================================
+// PANIER
+// ============================================================
+
+function getCartCount(){
+
+  return cart.reduce(
+    (total, item) => total + Number(item.quantity || 1),
+    0
+  );
+
+}
+
+function getCartSubtotal(){
+
+  return cart.reduce((total, item) => {
+
+    const product = getProduct(item.id);
+
+    if(!product){
+      return total;
+    }
+
+    return total + Number(product.price || 0) * Number(item.quantity || 1);
+
+  }, 0);
+
+}
+
+function addToCart(id, option = ""){
+
+  const product = getProduct(id);
+
+  if(!product){
+    toast(t("productNotFound"), "error");
+    return;
+  }
+
+  const existing = cart.find(item => item.id === id && item.option === option);
+
+  if(existing){
+
+    existing.quantity = Number(existing.quantity || 1) + 1;
+
+  }else{
+
+    cart.push({ id, option, quantity:1 });
+
+  }
+
+  saveCart();
+  renderCart();
+
+  toast(t("addedCart"), "success");
+
+}
+
+function removeFromCart(id, option = ""){
+
+  cart = cart.filter(item => !(item.id === id && item.option === option));
+
+  saveCart();
+  renderCart();
+
+}
+
+function changeCartQuantity(id, option, quantity){
+
+  const item = cart.find(entry => entry.id === id && entry.option === option);
+
+  if(!item){
+    return;
+  }
+
+  item.quantity = Math.max(1, Number(quantity) || 1);
+
+  saveCart();
+  renderCart();
+
+}
+
+function renderCart(){
+
+  const count = getCartCount();
+
+  if(cartBadge){
+
+    cartBadge.textContent = String(count);
+    cartBadge.style.display = count > 0 ? "grid" : "none";
+
+  }
+
+  if(cartTotal){
+    cartTotal.textContent = money(getCartSubtotal());
+  }
+
+  if(!cartItems){
+    return;
+  }
+
+  if(!cart.length){
+
+    cartItems.innerHTML = `
+
+      <div class="nova-empty" style="text-align:center;padding:40px 10px;">
+
+        <div class="nova-empty-icon" style="font-size:50px;">🛒</div>
+
+        <h3>${escapeHTML(t("cartEmpty"))}</h3>
+
+        <p style="margin-top:8px;opacity:.65;">
+          ${escapeHTML(t("cartEmptyHint"))}
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+  cartItems.innerHTML =
+    cart.map(item => {
+
+      const product = getProduct(item.id);
+
+      if(!product){
+        return "";
+      }
+
+      return `
+
+        <div class="cart-item" data-id="${escapeAttr(item.id)}">
+
+          <div class="cart-item-img">
+            ${productImageHTML(product)}
+          </div>
+
+          <div class="cart-item-info">
+
+            <h4>${escapeHTML(product.name)}</h4>
+
+            ${
+              item.option
+                ? `<small>${escapeHTML(optionLabel(item.option))}</small>`
+                : ""
+            }
+
+            <div class="cart-item-price">${money(product.price)}</div>
+
+            <div class="cart-item-controls qty">
+
+              <button
+                type="button"
+                class="cart-minus"
+                data-id="${escapeAttr(item.id)}"
+                data-option="${escapeAttr(item.option || "")}"
+              >−</button>
+
+              <span>${Number(item.quantity || 1)}</span>
+
+              <button
+                type="button"
+                class="cart-plus"
+                data-id="${escapeAttr(item.id)}"
+                data-option="${escapeAttr(item.option || "")}"
+              >+</button>
+
+              <button
+                type="button"
+                class="cart-remove remove"
+                data-id="${escapeAttr(item.id)}"
+                data-option="${escapeAttr(item.option || "")}"
+              >🗑️</button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      `;
+
+    }).join("");
+
+  cartItems.querySelectorAll(".cart-minus").forEach(button => {
+
+    button.addEventListener("click", () => {
+
+      const id = button.dataset.id;
+      const option = button.dataset.option || "";
+
+      const item = cart.find(entry => entry.id === id && entry.option === option);
+
+      if(!item){
+        return;
+      }
+
+      const quantity = Number(item.quantity || 1);
+
+      if(quantity <= 1){
+        removeFromCart(id, option);
+      }else{
+        changeCartQuantity(id, option, quantity - 1);
+      }
+
+    });
+
+  });
+
+  cartItems.querySelectorAll(".cart-plus").forEach(button => {
+
+    button.addEventListener("click", () => {
+
+      const id = button.dataset.id;
+      const option = button.dataset.option || "";
+
+      const item = cart.find(entry => entry.id === id && entry.option === option);
+
+      if(item){
+        changeCartQuantity(id, option, Number(item.quantity || 1) + 1);
+      }
+
+    });
+
+  });
+
+  cartItems.querySelectorAll(".cart-remove").forEach(button => {
+
+    button.addEventListener("click", () => {
+      removeFromCart(button.dataset.id, button.dataset.option || "");
+    });
+
+  });
+
+}
+
+
+// ============================================================
+// PANIER OUVERTURE / FERMETURE
+// ============================================================
+
+function openCart(){
+  cartDrawer?.classList.add("open");
+  overlay?.classList.add("open");
+}
+
+function closeCart(){
+  cartDrawer?.classList.remove("open");
+  overlay?.classList.remove("open");
+}
+
+cartBtn?.addEventListener("click", openCart);
+heroCartBtn?.addEventListener("click", openCart);
+closeCartBtn?.addEventListener("click", closeCart);
+overlay?.addEventListener("click", closeCart);
+
+
+// ============================================================
+// MODAL
+// ============================================================
+
+function showModal(title, content){
+
+  if(modalTitle){
+    modalTitle.textContent = title;
+  }
+
+  if(modalContent){
+    modalContent.innerHTML = content;
+  }
+
+  modal?.classList.add("open");
+
+}
+
+function closeModal(){
+  modal?.classList.remove("open");
+}
+
+modalClose?.addEventListener("click", closeModal);
+
+modal?.addEventListener("click", event => {
+
+  if(event.target === modal){
+    closeModal();
+  }
+
+});
+
+
+// ============================================================
+// PRODUIT (FICHE)
+// ============================================================
+
+function openProduct(id){
+
+  const product = getProduct(id);
+
+  if(!product){
+    return;
+  }
+
+  let optionsHTML = "";
+
+  if(product.options){
+
+    Object.entries(product.options).forEach(([name, values]) => {
+
+      optionsHTML += `
+
+        <label for="option-${escapeAttr(name)}">
+          ${escapeHTML(lang === "en" ? (OPTION_EN[name] || name) : name)}
+        </label>
+
+        <select
+          id="option-${escapeAttr(name)}"
+          class="product-option"
+          data-option-name="${escapeAttr(name)}"
+        >
+
+          ${values.map(value => `
+            <option value="${escapeAttr(value)}">
+              ${escapeHTML(lang === "en" ? (OPTION_EN[value] || value) : value)}
+            </option>
+          `).join("")}
+
+        </select>
+
+      `;
+
+    });
+
+  }
+
+  const { rating, count } = getProductRating(product.id);
+  const freeShip = Number(product.price) >= 50;
+
+  showModal(
+    product.name,
+    `
+
+      <div class="product-modal">
+
+        <div class="product-modal-image" style="background:#fff;border-radius:14px;padding:14px;margin-bottom:16px;display:flex;justify-content:center;">
+          ${productImageHTML(product).replace("<img", '<img style="max-width:100%;max-height:260px;object-fit:contain;"')}
+        </div>
+
+        <div>
+
+          <div class="product-category">
+            ${escapeHTML(catLabel(product.category))}
+          </div>
+
+          <h2>${escapeHTML(product.name)}</h2>
+
+          <div class="product-rating" style="margin-top:8px;">
+            <span class="stars" aria-hidden="true">${starsHTML(rating)}</span>
+            <span class="rating-value">${rating.toFixed(1)}</span>
+            <span class="rating-count">${escapeHTML(t("ratingsCount", { n:count }))}</span>
+          </div>
+
+          <div class="price" style="margin-top:10px;">${money(product.price)}</div>
+
+          <div class="ship-line" style="margin-top:4px;">
+            ${freeShip ? escapeHTML(t("shipsFree")) : escapeHTML(t("shipsStd"))}
+            &nbsp;•&nbsp;
+            <span class="stock-line">${escapeHTML(t("inStock"))}</span>
+          </div>
+
+          ${
+            optionsHTML
+              ? `<div style="margin-top:18px;display:grid;gap:8px;">${optionsHTML}</div>`
+              : ""
+          }
+
+          <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;">
+
+            <button
+              type="button"
+              class="add-btn"
+              id="modalAddCart"
+              style="flex:1;min-width:170px;"
+            >
+              ${escapeHTML(t("addCart"))}
+            </button>
+
+            <button
+              type="button"
+              class="view-btn"
+              id="modalFavorite"
+              style="flex:1;min-width:170px;"
+            >
+              ❤️ ${escapeHTML(favorites.includes(product.id) ? t("favRemove") : t("favAdd"))}
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    `
+  );
+
+  $("modalAddCart")?.addEventListener("click", () => {
+
+    const selected =
+      Array.from(document.querySelectorAll(".product-option"))
+        .map(select => `${select.dataset.optionName}: ${select.value}`)
+        .join(" | ");
+
+    addToCart(product.id, selected);
+
+  });
+
+  $("modalFavorite")?.addEventListener("click", () => {
+
+    toggleFavorite(product.id);
+    closeModal();
+
+  });
+
+}
+
+
+// ============================================================
+// RECHERCHE / TRI
+// ============================================================
+
+searchInput?.addEventListener("input", event => {
+
+  state.search = event.target.value || "";
+
+  renderProducts();
+
+});
+
+sortSelect?.addEventListener("change", event => {
+
+  state.sort = event.target.value || "default";
+
+  renderProducts();
+
+});
