@@ -1,6 +1,5 @@
 // ============================================================
-// NOVASHOP - APP.JS (version pro : FR/EN + catalogue complet
-// + notes/avis + badges + logo)
+// NOVASHOP - APP.JS (version corrigée + FR/EN + nouveaux produits)
 // Firebase Auth + Firestore + Catalogue + Commandes + Admin
 // ============================================================
 
@@ -54,42 +53,13 @@ const LANG_KEY = "novaLang";
 
 
 // ============================================================
-// LOGO (SVG inline, injecté dans l'en-tête)
-// ============================================================
-
-const NOVA_LOGO_SVG = `
-<svg viewBox="0 0 48 48" width="34" height="34" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="NovaShop">
-  <defs>
-    <linearGradient id="novaLogoGrad" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#2d8cff"/>
-      <stop offset="1" stop-color="#22e0d6"/>
-    </linearGradient>
-  </defs>
-  <rect x="2" y="2" width="44" height="44" rx="13" fill="url(#novaLogoGrad)"/>
-  <path d="M15 34V14.6c0-.9 1.1-1.35 1.74-.7L32 30" stroke="#04101f" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-  <path d="M33 14v19.4c0 .9-1.1 1.35-1.74.7L16 18" stroke="#ffffff" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity=".001"/>
-  <circle cx="33.5" cy="14.5" r="3.1" fill="#04101f"/>
-  <circle cx="33.5" cy="14.5" r="1.35" fill="#7be9ff"/>
-</svg>
-`.trim();
-
-function injectLogo(){
-
-  document.querySelectorAll(".logo-mark").forEach(node => {
-    node.innerHTML = NOVA_LOGO_SVG;
-  });
-
-}
-
-
-// ============================================================
 // TRADUCTIONS FR / EN
 // ============================================================
 
 const I18N = {
 
   fr:{
-    searchPlaceholder:"Rechercher un produit, une marque...",
+    searchPlaceholder:"Rechercher un produit...",
     titleSettings:"Paramètres",
     titleAccount:"Compte",
     titleOrders:"Commandes",
@@ -97,17 +67,9 @@ const I18N = {
     titleCart:"Panier",
     titleLang:"Changer de langue",
     heroTitle:"Bienvenue sur <span>NovaShop</span>",
-    heroText:"Composants PC, périphériques gaming, smartphones, écrans, accessoires et bien plus — livrés vite, garantis, au meilleur prix.",
+    heroText:"Composants PC, périphériques gaming, smartphones, écrans, accessoires et bien plus.",
     heroCart:"🛒 Voir mon panier",
     heroDiscover:"Découvrir les produits",
-    trustFast:"Livraison rapide",
-    trustFastSub:"Expédié sous 24h",
-    trustSecure:"Paiement sécurisé",
-    trustSecureSub:"Chiffrement SSL",
-    trustReturns:"Retours faciles",
-    trustReturnsSub:"30 jours pour changer d'avis",
-    trustSupport:"Support réactif",
-    trustSupportSub:"Une équipe à votre écoute",
     products:"Produits",
     sortDefault:"Trier par défaut",
     sortAsc:"Prix croissant",
@@ -148,8 +110,6 @@ const I18N = {
     noProduct:"Aucun produit trouvé",
     noProductHint:"Essaie une autre recherche ou une autre catégorie.",
     newBadge:"NOUVEAU",
-    bestBadge:"BEST-SELLER",
-    freeShipBadge:"Livraison gratuite",
     favLabel:"Favori",
     view:"Voir",
     add:"🛒 Ajouter",
@@ -162,10 +122,6 @@ const I18N = {
     addCart:"🛒 Ajouter au panier",
     favAdd:"Ajouter aux favoris",
     favRemove:"Retirer des favoris",
-    ratingsCount:"({n} avis)",
-    inStock:"En stock",
-    shipsFree:"🚚 Livraison gratuite",
-    shipsStd:"🚚 Livraison dès 4,90 €",
 
     loginTitle:"Connexion",
     email:"Email",
@@ -305,7 +261,7 @@ const I18N = {
   },
 
   en:{
-    searchPlaceholder:"Search for a product, a brand...",
+    searchPlaceholder:"Search for a product...",
     titleSettings:"Settings",
     titleAccount:"Account",
     titleOrders:"Orders",
@@ -313,17 +269,10 @@ const I18N = {
     titleCart:"Cart",
     titleLang:"Change language",
     heroTitle:"Welcome to <span>NovaShop</span>",
-    heroText:"PC components, gaming peripherals, smartphones, monitors, accessories and much more — fast delivery, warranty included, best prices.",
+    heroText:"PC components, gaming peripherals, smartphones, monitors, accessories and much more.",
     heroCart:"🛒 View my cart",
     heroDiscover:"Discover our products",
-    trustFast:"Fast delivery",
-    trustFastSub:"Shipped within 24h",
-    trustSecure:"Secure payment",
-    trustSecureSub:"SSL encryption",
-    trustReturns:"Easy returns",
-    trustReturnsSub:"30 days to change your mind",
-    trustSupport:"Responsive support",
-    trustSupportSub:"A team that listens",
+    products:"Products",
     sortDefault:"Default sorting",
     sortAsc:"Price: low to high",
     sortDesc:"Price: high to low",
@@ -363,8 +312,6 @@ const I18N = {
     noProduct:"No product found",
     noProductHint:"Try another search or another category.",
     newBadge:"NEW",
-    bestBadge:"BEST SELLER",
-    freeShipBadge:"Free shipping",
     favLabel:"Favorite",
     view:"View",
     add:"🛒 Add",
@@ -377,10 +324,6 @@ const I18N = {
     addCart:"🛒 Add to cart",
     favAdd:"Add to favorites",
     favRemove:"Remove from favorites",
-    ratingsCount:"({n} reviews)",
-    inStock:"In stock",
-    shipsFree:"🚚 Free shipping",
-    shipsStd:"🚚 Shipping from $4.90",
 
     loginTitle:"Sign in",
     email:"Email",
@@ -648,7 +591,7 @@ function paymentLabel(method){
 
 
 // ============================================================
-// PRODUITS (catalogue complet)
+// PRODUITS
 // ============================================================
 
 const products = [
@@ -748,54 +691,6 @@ const products = [
   { id:"p105", name:"SteelSeries QcK Heavy XXL - Tapis de souris gaming en tissu - Base antidérapante 6mm", category:"Tapis de souris", price:15, image:"https://m.media-amazon.com/images/I/41HRqeeyZ0L._AC_SL1500_.jpg" }
 
 ];
-
-// Best-sellers mis en avant sur les fiches produit
-const BESTSELLERS = new Set(["p2","p14","p40","p7","p82","p98","p101"]);
-
-
-// ============================================================
-// AVIS / NOTES (déterministes à partir de l'id produit, pour un rendu pro et stable)
-// ============================================================
-
-function hashSeed(text){
-
-  let hash = 0;
-
-  for(let i = 0; i < text.length; i++){
-    hash = (hash * 31 + text.charCodeAt(i)) >>> 0;
-  }
-
-  return hash;
-
-}
-
-function getProductRating(id){
-
-  const seed = hashSeed(String(id));
-
-  const rating = Math.round((3.6 + (seed % 130) / 100) * 10) / 10;
-  const count = 12 + (seed % 480);
-
-  return {
-    rating:Math.min(rating, 5),
-    count
-  };
-
-}
-
-function starsHTML(rating){
-
-  const full = Math.round(rating);
-
-  let html = "";
-
-  for(let i = 1; i <= 5; i++){
-    html += i <= full ? "★" : "☆";
-  }
-
-  return html;
-
-}
 
 
 // ============================================================
@@ -975,7 +870,7 @@ function applyStaticTranslations(){
   });
 
   if(langBtn){
-    langBtn.title = t("titleLang");
+    langBtn.textContent = `🌐 ${lang.toUpperCase()}`;
   }
 
 }
@@ -1111,6 +1006,7 @@ function getFilteredProducts(){
     result = result.filter(product => product.category === state.category);
   }
 
+  // Compatible avec les valeurs du HTML (price-low / price-high) et price-asc / price-desc
   if(state.sort === "price-asc" || state.sort === "price-low"){
     result.sort((a, b) => Number(a.price) - Number(b.price));
   }
@@ -1155,7 +1051,7 @@ function renderProducts(){
 
     productGrid.innerHTML = `
 
-      <div class="empty" style="grid-column:1/-1;">
+      <div style="grid-column:1/-1;text-align:center;padding:50px 20px;">
 
         <div style="font-size:50px;margin-bottom:15px;">🔎</div>
 
@@ -1177,9 +1073,6 @@ function renderProducts(){
     result.map(product => {
 
       const isFavorite = favorites.includes(product.id);
-      const isBest = BESTSELLERS.has(product.id);
-      const { rating, count } = getProductRating(product.id);
-      const freeShip = Number(product.price) >= 50;
 
       return `
 
@@ -1187,22 +1080,15 @@ function renderProducts(){
 
           <div class="product-img">
 
-            <div class="badge-stack">
-              ${
-                product.new
-                  ? `<span class="badge badge-new">${escapeHTML(t("newBadge"))}</span>`
-                  : ""
-              }
-              ${
-                isBest
-                  ? `<span class="badge badge-best">${escapeHTML(t("bestBadge"))}</span>`
-                  : ""
-              }
-            </div>
+            ${
+              product.new
+                ? `<span class="product-badge">${escapeHTML(t("newBadge"))}</span>`
+                : ""
+            }
 
             <button
               type="button"
-              class="favorite favorite-btn ${isFavorite ? "active" : ""}"
+              class="favorite-btn ${isFavorite ? "active" : ""}"
               data-favorite="${escapeAttr(product.id)}"
               aria-label="${escapeAttr(t("favLabel"))}"
             >
@@ -1221,17 +1107,7 @@ function renderProducts(){
 
             <h3>${escapeHTML(product.name)}</h3>
 
-            <div class="product-rating">
-              <span class="stars" aria-hidden="true">${starsHTML(rating)}</span>
-              <span class="rating-value">${rating.toFixed(1)}</span>
-              <span class="rating-count">${escapeHTML(t("ratingsCount", { n:count }))}</span>
-            </div>
-
             <div class="price">${money(product.price)}</div>
-
-            <div class="ship-line">
-              ${freeShip ? escapeHTML(t("shipsFree")) : escapeHTML(t("shipsStd"))}
-            </div>
 
             <div class="product-actions">
 
@@ -1494,7 +1370,7 @@ function renderCart(){
 
               <button
                 type="button"
-                class="cart-remove remove"
+                class="cart-remove"
                 data-id="${escapeAttr(item.id)}"
                 data-option="${escapeAttr(item.option || "")}"
               >🗑️</button>
@@ -1659,9 +1535,6 @@ function openProduct(id){
 
   }
 
-  const { rating, count } = getProductRating(product.id);
-  const freeShip = Number(product.price) >= 50;
-
   showModal(
     product.name,
     `
@@ -1680,19 +1553,7 @@ function openProduct(id){
 
           <h2>${escapeHTML(product.name)}</h2>
 
-          <div class="product-rating" style="margin-top:8px;">
-            <span class="stars" aria-hidden="true">${starsHTML(rating)}</span>
-            <span class="rating-value">${rating.toFixed(1)}</span>
-            <span class="rating-count">${escapeHTML(t("ratingsCount", { n:count }))}</span>
-          </div>
-
-          <div class="price" style="margin-top:10px;">${money(product.price)}</div>
-
-          <div class="ship-line" style="margin-top:4px;">
-            ${freeShip ? escapeHTML(t("shipsFree")) : escapeHTML(t("shipsStd"))}
-            &nbsp;•&nbsp;
-            <span class="stock-line">${escapeHTML(t("inStock"))}</span>
-          </div>
+          <div class="price">${money(product.price)}</div>
 
           ${
             optionsHTML
@@ -1769,3 +1630,2276 @@ sortSelect?.addEventListener("change", event => {
   renderProducts();
 
 });
+
+
+// ============================================================
+// STYLES INJECTÉS
+// ============================================================
+
+function injectNovaStyles(){
+
+  if(document.getElementById("novaInjectedStyles")){
+    return;
+  }
+
+  const style = document.createElement("style");
+
+  style.id = "novaInjectedStyles";
+
+  style.textContent = `
+
+    .view-btn,
+    .add-btn,
+    .payment-choice{
+      cursor:pointer;
+      border:1px solid var(--line);
+      border-radius:10px;
+      padding:10px 14px;
+      font-weight:700;
+      transition:.2s ease;
+    }
+
+    .view-btn:hover,
+    .add-btn:hover,
+    .payment-choice:hover{
+      transform:translateY(-1px);
+    }
+
+    .add-btn{
+      background:#2d8cff;
+      color:#fff;
+      border-color:#2d8cff;
+    }
+
+    .view-btn{
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+    }
+
+    .payment-choice.selected{
+      background:#2d8cff;
+      color:#fff;
+      border-color:#2d8cff;
+    }
+
+    .product-actions{
+      display:flex;
+      gap:8px;
+      margin-top:11px;
+    }
+
+    .product-actions button{
+      flex:1;
+      padding:9px 8px;
+      font-size:12px;
+    }
+
+    .product-badge{
+      position:absolute;
+      top:10px;
+      left:10px;
+      z-index:2;
+      padding:5px 8px;
+      border-radius:8px;
+      background:#25d695;
+      color:#04110c;
+      font-size:11px;
+      font-weight:900;
+    }
+
+    .favorite-btn{
+      position:absolute;
+      top:10px;
+      right:10px;
+      z-index:3;
+      width:34px;
+      height:34px;
+      border-radius:50%;
+      border:1px solid rgba(0,0,0,.12);
+      background:rgba(255,255,255,.9);
+      color:#111;
+      cursor:pointer;
+      font-size:19px;
+    }
+
+    .favorite-btn.active{
+      color:#ff3d71;
+    }
+
+    .product-img{
+      height:165px !important;
+      padding:12px !important;
+    }
+
+    .product-img img{
+      width:100%;
+      height:100%;
+      max-width:100%;
+      max-height:100%;
+      object-fit:contain;
+    }
+
+    .product-body{
+      padding:13px;
+    }
+
+    .product h3{
+      font-size:14px;
+      min-height:58px;
+    }
+
+    .price{
+      font-size:19px;
+      font-weight:900;
+      margin-top:10px;
+    }
+
+    .cart-item-info small{
+      display:block;
+      opacity:.65;
+      margin-top:3px;
+    }
+
+    .cart-item-controls button{
+      cursor:pointer;
+    }
+
+    .toast:empty{
+      display:none;
+    }
+
+    .toast:not(.show){
+      display:none;
+    }
+
+    @media(max-width:520px){
+
+      .product-img{
+        height:190px !important;
+      }
+
+      .product-actions{
+        flex-direction:column;
+      }
+
+    }
+
+  `;
+
+  document.head.appendChild(style);
+
+}
+
+function injectNovaButtonStyles(){
+
+  if(document.getElementById("novaButtonStyles")){
+    return;
+  }
+
+  const style = document.createElement("style");
+
+  style.id = "novaButtonStyles";
+
+  style.textContent = `
+
+    button{
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    #heroCartBtn,
+    .view-btn,
+    .add-btn{
+      cursor:pointer;
+      transition:transform .18s ease, filter .18s ease, opacity .18s ease;
+    }
+
+    #heroCartBtn:hover,
+    .view-btn:hover,
+    .add-btn:hover{
+      transform:translateY(-1px);
+      filter:brightness(1.08);
+    }
+
+    #heroCartBtn:active,
+    .view-btn:active,
+    .add-btn:active{
+      transform:translateY(0);
+    }
+
+    button:disabled{
+      cursor:not-allowed !important;
+      opacity:.55 !important;
+      transform:none !important;
+    }
+
+    .payment-choice.selected{
+      border-color:#2d8cff !important;
+      background:rgba(45,140,255,.12) !important;
+      box-shadow:0 0 0 2px rgba(45,140,255,.12);
+    }
+
+    .theme-choice,
+    .lang-choice{
+      transition:transform .15s ease, border-color .15s ease;
+    }
+
+    .theme-choice:hover,
+    .lang-choice:hover{
+      transform:translateY(-1px);
+    }
+
+    .modal-content input,
+    .modal-content select,
+    .modal-content textarea{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:10px;
+      padding:12px;
+      outline:none;
+      background:var(--card2);
+      color:var(--text);
+      margin-top:6px;
+    }
+
+    .modal-content label{
+      font-size:13px;
+      font-weight:800;
+    }
+
+  `;
+
+  document.head.appendChild(style);
+
+}
+
+injectNovaStyles();
+injectNovaButtonStyles();
+
+
+// ============================================================
+// AUTH
+// ============================================================
+
+function authError(error){
+
+  const messages = {
+    "auth/invalid-credential":"authInvalidCred",
+    "auth/invalid-email":"authInvalidEmail",
+    "auth/email-already-in-use":"authEmailUsed",
+    "auth/weak-password":"authWeak",
+    "auth/user-not-found":"authNoUser",
+    "auth/wrong-password":"authWrongPwd",
+    "auth/too-many-requests":"authTooMany"
+  };
+
+  const key = messages[error?.code || ""];
+
+  return key ? t(key) : (error?.message || t("authGeneric"));
+
+}
+
+function showLoginForm(){
+
+  showModal(
+    t("loginTitle"),
+    `
+
+      <form id="loginForm">
+
+        <label for="loginEmail">${escapeHTML(t("email"))}</label>
+
+        <input
+          id="loginEmail"
+          type="email"
+          autocomplete="email"
+          required
+          placeholder="you@email.com"
+        >
+
+        <label for="loginPassword" style="display:block;margin-top:12px;">
+          ${escapeHTML(t("password"))}
+        </label>
+
+        <input
+          id="loginPassword"
+          type="password"
+          autocomplete="current-password"
+          required
+          placeholder="${escapeAttr(t("password"))}"
+        >
+
+        <button type="submit" class="add-btn" style="width:100%;margin-top:16px;">
+          ${escapeHTML(t("signIn"))}
+        </button>
+
+        <button type="button" class="view-btn" id="showRegister" style="width:100%;margin-top:10px;">
+          ${escapeHTML(t("createAccount"))}
+        </button>
+
+        <div id="loginError" style="display:none;color:#ff7777;margin-top:12px;"></div>
+
+      </form>
+
+    `
+  );
+
+  $("loginForm")?.addEventListener("submit", async event => {
+
+    event.preventDefault();
+
+    const email = $("loginEmail")?.value.trim() || "";
+    const password = $("loginPassword")?.value || "";
+    const error = $("loginError");
+
+    try{
+
+      await signInWithEmailAndPassword(auth, email, password);
+
+      closeModal();
+
+      toast(t("loginOk"), "success");
+
+    }catch(err){
+
+      if(error){
+        error.textContent = authError(err);
+        error.style.display = "block";
+      }
+
+    }
+
+  });
+
+  $("showRegister")?.addEventListener("click", showRegisterForm);
+
+}
+
+function showRegisterForm(){
+
+  showModal(
+    t("createAccount"),
+    `
+
+      <form id="registerForm">
+
+        <label for="registerEmail">${escapeHTML(t("email"))}</label>
+
+        <input id="registerEmail" type="email" autocomplete="email" required>
+
+        <label for="registerPassword" style="display:block;margin-top:12px;">
+          ${escapeHTML(t("password"))}
+        </label>
+
+        <input id="registerPassword" type="password" autocomplete="new-password" required>
+
+        <button type="submit" class="add-btn" style="width:100%;margin-top:16px;">
+          ${escapeHTML(t("createMyAccount"))}
+        </button>
+
+        <button type="button" class="view-btn" id="showLogin" style="width:100%;margin-top:10px;">
+          ${escapeHTML(t("haveAccount"))}
+        </button>
+
+        <div id="registerError" style="display:none;color:#ff7777;margin-top:12px;"></div>
+
+      </form>
+
+    `
+  );
+
+  $("registerForm")?.addEventListener("submit", async event => {
+
+    event.preventDefault();
+
+    const email = $("registerEmail")?.value.trim() || "";
+    const password = $("registerPassword")?.value || "";
+    const error = $("registerError");
+
+    try{
+
+      await createUserWithEmailAndPassword(auth, email, password);
+
+      closeModal();
+
+      toast(t("registerOk"), "success");
+
+    }catch(err){
+
+      if(error){
+        error.textContent = authError(err);
+        error.style.display = "block";
+      }
+
+    }
+
+  });
+
+  $("showLogin")?.addEventListener("click", showLoginForm);
+
+}
+
+function openAccount(){
+
+  if(!currentUser){
+    showLoginForm();
+    return;
+  }
+
+  showModal(
+    t("myAccount"),
+    `
+
+      <div style="display:grid;gap:14px;">
+
+        <div style="padding:16px;border-radius:15px;background:rgba(255,255,255,.05);">
+
+          <strong>${escapeHTML(t("connectedAccount"))}</strong>
+
+          <p style="margin-top:8px;opacity:.75;">
+            ${escapeHTML(currentUser.email || "")}
+          </p>
+
+        </div>
+
+        <button type="button" class="view-btn" id="accountOrders">
+          ${escapeHTML(t("myOrders"))}
+        </button>
+
+        <button type="button" class="view-btn" id="accountLogout">
+          ${escapeHTML(t("logout"))}
+        </button>
+
+      </div>
+
+    `
+  );
+
+  $("accountOrders")?.addEventListener("click", openOrders);
+
+  $("accountLogout")?.addEventListener("click", async () => {
+
+    try{
+
+      await signOut(auth);
+
+      closeModal();
+
+      toast(t("logoutOk"));
+
+    }catch(error){
+
+      toast(authError(error), "error");
+
+    }
+
+  });
+
+}
+
+function updateAccountButton(){
+
+  if(!accountBtn){
+    return;
+  }
+
+  accountBtn.title = currentUser ? t("myAccount") : t("loginTitle");
+
+}
+
+
+// ============================================================
+// COMMANDES
+// ============================================================
+
+async function openOrders(){
+
+  if(!currentUser){
+
+    toast(t("ordersLogin"));
+
+    showLoginForm();
+
+    return;
+
+  }
+
+  showModal(
+    t("ordersTitle"),
+    `
+
+      <div id="ordersLoading" style="text-align:center;padding:30px;">
+        ${escapeHTML(t("ordersLoading"))}
+      </div>
+
+      <div id="ordersContent"></div>
+
+    `
+  );
+
+  try{
+
+    const ordersQuery = query(
+      collection(db, "orders"),
+      where("userId", "==", currentUser.uid)
+    );
+
+    const snapshot = await getDocs(ordersQuery);
+
+    const orders = [];
+
+    snapshot.forEach(item => {
+      orders.push({ id:item.id, ...item.data() });
+    });
+
+    orders.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+
+    renderOrders(orders);
+
+  }catch(error){
+
+    console.error("Orders error:", error);
+
+    const loading = $("ordersLoading");
+
+    if(loading){
+
+      loading.innerHTML = `
+        <div style="color:#ff7777;">
+          ${escapeHTML(t("ordersFail"))}
+          <br><br>
+          ${escapeHTML(error.message || "")}
+        </div>
+      `;
+
+    }
+
+  }
+
+}
+
+function renderOrders(orders){
+
+  $("ordersLoading")?.remove();
+
+  const content = $("ordersContent");
+
+  if(!content){
+    return;
+  }
+
+  if(!orders.length){
+
+    content.innerHTML = `
+
+      <div class="nova-empty" style="text-align:center;padding:30px;">
+
+        <div class="nova-empty-icon" style="font-size:50px;">📦</div>
+
+        <h3>${escapeHTML(t("noOrders"))}</h3>
+
+        <p style="margin-top:8px;opacity:.65;">
+          ${escapeHTML(t("noOrdersHint"))}
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+  content.innerHTML =
+    orders.map(order => `
+
+      <div style="padding:16px;border:1px solid var(--line);border-radius:16px;margin-bottom:12px;">
+
+        <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+
+          <strong>${escapeHTML(t("orderWord"))} #${escapeHTML(order.id.slice(0, 8))}</strong>
+
+          <strong>${money(order.total || 0)}</strong>
+
+        </div>
+
+        <div style="margin-top:9px;font-size:14px;">
+          ${escapeHTML(t("statusLbl"))} :
+          <strong>${escapeHTML(statusLabel(order.status || "Enregistrée"))}</strong>
+        </div>
+
+        ${
+          order.city
+            ? `<div style="margin-top:7px;opacity:.8;">📍 ${escapeHTML(order.city)}</div>`
+            : ""
+        }
+
+        ${
+          order.estimatedDelivery
+            ? `<div style="margin-top:7px;opacity:.8;">${escapeHTML(t("deliveryLine"))} ${escapeHTML(order.estimatedDelivery)}</div>`
+            : ""
+        }
+
+        ${
+          order.tracking
+            ? `<div style="margin-top:7px;opacity:.8;">${escapeHTML(t("trackingLine"))} ${escapeHTML(order.tracking)}</div>`
+            : ""
+        }
+
+        <button
+          type="button"
+          class="view-btn order-detail"
+          data-id="${escapeAttr(order.id)}"
+          style="margin-top:14px;width:100%;"
+        >
+          ${escapeHTML(t("seeDetail"))}
+        </button>
+
+      </div>
+
+    `).join("");
+
+  document.querySelectorAll(".order-detail").forEach(button => {
+
+    button.addEventListener("click", () => {
+
+      const order = orders.find(item => item.id === button.dataset.id);
+
+      if(order){
+        showOrderDetail(order);
+      }
+
+    });
+
+  });
+
+}
+
+
+// ============================================================
+// DÉTAIL COMMANDE
+// ============================================================
+
+const ORDER_STATUSES = [
+  "Enregistrée",
+  "Acceptée",
+  "Préparation",
+  "En transit",
+  "Livraison proche",
+  "Livrée",
+  "Annulée",
+  "Remboursement en cours"
+];
+
+function showOrderDetail(order){
+
+  const status = order.status || "Enregistrée";
+  const currentIndex = ORDER_STATUSES.indexOf(status);
+  const items = Array.isArray(order.items) ? order.items : [];
+
+  const itemsHTML =
+    items.map(item => {
+
+      const product = getProduct(item.id);
+      const name = item.name || product?.name || t("productWord");
+      const price = Number(product?.price ?? item.price ?? 0);
+      const quantity = Number(item.quantity || 1);
+
+      return `
+
+        <div style="display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);">
+
+          <div>
+
+            <strong>${escapeHTML(name)}</strong>
+
+            <div style="margin-top:4px;opacity:.7;font-size:13px;">×${quantity}</div>
+
+          </div>
+
+          <strong>${money(price * quantity)}</strong>
+
+        </div>
+
+      `;
+
+    }).join("");
+
+  const timelineHTML =
+    ORDER_STATUSES.map((item, index) => {
+
+      const active = currentIndex >= index;
+
+      return `
+
+        <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;">
+
+          <div style="
+            width:24px;
+            height:24px;
+            min-width:24px;
+            border-radius:50%;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            background:${active ? "#2d8cff" : "rgba(255,255,255,.08)"};
+            color:${active ? "#fff" : "var(--muted)"};
+            font-size:12px;
+            font-weight:800;
+          ">
+            ${active ? "✓" : index + 1}
+          </div>
+
+          <div><strong>${escapeHTML(statusLabel(item))}</strong></div>
+
+        </div>
+
+      `;
+
+    }).join("");
+
+  showModal(
+    `${t("orderWord")} #${order.id.slice(0, 8)}`,
+    `
+
+      <div style="display:grid;gap:16px;">
+
+        <div style="padding:16px;border-radius:16px;background:rgba(45,140,255,.08);border:1px solid rgba(45,140,255,.18);">
+
+          <div style="font-size:13px;opacity:.65;">${escapeHTML(t("currentStatus"))}</div>
+
+          <div style="font-size:20px;font-weight:800;margin-top:5px;">
+            ${escapeHTML(statusLabel(status))}
+          </div>
+
+          ${
+            order.city
+              ? `<div style="margin-top:10px;">${escapeHTML(t("destination"))} <strong>${escapeHTML(order.city)}</strong></div>`
+              : ""
+          }
+
+          ${
+            order.estimatedDelivery
+              ? `<div style="margin-top:7px;">${escapeHTML(t("estDelivery"))} <strong>${escapeHTML(order.estimatedDelivery)}</strong></div>`
+              : ""
+          }
+
+          ${
+            order.tracking
+              ? `<div style="margin-top:7px;">${escapeHTML(t("trackingLine"))} <strong>${escapeHTML(order.tracking)}</strong></div>`
+              : ""
+          }
+
+        </div>
+
+        <div style="padding:16px;border-radius:16px;background:rgba(255,255,255,.04);">
+
+          <h3>${escapeHTML(t("orderTracking"))}</h3>
+
+          <div style="margin-top:16px;">${timelineHTML}</div>
+
+        </div>
+
+        <div style="padding:16px;border-radius:16px;background:rgba(255,255,255,.04);">
+
+          <h3>${escapeHTML(t("productsWord"))}</h3>
+
+          <div style="margin-top:10px;">${itemsHTML}</div>
+
+          <div style="display:flex;justify-content:space-between;margin-top:16px;font-size:20px;">
+
+            <span>${escapeHTML(t("total"))}</span>
+
+            <strong>${money(order.total || 0)}</strong>
+
+          </div>
+
+        </div>
+
+        <div style="padding:16px;border-radius:16px;background:rgba(255,255,255,.04);">
+
+          <h3>${escapeHTML(t("deliveryWord"))}</h3>
+
+          <p style="margin-top:10px;opacity:.8;">
+            ${escapeHTML(order.address || t("addressMissing"))}
+          </p>
+
+        </div>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+
+          <button type="button" class="add-btn" id="orderInvoiceBtn" style="flex:1;min-width:180px;">
+            ${escapeHTML(t("seeInvoice"))}
+          </button>
+
+          <button type="button" class="view-btn" id="orderBackBtn" style="flex:1;min-width:180px;">
+            ${escapeHTML(t("backOrders"))}
+          </button>
+
+        </div>
+
+      </div>
+
+    `
+  );
+
+  $("orderInvoiceBtn")?.addEventListener("click", () => printInvoice(order));
+
+  $("orderBackBtn")?.addEventListener("click", () => {
+
+    closeModal();
+
+    setTimeout(openOrders, 100);
+
+  });
+
+}
+
+
+// ============================================================
+// CARTE DE TEST (créée depuis l'admin)
+// ============================================================
+
+function getTestCard(){
+  return loadStorage(TEST_CARD_STORAGE_KEY, null);
+}
+
+function generateTestCard(){
+
+  let number = "4";
+
+  for(let i = 0; i < 15; i++){
+    number += Math.floor(Math.random() * 10);
+  }
+
+  const month = String(Math.floor(Math.random() * 12) + 1).padStart(2, "0");
+
+  const year = String(
+    (new Date().getFullYear() + 2 + Math.floor(Math.random() * 4)) % 100
+  ).padStart(2, "0");
+
+  const cvv = String(Math.floor(Math.random() * 900) + 100);
+
+  const card = {
+    number,
+    holder:"NOVA CLIENT",
+    expiry:`${month}/${year}`,
+    cvv
+  };
+
+  saveStorage(TEST_CARD_STORAGE_KEY, card);
+
+  return card;
+
+}
+
+function formatCardNumber(number){
+  return String(number || "").replace(/(.{4})/g, "$1 ").trim();
+}
+
+function renderTestCardHTML(){
+
+  const card = getTestCard();
+
+  return `
+
+    ${
+      card
+        ? `
+          <div style="margin-top:12px;padding:14px;border-radius:14px;background:rgba(255,255,255,.05);line-height:1.8;">
+            <div>${escapeHTML(t("cardNumberLbl"))} : <strong>${escapeHTML(formatCardNumber(card.number))}</strong></div>
+            <div>${escapeHTML(t("cardHolderLbl"))} : <strong>${escapeHTML(card.holder)}</strong></div>
+            <div>${escapeHTML(t("expiry"))} : <strong>${escapeHTML(card.expiry)}</strong></div>
+            <div>CVV : <strong>${escapeHTML(card.cvv)}</strong></div>
+          </div>
+        `
+        : `<p style="margin-top:12px;opacity:.6;">${escapeHTML(t("cardNone"))}</p>`
+    }
+
+    <button type="button" class="view-btn" id="generateTestCard" style="margin-top:12px;">
+      ${escapeHTML(card ? t("regenerateCard") : t("generateCard"))}
+    </button>
+
+  `;
+
+}
+
+
+// ============================================================
+// CHECKOUT
+// ============================================================
+
+checkoutBtn?.addEventListener("click", openCheckout);
+
+function openCheckout(){
+
+  if(!cart.length){
+
+    toast(t("cartEmptyToast"));
+
+    return;
+
+  }
+
+  if(!currentUser){
+
+    toast(t("loginToOrder"));
+
+    showLoginForm();
+
+    return;
+
+  }
+
+  const subtotal = getCartSubtotal();
+
+  showModal(
+    t("checkoutTitle"),
+    `
+
+      <form id="checkoutForm">
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+
+          <div>
+
+            <label for="checkoutFirstName">${escapeHTML(t("firstName"))}</label>
+
+            <input
+              id="checkoutFirstName"
+              type="text"
+              autocomplete="given-name"
+              required
+              placeholder="${escapeAttr(t("firstNamePh"))}"
+            >
+
+          </div>
+
+          <div>
+
+            <label for="checkoutLastName">${escapeHTML(t("lastName"))}</label>
+
+            <input
+              id="checkoutLastName"
+              type="text"
+              autocomplete="family-name"
+              required
+              placeholder="${escapeAttr(t("lastNamePh"))}"
+            >
+
+          </div>
+
+        </div>
+
+        <div style="margin-bottom:14px;">
+
+          <label for="checkoutAddress">${escapeHTML(t("address"))}</label>
+
+          <textarea
+            id="checkoutAddress"
+            required
+            rows="4"
+            autocomplete="street-address"
+            placeholder="${escapeAttr(t("addressPh"))}"
+          ></textarea>
+
+        </div>
+
+        <div style="padding:15px;border-radius:14px;background:rgba(255,255,255,.05);margin:15px 0;">
+
+          <div style="display:flex;justify-content:space-between;">
+
+            <span>${escapeHTML(t("subtotal"))}</span>
+
+            <strong>${money(subtotal)}</strong>
+
+          </div>
+
+          <div style="display:flex;justify-content:space-between;margin-top:12px;font-size:22px;">
+
+            <span>${escapeHTML(t("total"))}</span>
+
+            <strong id="checkoutFinal">${money(subtotal)}</strong>
+
+          </div>
+
+        </div>
+
+        <h3>${escapeHTML(t("payMethod"))}</h3>
+
+        <div style="display:grid;gap:10px;margin:12px 0 18px;">
+
+          <button type="button" class="view-btn payment-choice" data-payment="paypal">
+            ${escapeHTML(t("paypal"))}
+          </button>
+
+          <button type="button" class="view-btn payment-choice" data-payment="card">
+            ${escapeHTML(t("card"))}
+          </button>
+
+        </div>
+
+        <input type="hidden" id="paymentMethod" value="">
+
+        <div id="paymentInfo" style="margin-bottom:14px;"></div>
+
+        <button type="submit" class="add-btn" id="checkoutSubmit" style="width:100%;">
+          ${escapeHTML(t("continue"))}
+        </button>
+
+        <div id="checkoutError" style="display:none;color:#ff7777;margin-top:12px;"></div>
+
+      </form>
+
+    `
+  );
+
+  let paymentMethod = "";
+
+  document.querySelectorAll(".payment-choice").forEach(button => {
+
+    button.addEventListener("click", () => {
+
+      paymentMethod = button.dataset.payment || "";
+
+      const input = $("paymentMethod");
+
+      if(input){
+        input.value = paymentMethod;
+      }
+
+      document.querySelectorAll(".payment-choice").forEach(item => {
+        item.classList.remove("selected");
+      });
+
+      button.classList.add("selected");
+
+      const info = $("paymentInfo");
+
+      if(!info){
+        return;
+      }
+
+      if(paymentMethod === "paypal"){
+
+        info.innerHTML = `
+
+          <div style="padding:12px;border-radius:12px;background:rgba(60,130,255,.1);">
+            ${escapeHTML(t("paypalInfo"))}
+          </div>
+
+        `;
+
+      }else{
+
+        info.innerHTML = `
+
+          <div style="padding:15px;border-radius:14px;background:rgba(255,255,255,.05);">
+
+            <div style="font-weight:700;margin-bottom:12px;">
+              ${escapeHTML(t("cardInfoTitle"))}
+            </div>
+
+            <label for="cardNumber">${escapeHTML(t("cardNumber"))}</label>
+
+            <input
+              id="cardNumber"
+              type="text"
+              inputmode="numeric"
+              autocomplete="off"
+              placeholder="${escapeAttr(t("cardNumber"))}"
+              required
+            >
+
+            <label for="cardHolder" style="display:block;margin-top:10px;">
+              ${escapeHTML(t("cardHolder"))}
+            </label>
+
+            <input
+              id="cardHolder"
+              type="text"
+              autocomplete="off"
+              placeholder="${escapeAttr(t("cardHolder"))}"
+              required
+            >
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;">
+
+              <div>
+
+                <label for="cardExpiry">${escapeHTML(t("expiry"))}</label>
+
+                <input
+                  id="cardExpiry"
+                  type="text"
+                  autocomplete="off"
+                  placeholder="MM/YY"
+                  required
+                >
+
+              </div>
+
+              <div>
+
+                <label for="cardCvv">CVV</label>
+
+                <input
+                  id="cardCvv"
+                  type="text"
+                  inputmode="numeric"
+                  autocomplete="off"
+                  placeholder="CVV"
+                  required
+                >
+
+              </div>
+
+            </div>
+
+            <p style="margin-top:12px;color:var(--muted);font-size:13px;">
+              ${escapeHTML(t("cardHint"))}
+            </p>
+
+          </div>
+
+        `;
+
+      }
+
+    });
+
+  });
+
+  $("checkoutForm")?.addEventListener("submit", async event => {
+
+    event.preventDefault();
+
+    const firstName = $("checkoutFirstName")?.value.trim() || "";
+    const lastName = $("checkoutLastName")?.value.trim() || "";
+    const address = $("checkoutAddress")?.value.trim() || "";
+    const errorBox = $("checkoutError");
+
+    function checkoutError(message){
+
+      if(errorBox){
+        errorBox.textContent = message;
+        errorBox.style.display = "block";
+      }
+
+    }
+
+    if(!firstName){
+      checkoutError(t("errFirst"));
+      return;
+    }
+
+    if(!lastName){
+      checkoutError(t("errLast"));
+      return;
+    }
+
+    if(!address){
+      checkoutError(t("errAddr"));
+      return;
+    }
+
+    if(!paymentMethod){
+      checkoutError(t("errPay"));
+      return;
+    }
+
+    const submit = $("checkoutSubmit");
+
+    if(submit){
+      submit.disabled = true;
+      submit.textContent = t("creating");
+    }
+
+    try{
+
+      const total = getCartSubtotal();
+
+      if(!Number.isFinite(total)){
+        throw new Error(t("errAmount"));
+      }
+
+      let paymentStatus = "En attente";
+
+      // ---------- Paiement carte de test ----------
+
+      if(paymentMethod === "card"){
+
+        const card = getTestCard();
+
+        if(!card){
+          throw new Error(t("errNoCard"));
+        }
+
+        const clean = value => String(value || "").replace(/\s+/g, "").trim();
+
+        const enteredNumber = clean($("cardNumber")?.value);
+        const storedNumber = clean(card.number);
+
+        const enteredHolder = ($("cardHolder")?.value || "").trim().toLowerCase();
+        const storedHolder = String(card.holder || "").trim().toLowerCase();
+
+        const enteredExpiry = ($("cardExpiry")?.value || "").trim();
+        const storedExpiry = String(card.expiry || "").trim();
+
+        const enteredCvv = ($("cardCvv")?.value || "").trim();
+        const storedCvv = String(card.cvv || "").trim();
+
+        if(
+          enteredNumber !== storedNumber ||
+          enteredHolder !== storedHolder ||
+          enteredExpiry !== storedExpiry ||
+          enteredCvv !== storedCvv
+        ){
+          throw new Error(t("errCardWrong"));
+        }
+
+        paymentStatus = "Payé";
+
+      }
+
+      // ---------- Produits de la commande ----------
+
+      const orderItems = cart.map(item => {
+
+        const product = getProduct(item.id);
+        const baseName = product?.name || t("productWord");
+
+        return {
+          id:item.id,
+          name:item.option ? `${baseName} (${item.option})` : baseName,
+          option:item.option || "",
+          price:Number(product?.price ?? 0),
+          quantity:Number(item.quantity || 1)
+        };
+
+      });
+
+      if(!orderItems.length){
+        throw new Error(t("errEmptyCart"));
+      }
+
+      // ---------- Création Firestore ----------
+
+      const orderData = {
+        userId:currentUser.uid,
+        userEmail:currentUser.email || "",
+        firstName,
+        lastName,
+        items:orderItems,
+        subtotal:total,
+        total,
+        address,
+        city:"",
+        status:"Enregistrée",
+        paymentMethod,
+        paymentStatus,
+        tracking:"",
+        estimatedDelivery:"",
+        createdAt:serverTimestamp()
+      };
+
+      const orderRef = await addDoc(collection(db, "orders"), orderData);
+
+      // ---------- Vider le panier ----------
+
+      cart = [];
+
+      saveCart();
+      renderCart();
+      closeModal();
+
+      toast(t("orderCreated", { id:orderRef.id.slice(0, 8) }), "success");
+
+      // ---------- PayPal ----------
+
+      if(paymentMethod === "paypal" && total > 0){
+
+        const paypalUrl =
+          `https://paypal.me/SH0PNOVA/${encodeURIComponent(total.toFixed(2))}EUR`;
+
+        setTimeout(() => {
+          window.open(paypalUrl, "_blank", "noopener,noreferrer");
+        }, 400);
+
+      }
+
+    }catch(error){
+
+      console.error("Firestore Checkout Error:", error);
+
+      checkoutError(
+        `${t("errorPrefix")}${error.message || error.code || t("unknown")}`
+      );
+
+    }finally{
+
+      if(submit){
+        submit.disabled = false;
+        submit.textContent = t("continue");
+      }
+
+    }
+
+  });
+
+}
+
+
+// ============================================================
+// FACTURE
+// ============================================================
+
+function printInvoice(order){
+
+  const items = Array.isArray(order.items) ? order.items : [];
+
+  const rows =
+    items.map(item => {
+
+      const product = getProduct(item.id);
+      const name = item.name || product?.name || t("productWord");
+      const price = Number(product?.price ?? item.price ?? 0);
+      const quantity = Number(item.quantity || 1);
+
+      return `
+
+        <tr>
+          <td>${escapeHTML(name)}</td>
+          <td>${quantity}</td>
+          <td>${money(price)}</td>
+          <td>${money(price * quantity)}</td>
+        </tr>
+
+      `;
+
+    }).join("");
+
+  const customerName =
+    `${order.firstName || ""} ${order.lastName || ""}`.trim();
+
+  const invoiceWindow = window.open("", "_blank", "width=900,height=700");
+
+  if(!invoiceWindow){
+
+    toast(t("invoiceBlocked"), "error");
+
+    return;
+
+  }
+
+  invoiceWindow.document.write(`
+
+    <!DOCTYPE html>
+
+    <html lang="${lang}">
+
+    <head>
+
+      <meta charset="UTF-8">
+
+      <title>${escapeHTML(t("invoiceTitle"))}</title>
+
+      <style>
+
+        *{ box-sizing:border-box; }
+
+        body{
+          font-family:Arial,sans-serif;
+          padding:40px;
+          color:#111827;
+          background:#fff;
+        }
+
+        h3{ margin-top:28px; }
+
+        .top{
+          display:flex;
+          justify-content:space-between;
+          gap:30px;
+          margin-bottom:40px;
+        }
+
+        .brand{
+          font-size:28px;
+          font-weight:800;
+        }
+
+        table{
+          width:100%;
+          border-collapse:collapse;
+          margin-top:20px;
+        }
+
+        th, td{
+          border-bottom:1px solid #ddd;
+          padding:12px;
+          text-align:left;
+        }
+
+        th{ background:#f5f5f5; }
+
+        .total{
+          margin-top:30px;
+          text-align:right;
+          font-size:24px;
+          font-weight:bold;
+        }
+
+        .small{
+          color:#666;
+          margin-top:30px;
+        }
+
+        .status{
+          margin-top:20px;
+          padding:12px;
+          background:#f5f5f5;
+          border-radius:8px;
+        }
+
+        @media print{
+          body{ padding:20px; }
+        }
+
+      </style>
+
+    </head>
+
+    <body>
+
+      <div class="top">
+
+        <div>
+          <div class="brand">NovaShop</div>
+          <p>${escapeHTML(t("gameShop"))}</p>
+        </div>
+
+        <div>
+          <strong>${escapeHTML(t("invoice"))}</strong>
+          <p>${escapeHTML(t("orderWord"))} #${escapeHTML(order.id)}</p>
+        </div>
+
+      </div>
+
+      <h3>${escapeHTML(t("client"))}</h3>
+
+      ${customerName ? `<p><strong>${escapeHTML(customerName)}</strong></p>` : ""}
+      ${order.userEmail ? `<p>${escapeHTML(order.userEmail)}</p>` : ""}
+      ${order.address ? `<p>${escapeHTML(order.address)}</p>` : ""}
+      ${order.city ? `<p>${escapeHTML(order.city)}</p>` : ""}
+
+      <h3>${escapeHTML(t("productsWord"))}</h3>
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>${escapeHTML(t("productWord"))}</th>
+            <th>${escapeHTML(t("qty"))}</th>
+            <th>${escapeHTML(t("price"))}</th>
+            <th>${escapeHTML(t("total"))}</th>
+          </tr>
+        </thead>
+
+        <tbody>${rows}</tbody>
+
+      </table>
+
+      <div class="total">
+        ${escapeHTML(t("total"))} : ${money(order.total || 0)}
+      </div>
+
+      <div class="status">
+        ${escapeHTML(t("statusLbl"))} :
+        <strong>${escapeHTML(statusLabel(order.status || "Enregistrée"))}</strong>
+      </div>
+
+      <p class="small">NovaShop • ${escapeHTML(t("gameShop"))}</p>
+
+      <script>
+        window.onload = function(){ window.print(); };
+      <\/script>
+
+    </body>
+
+    </html>
+
+  `);
+
+  invoiceWindow.document.close();
+
+}
+
+
+// ============================================================
+// ADMIN
+// ============================================================
+
+adminBtn?.addEventListener("click", openAdmin);
+
+function isAdminUser(){
+
+  return Boolean(
+    currentUser &&
+    (currentUser.email || "").toLowerCase() === ADMIN_EMAIL.toLowerCase()
+  );
+
+}
+
+function openAdmin(){
+
+  if(!isAdminUser()){
+
+    toast(t("adminDenied"), "error");
+
+    return;
+
+  }
+
+  const authorized = localStorage.getItem(ADMIN_ACCESS_KEY) === "true";
+
+  if(!authorized){
+
+    const code = prompt(t("adminCodePrompt"));
+
+    if(code !== ADMIN_CODE){
+
+      toast(t("adminCodeWrong"), "error");
+
+      return;
+
+    }
+
+    localStorage.setItem(ADMIN_ACCESS_KEY, "true");
+
+  }
+
+  loadAdmin();
+
+}
+
+async function loadAdmin(){
+
+  if(!isAdminUser()){
+
+    toast(t("adminDenied"), "error");
+
+    return;
+
+  }
+
+  showModal(
+    t("adminTitle"),
+    `
+
+      <div id="adminLoading" style="text-align:center;padding:30px;">
+        ${escapeHTML(t("loading"))}
+      </div>
+
+      <div id="adminContent"></div>
+
+    `
+  );
+
+  try{
+
+    const snapshot = await getDocs(collection(db, "orders"));
+
+    const orders = [];
+
+    snapshot.forEach(item => {
+      orders.push({ id:item.id, ...item.data() });
+    });
+
+    orders.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+
+    renderAdmin(orders);
+
+  }catch(error){
+
+    console.error("Admin Firestore Error:", error);
+
+    const loading = $("adminLoading");
+
+    if(loading){
+
+      loading.innerHTML = `
+        <div style="color:#ff7777;">
+          ${escapeHTML(t("adminFirestoreErr"))}
+          ${escapeHTML(error.message || "")}
+        </div>
+      `;
+
+    }
+
+  }
+
+}
+
+function renderAdmin(orders){
+
+  $("adminLoading")?.remove();
+
+  const content = $("adminContent");
+
+  if(!content){
+    return;
+  }
+
+  content.innerHTML = `
+
+    <div style="padding:15px;margin-bottom:18px;border-radius:16px;background:rgba(80,120,255,.08);">
+
+      <strong>${escapeHTML(t("adminHeader"))}</strong>
+
+      <p style="margin-top:6px;">
+        ${escapeHTML(t(orders.length > 1 ? "ordCountMany" : "ordCountOne", { n:orders.length }))}
+      </p>
+
+    </div>
+
+    <div style="padding:16px;margin-bottom:18px;border-radius:16px;background:rgba(255,255,255,.04);">
+
+      <strong>${escapeHTML(t("cardTitle"))}</strong>
+
+      <p style="margin-top:6px;opacity:.7;">
+        ${escapeHTML(t("cardOnly"))}
+      </p>
+
+      <div id="testCardContainer">
+        ${renderTestCardHTML()}
+      </div>
+
+    </div>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;">
+
+      <button type="button" class="view-btn" id="adminRefresh">
+        ${escapeHTML(t("refresh"))}
+      </button>
+
+      <button type="button" class="view-btn" id="adminLogout">
+        ${escapeHTML(t("quitAdmin"))}
+      </button>
+
+    </div>
+
+    <div id="adminOrders">
+
+      ${
+        orders.length
+          ? orders.map(order => {
+
+              const items = Array.isArray(order.items) ? order.items : [];
+
+              const productsText =
+                items
+                  .map(item => `${item.name || item.id} ×${item.quantity || 1}`)
+                  .join(", ");
+
+              const customerName =
+                `${order.firstName || ""} ${order.lastName || ""}`.trim();
+
+              return `
+
+                <div
+                  class="admin-order"
+                  style="padding:16px;margin-bottom:15px;border:1px solid var(--line);border-radius:16px;"
+                >
+
+                  <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+
+                    <strong>#${escapeHTML(order.id.slice(0, 8))}</strong>
+
+                    <strong>${money(order.total || 0)}</strong>
+
+                  </div>
+
+                  <p style="margin:8px 0;">
+                    👤
+                    ${
+                      customerName
+                        ? `<strong>${escapeHTML(customerName)}</strong>`
+                        : escapeHTML(t("nameMissing"))
+                    }
+                  </p>
+
+                  <p style="margin:8px 0;opacity:.85;">
+                    📧 ${escapeHTML(order.userEmail || t("unknownWord"))}
+                  </p>
+
+                  <p style="margin:8px 0;">
+                    💳 ${escapeHTML(paymentLabel(order.paymentMethod))}
+                    |
+                    ${escapeHTML(statusLabel(order.paymentStatus || "En attente"))}
+                  </p>
+
+                  <p style="margin:8px 0;opacity:.8;">
+                    ${escapeHTML(productsText)}
+                  </p>
+
+                  <label>${escapeHTML(t("statusLbl"))}</label>
+
+                  <select
+                    class="admin-status"
+                    data-id="${escapeAttr(order.id)}"
+                    style="width:100%;margin:6px 0 10px;"
+                  >
+
+                    ${ORDER_STATUSES.map(status => `
+                      <option
+                        value="${escapeAttr(status)}"
+                        ${order.status === status ? "selected" : ""}
+                      >
+                        ${escapeHTML(statusLabel(status))}
+                      </option>
+                    `).join("")}
+
+                  </select>
+
+                  <input
+                    class="admin-city"
+                    data-id="${escapeAttr(order.id)}"
+                    value="${escapeAttr(order.city || "")}"
+                    placeholder="${escapeAttr(t("cityPh"))}"
+                    style="width:100%;margin-bottom:8px;"
+                  >
+
+                  <input
+                    class="admin-tracking"
+                    data-id="${escapeAttr(order.id)}"
+                    value="${escapeAttr(order.tracking || "")}"
+                    placeholder="${escapeAttr(t("trackingPh"))}"
+                    style="width:100%;margin-bottom:8px;"
+                  >
+
+                  <input
+                    class="admin-delivery"
+                    data-id="${escapeAttr(order.id)}"
+                    value="${escapeAttr(order.estimatedDelivery || "")}"
+                    placeholder="${escapeAttr(t("deliveryPh"))}"
+                    style="width:100%;margin-bottom:10px;"
+                  >
+
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+
+                    <button type="button" class="add-btn admin-save" data-id="${escapeAttr(order.id)}">
+                      ${escapeHTML(t("save"))}
+                    </button>
+
+                    <button type="button" class="view-btn admin-paid" data-id="${escapeAttr(order.id)}">
+                      ${escapeHTML(t("markPaid"))}
+                    </button>
+
+                    <button type="button" class="view-btn admin-invoice" data-id="${escapeAttr(order.id)}">
+                      ${escapeHTML(t("invoiceBtn"))}
+                    </button>
+
+                    <button
+                      type="button"
+                      class="view-btn admin-delete"
+                      data-id="${escapeAttr(order.id)}"
+                      style="color:#ff7777;"
+                    >
+                      ${escapeHTML(t("del"))}
+                    </button>
+
+                  </div>
+
+                </div>
+
+              `;
+
+            }).join("")
+          : `
+
+            <div style="text-align:center;padding:30px;">
+
+              <div style="font-size:50px;">📦</div>
+
+              <h3>${escapeHTML(t("noOrders"))}</h3>
+
+            </div>
+
+          `
+      }
+
+    </div>
+
+  `;
+
+  $("adminRefresh")?.addEventListener("click", loadAdmin);
+
+  $("adminLogout")?.addEventListener("click", () => {
+
+    localStorage.removeItem(ADMIN_ACCESS_KEY);
+
+    closeModal();
+
+    toast(t("adminClosed"));
+
+  });
+
+  attachTestCardButton();
+
+  document.querySelectorAll(".admin-save").forEach(button => {
+    button.addEventListener("click", async () => {
+      await saveAdminOrder(button.dataset.id);
+    });
+  });
+
+  document.querySelectorAll(".admin-paid").forEach(button => {
+    button.addEventListener("click", async () => {
+      await markOrderPaid(button.dataset.id);
+    });
+  });
+
+  document.querySelectorAll(".admin-invoice").forEach(button => {
+
+    button.addEventListener("click", () => {
+
+      const order = orders.find(item => item.id === button.dataset.id);
+
+      if(order){
+        printInvoice(order);
+      }
+
+    });
+
+  });
+
+  document.querySelectorAll(".admin-delete").forEach(button => {
+    button.addEventListener("click", async () => {
+      await deleteAdminOrder(button.dataset.id);
+    });
+  });
+
+}
+
+function attachTestCardButton(){
+
+  const button = $("generateTestCard");
+
+  if(!button){
+    return;
+  }
+
+  button.addEventListener("click", () => {
+
+    generateTestCard();
+
+    const container = $("testCardContainer");
+
+    if(container){
+
+      container.innerHTML = renderTestCardHTML();
+
+      attachTestCardButton();
+
+    }
+
+    toast(t("cardGenerated"), "success");
+
+  });
+
+}
+
+function adminErrorToast(error){
+
+  console.error(error);
+
+  toast(
+    `${t("errorPrefix")}${error.message || error.code || t("unknown")}`,
+    "error"
+  );
+
+}
+
+async function saveAdminOrder(id){
+
+  try{
+
+    const safeId =
+      typeof CSS !== "undefined" && typeof CSS.escape === "function"
+        ? CSS.escape(id)
+        : id.replace(/["\\]/g, "\\$&");
+
+    const status =
+      document.querySelector(`.admin-status[data-id="${safeId}"]`)?.value ||
+      "Enregistrée";
+
+    const city =
+      document.querySelector(`.admin-city[data-id="${safeId}"]`)?.value || "";
+
+    const tracking =
+      document.querySelector(`.admin-tracking[data-id="${safeId}"]`)?.value || "";
+
+    const estimatedDelivery =
+      document.querySelector(`.admin-delivery[data-id="${safeId}"]`)?.value || "";
+
+    await updateDoc(
+      doc(db, "orders", id),
+      {
+        status,
+        city,
+        tracking,
+        estimatedDelivery,
+        updatedAt:serverTimestamp()
+      }
+    );
+
+    toast(t("updated"), "success");
+
+  }catch(error){
+
+    adminErrorToast(error);
+
+  }
+
+}
+
+async function markOrderPaid(id){
+
+  try{
+
+    await updateDoc(
+      doc(db, "orders", id),
+      {
+        paymentStatus:"Payé",
+        updatedAt:serverTimestamp()
+      }
+    );
+
+    toast(t("paidMarked"), "success");
+
+    loadAdmin();
+
+  }catch(error){
+
+    adminErrorToast(error);
+
+  }
+
+}
+
+async function deleteAdminOrder(id){
+
+  if(!confirm(t("confirmDelete"))){
+    return;
+  }
+
+  try{
+
+    await deleteDoc(doc(db, "orders", id));
+
+    toast(t("deleted"), "success");
+
+    loadAdmin();
+
+  }catch(error){
+
+    adminErrorToast(error);
+
+  }
+
+}
+
+
+// ============================================================
+// PARAMÈTRES (thème + langue)
+// ============================================================
+
+function getTheme(){
+  return localStorage.getItem("novaThemeChoice") || "dark";
+}
+
+function applyTheme(){
+
+  const light = getTheme() === "light";
+
+  document.documentElement.dataset.theme = light ? "light" : "dark";
+
+  // Le CSS du HTML utilise body.light
+  document.body.classList.toggle("light", light);
+
+}
+
+function saveTheme(theme){
+
+  localStorage.setItem("novaThemeChoice", theme);
+
+  applyTheme();
+
+}
+
+function openSettings(){
+
+  const currentTheme = getTheme();
+
+  showModal(
+    t("settingsTitle"),
+    `
+
+      <div style="display:flex;flex-direction:column;gap:18px;">
+
+        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:18px;">
+
+          <h3 style="margin-bottom:12px;">${escapeHTML(t("appearance"))}</h3>
+
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+
+            <button
+              type="button"
+              class="theme-choice"
+              data-theme-choice="dark"
+              style="padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#0b1424;color:white;cursor:pointer;"
+            >
+              ${escapeHTML(t("dark"))}
+            </button>
+
+            <button
+              type="button"
+              class="theme-choice"
+              data-theme-choice="light"
+              style="padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#f4f7fb;color:#111;cursor:pointer;"
+            >
+              ${escapeHTML(t("light"))}
+            </button>
+
+          </div>
+
+        </div>
+
+        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:18px;">
+
+          <h3 style="margin-bottom:12px;">🌐 ${escapeHTML(t("language"))}</h3>
+
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+
+            <button
+              type="button"
+              class="lang-choice"
+              data-lang-choice="fr"
+              style="padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#0b1424;color:white;cursor:pointer;"
+            >
+              🇫🇷 Français
+            </button>
+
+            <button
+              type="button"
+              class="lang-choice"
+              data-lang-choice="en"
+              style="padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#0b1424;color:white;cursor:pointer;"
+            >
+              🇬🇧 English
+            </button>
+
+          </div>
+
+        </div>
+
+        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:18px;">
+
+          <h3 style="margin-bottom:8px;">NovaShop</h3>
+
+          <p style="opacity:.7;line-height:1.6;">${escapeHTML(t("version"))}</p>
+
+        </div>
+
+      </div>
+
+    `
+  );
+
+  document.querySelectorAll(".theme-choice").forEach(button => {
+
+    if(button.dataset.themeChoice === currentTheme){
+      button.style.outline = "2px solid #2d8cff";
+    }
+
+    button.addEventListener("click", () => {
+
+      saveTheme(button.dataset.themeChoice);
+
+      openSettings();
+
+      toast(
+        button.dataset.themeChoice === "dark" ? t("darkOn") : t("lightOn"),
+        "success"
+      );
+
+    });
+
+  });
+
+  document.querySelectorAll(".lang-choice").forEach(button => {
+
+    if(button.dataset.langChoice === lang){
+      button.style.outline = "2px solid #2d8cff";
+    }
+
+    button.addEventListener("click", () => {
+
+      setLanguage(button.dataset.langChoice);
+
+      openSettings();
+
+      toast(t("langChanged"), "success");
+
+    });
+
+  });
+
+}
+
+
+// ============================================================
+// BOUTONS DU HAUT
+// ============================================================
+
+accountBtn?.addEventListener("click", openAccount);
+ordersBtn?.addEventListener("click", openOrders);
+settingsBtn?.addEventListener("click", openSettings);
+
+
+// ============================================================
+// ETAT FIREBASE / UTILISATEUR
+// ============================================================
+
+onAuthStateChanged(auth, user => {
+
+  currentUser = user || null;
+
+  updateAccountButton();
+
+  if(adminBtn){
+    adminBtn.style.display = isAdminUser() ? "" : "none";
+  }
+
+});
+
+
+// ============================================================
+// CLAVIER / ERREURS
+// ============================================================
+
+document.addEventListener("keydown", event => {
+
+  if(event.key !== "Escape"){
+    return;
+  }
+
+  closeModal();
+  closeCart();
+
+});
+
+window.addEventListener("error", event => {
+  console.error("NovaShop JS error :", event.error || event.message);
+});
+
+window.addEventListener("unhandledrejection", event => {
+  console.error("NovaShop Promise error :", event.reason);
+});
+
+
+// ============================================================
+// INITIALISATION
+// ============================================================
+
+function initNovaShop(){
+
+  try{
+
+    applyTheme();
+    applyStaticTranslations();
+    renderCategories();
+    renderProducts();
+    renderCart();
+    updateAccountButton();
+
+    console.log(`NovaShop chargé avec succès 🚀 | ${products.length} produits`);
+
+  }catch(error){
+
+    console.error("Erreur initialisation NovaShop :", error);
+
+    if(productGrid){
+
+      productGrid.innerHTML = `
+
+        <div style="
+          grid-column:1/-1;
+          padding:40px 20px;
+          text-align:center;
+          border-radius:18px;
+          background:rgba(255,70,70,.08);
+          border:1px solid rgba(255,70,70,.2);
+          color:#ff7777;
+        ">
+
+          <h2 style="margin-bottom:10px;">${escapeHTML(t("loadErr"))}</h2>
+
+          <p style="opacity:.8;line-height:1.6;">${escapeHTML(t("loadErrText"))}</p>
+
+          <small style="display:block;margin-top:10px;opacity:.55;word-break:break-word;">
+            ${escapeHTML(error?.message || t("unknownErr"))}
+          </small>
+
+        </div>
+
+      `;
+
+    }
+
+    if(productCount){
+      productCount.textContent = t("errWord");
+    }
+
+  }
+
+}
+
+initNovaShop();
+
+
+// ============================================================
+// API PUBLIQUE
+// ============================================================
+
+window.NovaShop = {
+
+  products,
+
+  get currentUser(){
+    return currentUser;
+  },
+
+  get lang(){
+    return lang;
+  },
+
+  setLanguage,
+  toggleLanguage,
+  addToCart,
+  removeFromCart,
+  changeCartQuantity,
+  openCart,
+  closeCart,
+  openProduct,
+  openAccount,
+  openOrders,
+  openSettings,
+  openCheckout,
+  openAdmin,
+  renderProducts,
+  renderCart,
+  getCartCount,
+  getCartSubtotal,
+  money
+
+};
