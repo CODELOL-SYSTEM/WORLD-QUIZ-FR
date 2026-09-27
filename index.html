@@ -1,2072 +1,1782 @@
-
+```html
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#08020f">
-<meta name="description" content="NovaShop MEMBERS - Packs MEMBERS Discord">
-<title>NOVASHOP • MEMBERS</title>
+<meta name="theme-color" content="#7c3aed">
+<meta name="description" content="NOVA MEMBERS">
+<title>NOVA MEMBERS</title>
 
 <style>
-
-/* ============================================================
-   NOVASHOP MEMBERS
-   INDEX.HTML
-   STYLE COMPLET
-============================================================ */
-
-:root {
-    --bg: #05020a;
-    --bg2: #09030f;
-    --panel: rgba(13, 6, 23, 0.94);
-    --panel-light: rgba(24, 11, 39, 0.85);
-    --purple: #8d35ff;
-    --purple-light: #c993ff;
-    --purple-dark: #4f0db0;
-    --white: #ffffff;
-    --text: #f5efff;
-    --muted: #a79db5;
-    --border: rgba(181, 105, 255, 0.2);
-    --danger: #ff5e72;
-    --success: #70e0a1;
-    --paypal: #ffc439;
-}
-
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
-html {
+html,
+body {
+    width: 100%;
     min-height: 100%;
-    background: var(--bg);
-    scroll-behavior: smooth;
 }
 
 body {
     min-height: 100vh;
-    background:
-        radial-gradient(
-            circle at 50% 10%,
-            rgba(126, 34, 255, 0.17),
-            transparent 30%
-        ),
-        radial-gradient(
-            circle at 0% 100%,
-            rgba(83, 17, 170, 0.12),
-            transparent 30%
-        ),
-        var(--bg);
-    color: var(--text);
-    font-family:
-        Inter,
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Arial,
-        sans-serif;
     overflow-x: hidden;
-}
-
-body.drawer-open {
-    overflow: hidden;
-}
-
-button,
-input {
-    font: inherit;
-}
-
-button {
-    cursor: pointer;
-}
-
-button:focus-visible,
-input:focus-visible {
-    outline: 2px solid var(--purple-light);
-    outline-offset: 3px;
-}
-
-a {
-    color: inherit;
-    text-decoration: none;
-}
-
-/* ============================================================
-   BACKGROUND
-============================================================ */
-
-#spaceBackground {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    overflow: hidden;
-    pointer-events: none;
-}
-
-.spaceGradient {
-    position: absolute;
-    inset: 0;
     background:
-        radial-gradient(
-            circle at 50% 50%,
-            transparent 0%,
-            rgba(0, 0, 0, 0.18) 60%,
-            rgba(0, 0, 0, 0.65) 100%
-        );
+        radial-gradient(circle at 50% 15%, rgba(124,58,237,.18), transparent 35%),
+        radial-gradient(circle at 15% 80%, rgba(168,85,247,.08), transparent 30%),
+        #05030a;
+    color: #ffffff;
+    font-family: Inter, Arial, Helvetica, sans-serif;
 }
 
-.star {
-    position: absolute;
-    border-radius: 50%;
-    background: white;
-    box-shadow:
-        0 0 5px rgba(255,255,255,.8),
-        0 0 12px rgba(183,116,255,.7);
-    animation:
-        starTwinkle
-        var(--star-speed, 2.8s)
-        ease-in-out
-        infinite alternate;
-}
-
-@keyframes starTwinkle {
-    0% {
-        opacity: .15;
-        transform: scale(.65);
-    }
-
-    45% {
-        opacity: .55;
-    }
-
-    100% {
-        opacity: 1;
-        transform: scale(1.45);
-    }
-}
-
-.constellationLine {
-    position: absolute;
-    height: 1px;
-    transform-origin: left center;
-    background:
-        linear-gradient(
-            90deg,
-            transparent,
-            rgba(175, 102, 255, .3),
-            transparent
-        );
-    opacity: .3;
-    filter: drop-shadow(0 0 4px rgba(150,70,255,.6));
-}
-
-.backgroundOrb {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(70px);
-    opacity: .12;
-    animation: orbFloat 9s ease-in-out infinite alternate;
-}
-
-.orbOne {
-    width: 380px;
-    height: 380px;
-    top: 5%;
-    left: -130px;
-    background: #812aff;
-}
-
-.orbTwo {
-    width: 430px;
-    height: 430px;
-    right: -170px;
-    bottom: 0;
-    background: #4b00a9;
-    animation-delay: 2s;
-}
-
-@keyframes orbFloat {
-    from {
-        transform: translate3d(0, 0, 0) scale(.9);
-    }
-
-    to {
-        transform: translate3d(50px, -35px, 0) scale(1.1);
-    }
-}
-
-/* ============================================================
-   ELECTRICITY
-============================================================ */
-
-.electricBolt {
-    position: absolute;
-    width: 2px;
-    height: 170px;
-    background:
-        linear-gradient(
-            to bottom,
-            transparent,
-            #9f4aff,
-            #ffffff,
-            #7a20ff,
-            transparent
-        );
-    filter:
-        drop-shadow(0 0 5px #a84cff)
-        drop-shadow(0 0 18px #7a22ff);
-    opacity: 0;
-    transform: rotate(var(--bolt-angle));
-    animation:
-        electricFlash
-        var(--bolt-duration)
-        infinite;
-    animation-delay: var(--bolt-delay);
-}
-
-@keyframes electricFlash {
-    0% {
-        opacity: 0;
-    }
-
-    8% {
-        opacity: .8;
-    }
-
-    10% {
-        opacity: .05;
-    }
-
-    12% {
-        opacity: 1;
-    }
-
-    15% {
-        opacity: 0;
-    }
-
-    100% {
-        opacity: 0;
-    }
-}
-
-/* ============================================================
+/* =========================================================
    LOADER
-============================================================ */
+   ========================================================= */
 
 #loader {
     position: fixed;
     inset: 0;
-    z-index: 10000;
+    z-index: 99999;
     display: flex;
     align-items: center;
     justify-content: center;
     background:
-        radial-gradient(
-            circle at center,
-            rgba(94, 21, 165, .17),
-            transparent 35%
-        ),
-        #020106;
+        radial-gradient(circle at center, #170b29 0%, #09040f 45%, #020106 100%);
     transition:
-        opacity .65s ease,
-        visibility .65s ease;
+        opacity .8s ease,
+        visibility .8s ease;
 }
 
-#loader.loader-hidden {
+#loader.hidden {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
 }
 
-.loaderCore {
-    position: relative;
-    width: 310px;
+.loader-content {
+    width: min(90vw, 620px);
     text-align: center;
-}
-
-.loaderRings {
-    position: absolute;
-    left: 50%;
-    top: -75px;
-    width: 150px;
-    height: 150px;
-    transform: translateX(-50%);
-}
-
-.loaderRing {
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    border: 1px solid rgba(180,100,255,.15);
-    animation: loaderRotate 3s linear infinite;
-}
-
-.loaderRing:nth-child(2) {
-    inset: 13px;
-    border-color: rgba(190,120,255,.28);
-    animation-duration: 2.2s;
-    animation-direction: reverse;
-}
-
-.loaderRing:nth-child(3) {
-    inset: 28px;
-    border-color: rgba(255,255,255,.25);
-    animation-duration: 1.5s;
-}
-
-@keyframes loaderRotate {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.loaderLightning {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    color: #e1c2ff;
-    font-size: 40px;
-    filter:
-        drop-shadow(0 0 8px #8e32ff)
-        drop-shadow(0 0 25px #7b22ff);
-    animation: loaderBoltPulse 1s ease-in-out infinite alternate;
-}
-
-@keyframes loaderBoltPulse {
-    from {
-        transform:
-            translate(-50%, -50%)
-            scale(.82);
-        opacity: .6;
-    }
-
-    to {
-        transform:
-            translate(-50%, -50%)
-            scale(1.12);
-        opacity: 1;
-    }
-}
-
-.loaderTitle {
     position: relative;
     z-index: 2;
-    margin-top: 75px;
-    font-size: 44px;
-    font-weight: 950;
-    letter-spacing: 8px;
-    color: #fff;
+}
+
+.loader-logo {
+    font-size: clamp(42px, 8vw, 82px);
+    font-weight: 1000;
+    letter-spacing: 12px;
+    color: #ffffff;
     text-shadow:
-        0 0 12px rgba(182,108,255,.8),
-        0 0 35px rgba(111,24,255,.65);
+        0 0 10px rgba(168,85,247,.9),
+        0 0 30px rgba(124,58,237,.7),
+        0 0 70px rgba(124,58,237,.4);
+    animation: loaderPulse 1.2s ease-in-out infinite;
 }
 
-.loaderSubtitle {
+.loader-subtitle {
+    margin-top: 12px;
+    color: #c4b5fd;
+    font-size: 13px;
+    letter-spacing: 5px;
+    font-weight: 800;
+}
+
+.loader-ring {
+    width: 110px;
+    height: 110px;
+    margin: 42px auto 28px;
+    border-radius: 50%;
+    border: 2px solid rgba(168,85,247,.15);
+    border-top-color: #a855f7;
+    border-right-color: #7c3aed;
+    box-shadow:
+        0 0 25px rgba(124,58,237,.5),
+        inset 0 0 25px rgba(124,58,237,.15);
+    animation: loaderSpin 1s linear infinite;
+    position: relative;
+}
+
+.loader-ring::before,
+.loader-ring::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+}
+
+.loader-ring::before {
+    inset: 13px;
+    border: 2px solid transparent;
+    border-left-color: #c084fc;
+    animation: loaderSpinReverse 1.4s linear infinite;
+}
+
+.loader-ring::after {
+    inset: 30px;
+    background: #a855f7;
+    box-shadow:
+        0 0 12px #a855f7,
+        0 0 30px #7c3aed;
+    animation: corePulse .8s ease-in-out infinite;
+}
+
+.loader-status {
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 3px;
+    color: #e9d5ff;
+}
+
+.loader-percent {
     margin-top: 13px;
-    color: #9d93a8;
-    font-size: 11px;
-    letter-spacing: 4px;
+    font-size: 31px;
+    font-weight: 1000;
+    color: #ffffff;
 }
 
-.loaderBar {
+.loader-bar {
+    height: 7px;
     width: 100%;
-    height: 5px;
-    margin-top: 28px;
-    overflow: hidden;
+    margin-top: 20px;
+    background: rgba(255,255,255,.08);
     border-radius: 999px;
-    background: rgba(255,255,255,.06);
+    overflow: hidden;
+    box-shadow: inset 0 0 10px rgba(0,0,0,.5);
 }
 
-.loaderBarProgress {
+.loader-bar-fill {
     width: 0%;
     height: 100%;
     border-radius: inherit;
-    background:
-        linear-gradient(
-            90deg,
-            #5712c8,
-            #9d42ff,
-            #d4a1ff
-        );
+    background: linear-gradient(90deg,#6d28d9,#a855f7,#d8b4fe);
     box-shadow:
-        0 0 12px #8c35ff,
-        0 0 28px rgba(134,47,255,.7);
+        0 0 12px #a855f7,
+        0 0 28px rgba(168,85,247,.7);
     transition: width .08s linear;
 }
 
-.loaderPercent {
-    margin-top: 12px;
-    color: #c9b0df;
-    font-size: 12px;
-    font-weight: 700;
+.loader-particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
 }
 
-/* ============================================================
+.loader-particle {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: #c084fc;
+    box-shadow: 0 0 10px #a855f7;
+    animation: particleFloat 4s linear infinite;
+}
+
+/* =========================================================
    FIRE TRANSITION
-============================================================ */
+   ========================================================= */
 
 #fireTransition {
     position: fixed;
     inset: 0;
-    z-index: 9999;
-    visibility: hidden;
-    opacity: 0;
-    overflow: hidden;
+    z-index: 99998;
     pointer-events: none;
-    background: #030106;
+    opacity: 0;
+    visibility: hidden;
+    overflow: hidden;
+    background: #000;
 }
 
-#fireTransition.fire-active {
-    visibility: visible;
+#fireTransition.active {
     opacity: 1;
+    visibility: visible;
 }
 
-.fireBlack {
+.fire-background {
     position: absolute;
     inset: 0;
     background:
-        radial-gradient(
-            ellipse at 50% 110%,
-            rgba(255,70,0,.42),
-            transparent 55%
-        ),
-        #030106;
+        radial-gradient(circle at 50% 110%,
+            rgba(255,255,255,.95) 0%,
+            rgba(255,200,60,.95) 7%,
+            rgba(255,100,0,.9) 16%,
+            rgba(130,20,0,.8) 29%,
+            rgba(15,5,20,.98) 55%,
+            #000 100%);
+    transform: translateY(100%);
 }
 
-.fireGlow {
+#fireTransition.active .fire-background {
+    animation: fireRise 2.1s ease-in forwards;
+}
+
+.flames {
     position: absolute;
-    left: 50%;
-    bottom: -300px;
-    width: 900px;
-    height: 650px;
-    transform: translateX(-50%);
-    border-radius: 50%;
-    background:
-        radial-gradient(
-            ellipse,
-            rgba(255,185,0,.72) 0%,
-            rgba(255,69,0,.45) 30%,
-            rgba(180,15,0,.22) 50%,
-            transparent 72%
-        );
-    filter: blur(28px);
-    animation: fireGlowPulse .5s infinite alternate;
-}
-
-@keyframes fireGlowPulse {
-    from {
-        transform:
-            translateX(-50%)
-            scale(.92);
-    }
-
-    to {
-        transform:
-            translateX(-50%)
-            scale(1.08);
-    }
+    inset: auto 0 0;
+    height: 85%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 8px;
 }
 
 .flame {
-    position: absolute;
-    bottom: -170px;
-    width: var(--flame-width);
-    height: var(--flame-height);
-    left: var(--flame-left);
-    border-radius:
-        55% 45% 52% 48% /
-        65% 55% 45% 35%;
+    width: 5vw;
+    min-width: 24px;
+    max-width: 85px;
+    height: 40%;
+    border-radius: 55% 45% 35% 35%;
+    transform-origin: bottom;
+    filter: blur(1px);
     background:
-        radial-gradient(
-            ellipse at 50% 80%,
-            #fff6a0 0%,
-            #ffd500 16%,
-            #ff7a00 40%,
-            #ff2400 68%,
-            rgba(255,0,0,.1) 100%
-        );
-    filter: blur(var(--flame-blur));
-    transform-origin: bottom center;
-    animation:
-        flameMove
-        var(--flame-duration)
-        ease-in-out
-        infinite alternate;
+        linear-gradient(to top,
+            #ffec80 0%,
+            #ff9d00 28%,
+            #ff3d00 62%,
+            rgba(120,0,0,.2) 100%);
+    box-shadow:
+        0 0 20px #ff5e00,
+        0 0 60px rgba(255,60,0,.7);
     opacity: .95;
 }
 
-@keyframes flameMove {
-    0% {
-        transform:
-            rotate(-7deg)
-            scaleY(.86)
-            translateX(-8px);
-    }
+.flame:nth-child(1) {height:48%; animation: flameDance .55s infinite alternate;}
+.flame:nth-child(2) {height:67%; animation: flameDance .42s infinite alternate-reverse;}
+.flame:nth-child(3) {height:39%; animation: flameDance .63s infinite alternate;}
+.flame:nth-child(4) {height:76%; animation: flameDance .48s infinite alternate-reverse;}
+.flame:nth-child(5) {height:55%; animation: flameDance .51s infinite alternate;}
+.flame:nth-child(6) {height:82%; animation: flameDance .39s infinite alternate-reverse;}
+.flame:nth-child(7) {height:45%; animation: flameDance .58s infinite alternate;}
+.flame:nth-child(8) {height:72%; animation: flameDance .44s infinite alternate-reverse;}
+.flame:nth-child(9) {height:51%; animation: flameDance .61s infinite alternate;}
+.flame:nth-child(10) {height:88%; animation: flameDance .37s infinite alternate-reverse;}
+.flame:nth-child(11) {height:43%; animation: flameDance .54s infinite alternate;}
+.flame:nth-child(12) {height:70%; animation: flameDance .43s infinite alternate-reverse;}
 
-    35% {
-        transform:
-            rotate(5deg)
-            scaleY(1.05)
-            translateX(10px);
-    }
-
-    70% {
-        transform:
-            rotate(-4deg)
-            scaleY(.94)
-            translateX(-12px);
-    }
-
-    100% {
-        transform:
-            rotate(8deg)
-            scaleY(1.12)
-            translateX(12px);
-    }
-}
-
-.fireParticle {
+.embers {
     position: absolute;
-    left: var(--particle-left);
-    bottom: var(--particle-bottom);
-    width: var(--particle-size);
-    height: var(--particle-size);
-    border-radius: 50%;
-    background: #ffd66b;
-    box-shadow:
-        0 0 6px #ff7a00,
-        0 0 15px #ff3500;
-    animation:
-        particleRise
-        var(--particle-duration)
-        ease-out
-        infinite;
-    animation-delay: var(--particle-delay);
-}
-
-@keyframes particleRise {
-    0% {
-        opacity: 0;
-        transform:
-            translate3d(0, 0, 0)
-            scale(.5);
-    }
-
-    15% {
-        opacity: 1;
-    }
-
-    100% {
-        opacity: 0;
-        transform:
-            translate3d(
-                var(--particle-x),
-                var(--particle-y),
-                0
-            )
-            scale(.05);
-    }
-}
-
-.fireSmoke {
-    position: absolute;
-    left: var(--smoke-left);
-    bottom: var(--smoke-bottom);
-    width: var(--smoke-size);
-    height: var(--smoke-size);
-    border-radius: 50%;
-    background: rgba(110,110,110,.18);
-    filter: blur(30px);
-    animation:
-        smokeUp
-        var(--smoke-duration)
-        ease-out
-        infinite;
-    animation-delay: var(--smoke-delay);
-}
-
-@keyframes smokeUp {
-    0% {
-        opacity: 0;
-        transform:
-            translate3d(0,0,0)
-            scale(.5);
-    }
-
-    25% {
-        opacity: .5;
-    }
-
-    100% {
-        opacity: 0;
-        transform:
-            translate3d(
-                var(--smoke-x),
-                -550px,
-                0
-            )
-            scale(2.5);
-    }
-}
-
-.fireAsh {
-    position: absolute;
-    left: var(--ash-left);
-    bottom: var(--ash-bottom);
-    width: var(--ash-size);
-    height: var(--ash-size);
-    border-radius: 50%;
-    background: #777;
-    animation:
-        ashFall
-        var(--ash-duration)
-        ease-in
-        infinite;
-    animation-delay: var(--ash-delay);
-}
-
-@keyframes ashFall {
-    0% {
-        opacity: 0;
-        transform:
-            translate3d(0,-150px,0)
-            scale(.3);
-    }
-
-    25% {
-        opacity: .75;
-    }
-
-    100% {
-        opacity: 0;
-        transform:
-            translate3d(
-                var(--ash-x),
-                100px,
-                0
-            )
-            rotate(720deg)
-            scale(.1);
-    }
-}
-
-#fireTransition.fire-fade {
-    transition:
-        opacity 1.7s ease,
-        visibility 1.7s ease;
-    opacity: 0;
-}
-
-/* ============================================================
-   SITE
-============================================================ */
-
-#site {
-    position: relative;
-    z-index: 10;
-    min-height: 100vh;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(10px);
-    transition:
-        opacity .9s ease,
-        transform .9s ease,
-        visibility .9s ease;
-}
-
-#site.site-visible {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-}
-
-/* ============================================================
-   HEADER
-============================================================ */
-
-.siteHeader {
-    position: sticky;
-    top: 0;
-    z-index: 300;
-    height: 78px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 clamp(18px, 5vw, 80px);
-    border-bottom: 1px solid rgba(181,105,255,.12);
-    background: rgba(5,2,10,.72);
-    backdrop-filter: blur(22px);
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.logoMark {
-    display: grid;
-    place-items: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 11px;
-    background:
-        linear-gradient(
-            135deg,
-            #5915c5,
-            #a850ff
-        );
-    box-shadow:
-        0 0 20px rgba(136,45,255,.4);
-}
-
-.logoText {
-    font-size: 21px;
-    font-weight: 950;
-    letter-spacing: 2px;
-}
-
-.logoText span {
-    color: #b96fff;
-}
-
-.headerActions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.headerButton {
-    min-height: 44px;
-    border: 1px solid rgba(194,132,255,.22);
-    border-radius: 12px;
-    padding: 0 16px;
-    background: rgba(126,42,255,.08);
-    color: #fff;
-    transition:
-        background .2s ease,
-        transform .2s ease,
-        border-color .2s ease;
-}
-
-.headerButton:hover {
-    transform: translateY(-2px);
-    background: rgba(126,42,255,.18);
-    border-color: rgba(205,153,255,.5);
-}
-
-/* ============================================================
-   HERO
-============================================================ */
-
-.hero {
-    position: relative;
-    min-height:
-        calc(100vh - 78px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding:
-        80px 20px
-        120px;
+    inset: 0;
     overflow: hidden;
 }
 
-.heroGrid {
+.ember {
+    position: absolute;
+    bottom: -30px;
+    width: 4px;
+    height: 9px;
+    border-radius: 50%;
+    background: #ffd166;
+    box-shadow: 0 0 10px #ff5e00;
+    animation: emberRise 1.7s linear forwards;
+}
+
+.ash-layer {
     position: absolute;
     inset: 0;
-    opacity: .12;
-    background-image:
-        linear-gradient(
-            rgba(165,87,255,.2) 1px,
-            transparent 1px
-        ),
-        linear-gradient(
-            90deg,
-            rgba(165,87,255,.2) 1px,
-            transparent 1px
-        );
-    background-size: 70px 70px;
-    mask-image:
-        radial-gradient(
-            ellipse at center,
-            black,
-            transparent 75%
-        );
+    background:
+        radial-gradient(circle at 20% 40%, rgba(80,80,80,.7), transparent 2%),
+        radial-gradient(circle at 65% 30%, rgba(80,80,80,.6), transparent 2%),
+        radial-gradient(circle at 80% 65%, rgba(90,90,90,.5), transparent 2%),
+        #090909;
+    opacity: 0;
 }
 
-.heroContent {
+#fireTransition.ash .ash-layer {
+    animation: ashFade 1.2s ease forwards;
+}
+
+/* =========================================================
+   STARS
+   ========================================================= */
+
+#space {
+    position: fixed;
+    inset: 0;
+    z-index: -5;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 0 8px rgba(255,255,255,.9);
+    animation: starBlink 2s ease-in-out infinite alternate;
+}
+
+.constellation {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: #c084fc;
+    box-shadow:
+        0 0 8px #a855f7,
+        0 0 18px #7c3aed;
+}
+
+/* =========================================================
+   MAIN
+   ========================================================= */
+
+#site {
+    opacity: 0;
+    transform: translateY(15px);
+    transition:
+        opacity 1s ease,
+        transform 1s ease;
+}
+
+#site.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    height: 76px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 5vw;
+    background: rgba(5,3,10,.72);
+    backdrop-filter: blur(22px);
+    border-bottom: 1px solid rgba(168,85,247,.14);
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 1000;
+    letter-spacing: 4px;
+}
+
+.logo span {
+    color: #a855f7;
+    text-shadow: 0 0 18px rgba(168,85,247,.7);
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn {
+    border: 0;
+    cursor: pointer;
+    color: #fff;
+    font-weight: 900;
+    font-size: 14px;
+    border-radius: 13px;
+    padding: 13px 18px;
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        background .2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn-purple {
+    background: linear-gradient(135deg,#7c3aed,#a855f7);
+    box-shadow:
+        0 8px 30px rgba(124,58,237,.3);
+}
+
+.btn-purple:hover {
+    box-shadow:
+        0 12px 40px rgba(168,85,247,.5);
+}
+
+.btn-dark {
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.1);
+}
+
+.cart-count {
+    display: inline-flex;
+    min-width: 21px;
+    height: 21px;
+    align-items: center;
+    justify-content: center;
+    margin-left: 5px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: #a855f7;
+    font-size: 11px;
+}
+
+.hero {
+    min-height: calc(100vh - 76px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 70px 5vw;
     position: relative;
-    z-index: 2;
-    width: min(900px, 100%);
-    text-align: center;
 }
 
-.heroBadge {
+.hero-inner {
+    width: min(1150px,100%);
+    display: grid;
+    grid-template-columns: 1.05fr .95fr;
+    gap: 70px;
+    align-items: center;
+}
+
+.badge {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 9px 15px;
-    border: 1px solid rgba(193,124,255,.3);
+    padding: 9px 13px;
     border-radius: 999px;
-    background: rgba(122,33,255,.09);
-    color: #d6b4f4;
+    background: rgba(168,85,247,.1);
+    border: 1px solid rgba(168,85,247,.25);
+    color: #d8b4fe;
     font-size: 12px;
-    font-weight: 750;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
+    font-weight: 900;
+    letter-spacing: 1px;
 }
 
-.heroTitle {
-    margin-top: 27px;
-    font-size:
-        clamp(58px, 11vw, 135px);
-    line-height: .82;
+.badge-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #c084fc;
+    box-shadow: 0 0 12px #a855f7;
+}
+
+h1 {
+    margin-top: 24px;
+    font-size: clamp(52px, 8vw, 108px);
+    line-height: .88;
+    letter-spacing: -5px;
     font-weight: 1000;
-    letter-spacing: -.07em;
-    color: white;
-    text-shadow:
-        0 0 20px rgba(193,126,255,.2),
-        0 0 70px rgba(113,24,255,.25);
 }
 
-.heroTitle span {
-    display: block;
-    background:
-        linear-gradient(
-            135deg,
-            #fff 0%,
-            #e2c3ff 40%,
-            #9841ff 100%
-        );
+.gradient-text {
+    background: linear-gradient(100deg,#ffffff,#d8b4fe 42%,#9333ea);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
 }
 
-.heroDescription {
-    width: min(670px, 100%);
-    margin: 30px auto 0;
-    color: #aaa0b2;
+.hero-description {
+    margin-top: 27px;
+    max-width: 610px;
+    color: #a8a1b5;
     font-size: 17px;
-    line-height: 1.75;
+    line-height: 1.7;
 }
 
-.heroPrice {
-    margin-top: 28px;
-    font-size: 31px;
-    font-weight: 950;
-    color: #dfbdff;
-    text-shadow:
-        0 0 22px rgba(151,67,255,.4);
-}
-
-.heroPrice small {
-    font-size: 13px;
-    color: #8d8395;
-    font-weight: 500;
-}
-
-.heroActions {
+.hero-buttons {
     display: flex;
-    justify-content: center;
-    gap: 12px;
     flex-wrap: wrap;
-    margin-top: 30px;
+    gap: 13px;
+    margin-top: 34px;
 }
 
-.primaryButton {
-    min-height: 54px;
-    padding: 0 27px;
-    border: 0;
-    border-radius: 14px;
-    color: white;
-    font-weight: 850;
-    background:
-        linear-gradient(
-            135deg,
-            #6419dc,
-            #a348ff
-        );
-    box-shadow:
-        0 12px 35px rgba(105,27,215,.22),
-        inset 0 1px rgba(255,255,255,.25);
-    transition:
-        transform .2s ease,
-        box-shadow .2s ease,
-        filter .2s ease;
+.big-button {
+    padding: 17px 23px;
+    font-size: 15px;
 }
 
-.primaryButton:hover {
-    transform:
-        translateY(-3px)
-        scale(1.015);
-    filter: brightness(1.08);
-    box-shadow:
-        0 18px 45px rgba(105,27,215,.35),
-        0 0 25px rgba(155,70,255,.22);
-}
-
-.secondaryButton {
-    min-height: 54px;
-    padding: 0 25px;
-    border: 1px solid rgba(197,139,255,.25);
-    border-radius: 14px;
-    color: #d9c9e8;
-    background: rgba(255,255,255,.035);
-    transition: .2s;
-}
-
-.secondaryButton:hover {
-    transform: translateY(-2px);
-    border-color: rgba(197,139,255,.5);
-    background: rgba(255,255,255,.06);
-}
-
-/* ============================================================
-   INFO CARDS
-============================================================ */
-
-.infoSection {
+.product-card {
     position: relative;
-    z-index: 2;
-    width: min(1050px, 92%);
-    margin: 0 auto 100px;
-}
-
-.infoGrid {
-    display: grid;
-    grid-template-columns:
-        repeat(3, minmax(0,1fr));
-    gap: 14px;
-}
-
-.infoCard {
-    padding: 23px;
-    border: 1px solid rgba(181,105,255,.13);
-    border-radius: 20px;
+    min-height: 470px;
+    padding: 42px;
+    border-radius: 35px;
     background:
-        linear-gradient(
-            145deg,
-            rgba(255,255,255,.045),
-            rgba(255,255,255,.015)
-        );
+        linear-gradient(145deg,
+            rgba(255,255,255,.09),
+            rgba(255,255,255,.025));
+    border: 1px solid rgba(168,85,247,.23);
     box-shadow:
-        inset 0 1px rgba(255,255,255,.04);
+        0 30px 100px rgba(0,0,0,.4),
+        inset 0 0 70px rgba(124,58,237,.06);
+    overflow: hidden;
 }
 
-.infoIcon {
-    font-size: 24px;
+.product-card::before {
+    content: "";
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    right: -100px;
+    top: -100px;
+    border-radius: 50%;
+    background: rgba(168,85,247,.15);
+    filter: blur(50px);
 }
 
-.infoTitle {
-    margin-top: 15px;
-    font-size: 16px;
-    font-weight: 850;
+.product-icon {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 28px;
+    background:
+        linear-gradient(135deg,
+            rgba(124,58,237,.3),
+            rgba(168,85,247,.12));
+    border: 1px solid rgba(192,132,252,.25);
+    font-size: 48px;
+    box-shadow:
+        0 0 40px rgba(124,58,237,.25);
+    animation: floating 3s ease-in-out infinite;
 }
 
-.infoText {
-    margin-top: 8px;
-    color: #93899d;
-    font-size: 13px;
+.product-card h2 {
+    margin-top: 30px;
+    font-size: 43px;
+    font-weight: 1000;
+    letter-spacing: -2px;
+}
+
+.product-card p {
+    margin-top: 12px;
+    color: #aaa2b6;
+    line-height: 1.65;
+}
+
+.price {
+    margin-top: 27px;
+    font-size: 44px;
+    font-weight: 1000;
+}
+
+.price small {
+    color: #9f97a9;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.product-meta {
+    margin-top: 22px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.meta {
+    padding: 8px 11px;
+    border-radius: 10px;
+    background: rgba(255,255,255,.055);
+    color: #c4b5fd;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+/* =========================================================
+   FEATURES
+   ========================================================= */
+
+.features {
+    width: min(1150px,90%);
+    margin: 0 auto;
+    padding: 50px 0 120px;
+}
+
+.features-title {
+    text-align: center;
+    font-size: 38px;
+    font-weight: 1000;
+}
+
+.features-grid {
+    margin-top: 35px;
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 17px;
+}
+
+.feature {
+    padding: 27px;
+    border-radius: 22px;
+    background: rgba(255,255,255,.035);
+    border: 1px solid rgba(255,255,255,.07);
+    transition:
+        transform .25s ease,
+        border-color .25s ease,
+        background .25s ease;
+}
+
+.feature:hover {
+    transform: translateY(-6px);
+    border-color: rgba(168,85,247,.3);
+    background: rgba(168,85,247,.055);
+}
+
+.feature-icon {
+    font-size: 28px;
+}
+
+.feature h3 {
+    margin-top: 16px;
+    font-size: 18px;
+}
+
+.feature p {
+    margin-top: 9px;
+    color: #928b9d;
+    font-size: 14px;
     line-height: 1.6;
 }
 
-/* ============================================================
-   DRAWER OVERLAY
-============================================================ */
+/* =========================================================
+   OVERLAY
+   ========================================================= */
 
 #drawerOverlay {
     position: fixed;
     inset: 0;
-    z-index: 700;
+    z-index: 500;
+    background: rgba(0,0,0,.7);
+    backdrop-filter: blur(7px);
     opacity: 0;
     visibility: hidden;
-    pointer-events: none;
-    background: rgba(0,0,0,.68);
-    backdrop-filter: blur(6px);
     transition:
         opacity .35s ease,
         visibility .35s ease;
 }
 
-#drawerOverlay.overlay-visible {
+#drawerOverlay.active {
     opacity: 1;
     visibility: visible;
-    pointer-events: auto;
 }
 
-/* ============================================================
+/* =========================================================
    DRAWERS
-============================================================ */
+   ========================================================= */
 
 .drawer {
     position: fixed;
     top: 0;
     bottom: 0;
-    z-index: 701;
-    width: min(530px, 100vw);
-    padding: 28px;
-    overflow-y: auto;
+    width: min(50vw,560px);
+    min-width: 360px;
+    z-index: 600;
     background:
-        radial-gradient(
-            circle at 50% 0%,
-            rgba(127,38,255,.15),
-            transparent 30%
-        ),
-        #09040f;
-    box-shadow:
-        0 0 80px rgba(0,0,0,.7);
-    transition:
-        transform .5s
-        cubic-bezier(.2,.8,.2,1);
+        linear-gradient(160deg,#10091b,#08050d);
+    border-color: rgba(168,85,247,.18);
+    box-shadow: 0 0 80px rgba(0,0,0,.6);
+    transition: transform .42s cubic-bezier(.22,.8,.22,1);
+    padding: 30px;
+    overflow-y: auto;
 }
 
-.drawer::-webkit-scrollbar {
-    width: 6px;
-}
-
-.drawer::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    background: rgba(170,95,255,.25);
-}
-
-.quantityDrawer {
+#quantityDrawer {
     left: 0;
     transform: translateX(-105%);
-    border-right: 1px solid rgba(181,105,255,.18);
+    border-right: 1px solid rgba(168,85,247,.18);
 }
 
-.quantityDrawer.drawer-visible {
+#quantityDrawer.open {
     transform: translateX(0);
 }
 
-.cartDrawer {
+#cartDrawer {
     right: 0;
     transform: translateX(105%);
-    border-left: 1px solid rgba(181,105,255,.18);
+    border-left: 1px solid rgba(168,85,247,.18);
 }
 
-.cartDrawer.drawer-visible {
+#cartDrawer.open {
     transform: translateX(0);
 }
 
-.drawerHeader {
+.drawer-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 20px;
     padding-bottom: 22px;
-    border-bottom: 1px solid rgba(181,105,255,.1);
+    border-bottom: 1px solid rgba(255,255,255,.07);
 }
 
-.drawerTitle {
-    font-size: 24px;
+.drawer-title {
+    font-size: 26px;
+    font-weight: 1000;
+}
+
+.close-button {
+    width: 42px;
+    height: 42px;
+    border: 0;
+    border-radius: 13px;
+    cursor: pointer;
+    background: rgba(255,255,255,.07);
+    color: #fff;
+    font-size: 22px;
+    transition: transform .2s ease, background .2s ease;
+}
+
+.close-button:hover {
+    transform: rotate(90deg);
+    background: rgba(168,85,247,.2);
+}
+
+.quantity-product {
+    margin-top: 28px;
+    padding: 24px;
+    border-radius: 22px;
+    background: rgba(255,255,255,.045);
+    border: 1px solid rgba(255,255,255,.07);
+}
+
+.quantity-product-name {
+    font-size: 22px;
+    font-weight: 1000;
+}
+
+.quantity-product-price {
+    margin-top: 7px;
+    color: #c084fc;
     font-weight: 900;
 }
 
-.closeButton {
-    flex: 0 0 auto;
-    width: 43px;
-    height: 43px;
-    border: 1px solid rgba(255,255,255,.1);
-    border-radius: 13px;
-    background: rgba(255,255,255,.04);
-    color: white;
-    font-size: 25px;
-    line-height: 1;
-    transition: .2s;
-}
-
-.closeButton:hover {
-    transform: rotate(4deg);
-    background: rgba(255,76,100,.13);
-    border-color: rgba(255,100,120,.3);
-}
-
-/* ============================================================
-   DISCORD FORM
-============================================================ */
-
-.formIntro {
+.quantity-box {
     margin-top: 25px;
-    padding: 17px;
-    border: 1px solid rgba(181,105,255,.15);
-    border-radius: 17px;
-    background: rgba(124,40,255,.055);
 }
 
-.formIntroTitle {
-    color: #d9b8fa;
-    font-weight: 850;
-    font-size: 14px;
-}
-
-.formIntroText {
-    margin-top: 6px;
-    color: #8f8498;
-    font-size: 12px;
-    line-height: 1.55;
-}
-
-.formGroup {
-    margin-top: 21px;
-}
-
-.formLabel {
-    display: block;
-    margin-bottom: 8px;
-    color: #bbb1c2;
+.quantity-label {
+    color: #a8a1b5;
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 800;
 }
 
-.formInput {
-    width: 100%;
-    min-height: 50px;
-    padding: 0 15px;
-    border: 1px solid rgba(181,105,255,.16);
-    border-radius: 13px;
-    background: rgba(255,255,255,.035);
-    color: white;
-    transition: .2s;
-}
-
-.formInput::placeholder {
-    color: #625a69;
-}
-
-.formInput:focus {
-    border-color: rgba(171,87,255,.7);
-    background: rgba(130,40,255,.055);
-    box-shadow:
-        0 0 0 4px rgba(137,48,255,.08),
-        0 0 22px rgba(121,34,255,.08);
-}
-
-.inputError {
-    border-color: rgba(255,85,105,.75) !important;
-    box-shadow:
-        0 0 0 4px rgba(255,85,105,.07) !important;
-}
-
-.fieldError {
-    min-height: 18px;
-    margin-top: 6px;
-    color: #ff7e91;
-    font-size: 11px;
-}
-
-/* ============================================================
-   QUANTITY
-============================================================ */
-
-.quantitySection {
-    margin-top: 28px;
-}
-
-.quantityLabel {
-    color: #bbb1c2;
-    font-size: 13px;
-    font-weight: 700;
-    text-align: center;
-}
-
-.quantityControls {
+.quantity-control {
+    margin-top: 12px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 22px;
-    margin-top: 15px;
+    justify-content: space-between;
+    padding: 8px;
+    border-radius: 17px;
+    background: rgba(0,0,0,.28);
+    border: 1px solid rgba(255,255,255,.08);
 }
 
-.quantityButton {
-    width: 51px;
-    height: 51px;
-    border: 1px solid rgba(181,105,255,.22);
-    border-radius: 15px;
-    background: rgba(123,37,255,.08);
-    color: white;
-    font-size: 27px;
-    transition: .2s;
+.quantity-button {
+    width: 48px;
+    height: 48px;
+    border: 0;
+    border-radius: 13px;
+    background: rgba(168,85,247,.12);
+    color: #fff;
+    font-size: 25px;
+    cursor: pointer;
 }
 
-.quantityButton:hover {
-    background: rgba(123,37,255,.2);
-    border-color: rgba(199,144,255,.55);
-    transform: translateY(-2px);
-}
-
-.quantityNumber {
-    min-width: 115px;
+.quantity-value {
+    min-width: 80px;
     text-align: center;
-    font-size: 32px;
-    font-weight: 950;
-    color: white;
+    font-size: 22px;
+    font-weight: 1000;
 }
 
-.quantityMembers {
-    margin-top: 12px;
-    text-align: center;
-    color: #a993b7;
-    font-size: 13px;
+.member-total {
+    margin-top: 25px;
+    padding: 20px;
+    border-radius: 17px;
+    background: rgba(124,58,237,.09);
+    border: 1px solid rgba(168,85,247,.17);
 }
 
-.pricePreview {
-    margin-top: 7px;
-    text-align: center;
-    color: #d9b2fb;
-    font-size: 28px;
-    font-weight: 950;
-}
-
-.pricePreview small {
-    color: #746b7d;
-    font-size: 11px;
-    font-weight: 500;
-}
-
-/* ============================================================
-   CART
-============================================================ */
-
-.cartItems {
+.member-total-row {
     display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 23px;
-    padding-bottom: 190px;
+    justify-content: space-between;
+    gap: 20px;
+    color: #aaa2b6;
 }
 
-.emptyCart {
-    padding: 65px 20px;
+.member-total-row + .member-total-row {
+    margin-top: 10px;
+}
+
+.member-total strong {
+    color: #fff;
+}
+
+.member-price {
+    color: #c084fc !important;
+    font-size: 23px;
+}
+
+.add-cart-button {
+    width: 100%;
+    margin-top: 24px;
+    padding: 17px;
+    border: 0;
+    border-radius: 15px;
+    cursor: pointer;
+    color: #fff;
+    background: linear-gradient(135deg,#7c3aed,#a855f7);
+    font-size: 15px;
+    font-weight: 1000;
+    box-shadow: 0 12px 35px rgba(124,58,237,.25);
+}
+
+.add-cart-button:hover {
+    box-shadow: 0 15px 45px rgba(168,85,247,.45);
+}
+
+/* =========================================================
+   CART
+   ========================================================= */
+
+.empty-cart {
+    margin-top: 50px;
     text-align: center;
-    color: #746c7c;
+    color: #8f879a;
 }
 
-.emptyCartIcon {
-    font-size: 45px;
+.empty-cart-icon {
+    font-size: 55px;
     opacity: .7;
 }
 
-.emptyCartText {
-    margin-top: 13px;
-    font-size: 14px;
+.empty-cart p {
+    margin-top: 14px;
 }
 
-.cartItem {
-    padding: 17px;
-    border: 1px solid rgba(181,105,255,.13);
-    border-radius: 17px;
-    background: rgba(255,255,255,.035);
+.cart-item {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 19px;
+    background: rgba(255,255,255,.045);
+    border: 1px solid rgba(255,255,255,.07);
 }
 
-.cartItemTop {
+.cart-item-top {
     display: flex;
     justify-content: space-between;
     gap: 15px;
 }
 
-.cartItemName {
-    font-size: 15px;
-    font-weight: 850;
+.cart-item-name {
+    font-weight: 1000;
 }
 
-.cartItemPrice {
-    color: #d9b2fb;
-    font-weight: 850;
+.cart-item-price {
+    color: #c084fc;
+    font-weight: 900;
 }
 
-.cartItemDetails {
-    margin-top: 11px;
-    color: #8c8293;
-    font-size: 12px;
-    line-height: 1.65;
+.cart-item-members {
+    margin-top: 8px;
+    color: #9f97a9;
+    font-size: 13px;
 }
 
-.cartItemDetails strong {
-    color: #bcb0c5;
-}
-
-.removeItemButton {
-    margin-top: 12px;
+.cart-item-remove {
+    margin-top: 15px;
     border: 0;
     background: transparent;
-    color: #ff7184;
+    color: #f0abfc;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.cart-total {
+    margin-top: 28px;
+    padding-top: 22px;
+    border-top: 1px solid rgba(255,255,255,.08);
+}
+
+.cart-total-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 16px;
+}
+
+.cart-total-price {
+    color: #d8b4fe;
+    font-size: 28px;
+    font-weight: 1000;
+}
+
+.paypal-button {
+    width: 100%;
+    margin-top: 20px;
+    padding: 17px;
+    border: 0;
+    border-radius: 15px;
+    cursor: pointer;
+    background: #ffc439;
+    color: #111;
+    font-size: 15px;
+    font-weight: 1000;
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.paypal-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(255,196,57,.25);
+}
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+
+#toast {
+    position: fixed;
+    left: 50%;
+    bottom: 25px;
+    z-index: 1000;
+    transform: translate(-50%,20px);
+    opacity: 0;
+    visibility: hidden;
+    padding: 13px 18px;
+    border-radius: 13px;
+    background: rgba(20,12,30,.94);
+    border: 1px solid rgba(168,85,247,.3);
+    box-shadow: 0 15px 40px rgba(0,0,0,.4);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+    transition:
+        opacity .3s ease,
+        transform .3s ease,
+        visibility .3s ease;
+}
+
+#toast.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%,0);
+}
+
+/* =========================================================
+   LIGHTNING
+   ========================================================= */
+
+.lightning {
+    position: fixed;
+    pointer-events: none;
+    z-index: -1;
+    width: 1px;
+    height: 180px;
+    background: linear-gradient(
+        to bottom,
+        transparent,
+        rgba(192,132,252,.8),
+        transparent
+    );
+    transform: rotate(25deg);
+    filter: blur(.3px);
+    opacity: 0;
+    animation: lightningFlash 4s infinite;
+}
+
+.lightning.one {
+    left: 12%;
+    top: 15%;
+}
+
+.lightning.two {
+    right: 15%;
+    top: 30%;
+    animation-delay: 1.2s;
+}
+
+.lightning.three {
+    left: 72%;
+    top: 9%;
+    animation-delay: 2.2s;
+}
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+footer {
+    padding: 40px 5vw;
+    text-align: center;
+    color: #686170;
+    border-top: 1px solid rgba(255,255,255,.05);
     font-size: 12px;
 }
 
-.removeItemButton:hover {
-    text-decoration: underline;
-}
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
 
-.cartBottom {
-    position: absolute;
-    left: 28px;
-    right: 28px;
-    bottom: 24px;
-    padding-top: 15px;
-    background:
-        linear-gradient(
-            to bottom,
-            transparent,
-            #09040f 18%
-        );
-}
-
-.cartTotalRow {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 0;
-    font-size: 18px;
-}
-
-.cartTotalValue {
-    color: #dfbfff;
-    font-size: 24px;
-    font-weight: 950;
-}
-
-.paypalButton {
-    width: 100%;
-    min-height: 52px;
-    border: 0;
-    border-radius: 13px;
-    background: var(--paypal);
-    color: #111;
-    font-weight: 950;
-    transition: .2s;
-}
-
-.paypalButton:hover {
-    transform: translateY(-2px);
-    filter: brightness(1.04);
-    box-shadow:
-        0 10px 30px rgba(255,196,57,.15);
-}
-
-.paypalNote {
-    margin-top: 8px;
-    color: #665d6d;
-    text-align: center;
-    font-size: 10px;
-    line-height: 1.4;
-}
-
-/* ============================================================
-   TOAST
-============================================================ */
-
-#toastContainer {
-    position: fixed;
-    right: 20px;
-    bottom: 20px;
-    z-index: 2000;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 10px;
-    pointer-events: none;
-}
-
-.toast {
-    width: min(370px, calc(100vw - 40px));
-    padding: 15px 17px;
-    border: 1px solid rgba(181,105,255,.2);
-    border-radius: 14px;
-    background: rgba(15,7,24,.94);
-    box-shadow:
-        0 15px 40px rgba(0,0,0,.35);
-    backdrop-filter: blur(18px);
-    color: #eee;
-    font-size: 13px;
-    animation:
-        toastIn .35s ease forwards;
-}
-
-.toast.toast-out {
-    animation:
-        toastOut .35s ease forwards;
-}
-
-.toast.success {
-    border-color: rgba(112,224,161,.25);
-}
-
-.toast.error {
-    border-color: rgba(255,94,114,.3);
-}
-
-@keyframes toastIn {
-    from {
-        opacity: 0;
-        transform:
-            translateY(15px)
-            translateX(15px);
-    }
-
-    to {
-        opacity: 1;
-        transform:
-            translateY(0)
-            translateX(0);
-    }
-}
-
-@keyframes toastOut {
-    to {
-        opacity: 0;
-        transform:
-            translateY(10px)
-            translateX(20px);
-    }
-}
-
-/* ============================================================
-   FOOTER
-============================================================ */
-
-.footer {
-    position: relative;
-    z-index: 2;
-    width: min(1050px, 92%);
-    margin: 0 auto;
-    padding: 35px 0 45px;
-    border-top: 1px solid rgba(181,105,255,.1);
-    text-align: center;
-}
-
-.footerLogo {
-    font-weight: 900;
-    letter-spacing: 2px;
-}
-
-.footerText {
-    margin-top: 8px;
-    color: #625969;
-    font-size: 11px;
-}
-
-/* ============================================================
-   MOBILE
-============================================================ */
-
-@media (max-width: 760px) {
-
-    .siteHeader {
-        height: 68px;
-    }
-
-    .logoText {
-        font-size: 17px;
-    }
-
-    .logoMark {
-        width: 32px;
-        height: 32px;
-    }
-
-    .headerButton {
-        min-height: 40px;
-        padding: 0 12px;
-        font-size: 12px;
+@media (max-width: 850px) {
+    header {
+        padding: 0 20px;
     }
 
     .hero {
-        min-height:
-            calc(100vh - 68px);
-        padding:
-            70px 18px
-            90px;
+        padding: 55px 20px;
     }
 
-    .heroTitle {
-        font-size:
-            clamp(55px, 19vw, 100px);
+    .hero-inner {
+        grid-template-columns: 1fr;
+        gap: 45px;
     }
 
-    .heroDescription {
-        font-size: 14px;
-        line-height: 1.7;
+    h1 {
+        letter-spacing: -3px;
     }
 
-    .heroPrice {
-        font-size: 26px;
+    .features {
+        width: calc(100% - 40px);
     }
 
-    .infoGrid {
+    .features-grid {
         grid-template-columns: 1fr;
     }
 
     .drawer {
         width: 100vw;
-        padding: 22px;
+        min-width: 0;
     }
 
-    .cartBottom {
-        left: 22px;
-        right: 22px;
-    }
-
-    .loaderCore {
-        width: min(280px, 85vw);
-    }
-
-    .loaderTitle {
-        font-size: 37px;
+    .nav-actions .btn-dark {
+        display: none;
     }
 }
 
-@media (max-width: 420px) {
-
-    .headerActions {
-        gap: 5px;
+@media (max-width: 520px) {
+    .logo {
+        font-size: 19px;
     }
 
-    .headerButton {
-        padding: 0 9px;
+    .hero-description {
+        font-size: 15px;
     }
 
-    .heroActions {
+    .product-card {
+        padding: 27px;
+        min-height: auto;
+    }
+
+    .product-card h2 {
+        font-size: 34px;
+    }
+
+    .price {
+        font-size: 37px;
+    }
+
+    .hero-buttons {
         flex-direction: column;
     }
 
-    .primaryButton,
-    .secondaryButton {
+    .hero-buttons .btn {
         width: 100%;
+    }
+
+    .drawer {
+        padding: 22px;
     }
 }
 
+/* =========================================================
+   ANIMATIONS
+   ========================================================= */
+
+@keyframes loaderSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes loaderSpinReverse {
+    to {
+        transform: rotate(-360deg);
+    }
+}
+
+@keyframes loaderPulse {
+    0%,100% {
+        transform: scale(1);
+        opacity: .8;
+    }
+    50% {
+        transform: scale(1.035);
+        opacity: 1;
+    }
+}
+
+@keyframes corePulse {
+    0%,100% {
+        transform: scale(.8);
+        opacity: .7;
+    }
+    50% {
+        transform: scale(1.15);
+        opacity: 1;
+    }
+}
+
+@keyframes particleFloat {
+    from {
+        transform: translateY(110vh) scale(.4);
+        opacity: 0;
+    }
+    15% {
+        opacity: 1;
+    }
+    to {
+        transform: translateY(-20vh) scale(1.2);
+        opacity: 0;
+    }
+}
+
+@keyframes fireRise {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+@keyframes flameDance {
+    from {
+        transform: scaleY(.82) rotate(-4deg);
+    }
+    to {
+        transform: scaleY(1.13) rotate(5deg);
+    }
+}
+
+@keyframes emberRise {
+    0% {
+        transform: translateY(0) translateX(0) scale(.5);
+        opacity: 0;
+    }
+    15% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-110vh) translateX(90px) scale(0);
+        opacity: 0;
+    }
+}
+
+@keyframes ashFade {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes floating {
+    0%,100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes starBlink {
+    from {
+        opacity: .2;
+        transform: scale(.7);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1.4);
+    }
+}
+
+@keyframes lightningFlash {
+    0%,82%,100% {
+        opacity: 0;
+    }
+    84% {
+        opacity: .8;
+    }
+    85% {
+        opacity: 0;
+    }
+    86% {
+        opacity: .45;
+    }
+    88% {
+        opacity: 0;
+    }
+}
 </style>
 </head>
 
 <body>
 
-<!-- ============================================================
-     BACKGROUND
-============================================================ -->
-
-<div id="spaceBackground" aria-hidden="true">
-
-    <div class="spaceGradient"></div>
-
-    <div class="backgroundOrb orbOne"></div>
-    <div class="backgroundOrb orbTwo"></div>
-
-</div>
-
-
-<!-- ============================================================
+<!-- =======================================================
      LOADER
-============================================================ -->
+======================================================= -->
 
-<div id="loader" aria-hidden="true">
+<div id="loader">
 
-    <div class="loaderCore">
+    <div class="loader-particles" id="loaderParticles"></div>
 
-        <div class="loaderRings">
-            <div class="loaderRing"></div>
-            <div class="loaderRing"></div>
-            <div class="loaderRing"></div>
+    <div class="loader-content">
 
-            <div class="loaderLightning">
-                ⚡
-            </div>
-        </div>
-
-        <div class="loaderTitle">
+        <div class="loader-logo">
             NOVA
         </div>
 
-        <div class="loaderSubtitle">
+        <div class="loader-subtitle">
+            MEMBERS
+        </div>
+
+        <div class="loader-ring"></div>
+
+        <div class="loader-status" id="loaderStatus">
             INITIALISATION...
         </div>
 
-        <div class="loaderBar">
-            <div
-                id="loaderProgress"
-                class="loaderBarProgress"
-            ></div>
-        </div>
-
-        <div
-            id="loaderPercent"
-            class="loaderPercent"
-        >
+        <div class="loader-percent" id="loaderPercent">
             0%
         </div>
 
+        <div class="loader-bar">
+            <div
+                class="loader-bar-fill"
+                id="loaderBarFill">
+            </div>
+        </div>
+
     </div>
 
 </div>
 
+<!-- =======================================================
+     FIRE
+======================================================= -->
 
-<!-- ============================================================
-     FIRE TRANSITION
-============================================================ -->
+<div id="fireTransition">
 
-<div
-    id="fireTransition"
-    aria-hidden="true"
->
+    <div class="fire-background"></div>
 
-    <div class="fireBlack"></div>
-    <div class="fireGlow"></div>
+    <div class="flames">
+        <div class="flame"></div>
+        <div class="flame"></div>
+        <div class="flame"></div>
+        <div class="flame"></div>
+        <div class="flame"></div>
+        <div class="flame"></div>
+        <div class="flame"></div>
+        <div class="flame"></div>
+        <div class="flame"></div>
+        <div class="flame"></div>
+        <div class="flame"></div>
+        <div class="flame"></div>
+    </div>
+
+    <div class="embers" id="embers"></div>
+
+    <div class="ash-layer"></div>
 
 </div>
 
+<!-- =======================================================
+     SPACE
+======================================================= -->
 
-<!-- ============================================================
+<div id="space"></div>
+
+<div class="lightning one"></div>
+<div class="lightning two"></div>
+<div class="lightning three"></div>
+
+<!-- =======================================================
      SITE
-============================================================ -->
+======================================================= -->
 
 <div id="site">
 
-    <header class="siteHeader">
+<header>
 
-        <a
-            href="#"
-            class="logo"
-            aria-label="NovaShop"
-        >
+    <div class="logo">
+        NOVA<span>.</span>
+    </div>
 
-            <span class="logoMark">
-                ⚡
+    <div class="nav-actions">
+
+        <button
+            class="btn btn-dark"
+            id="heroCartButton"
+            type="button">
+            🛒 Panier
+            <span
+                class="cart-count"
+                id="cartCount">
+                0
             </span>
+        </button>
 
-            <span class="logoText">
-                NOVA<span>SHOP</span>
-            </span>
+        <button
+            class="btn btn-purple"
+            id="chooseButton"
+            type="button">
+            Choisir
+        </button>
 
-        </a>
+    </div>
 
+</header>
 
-        <div class="headerActions">
+<main>
+
+<section class="hero">
+
+    <div class="hero-inner">
+
+        <div>
+
+            <div class="badge">
+                <span class="badge-dot"></span>
+                NOVA MEMBERS
+            </div>
+
+            <h1>
+                <span class="gradient-text">
+                    1K
+                </span>
+                MEMBERS.
+            </h1>
+
+            <p class="hero-description">
+                Obtiens ton pack de 1 000 MEMBERS avec une expérience
+                simple, rapide et entièrement pensée pour NOVA.
+            </p>
+
+            <div class="hero-buttons">
+
+                <button
+                    class="btn btn-purple big-button"
+                    id="heroChooseButton"
+                    type="button">
+                    ✦ Choisir mon pack
+                </button>
+
+                <button
+                    class="btn btn-dark big-button"
+                    id="heroCartButton2"
+                    type="button">
+                    🛒 Ouvrir le panier
+                </button>
+
+            </div>
+
+        </div>
+
+        <div class="product-card">
+
+            <div class="product-icon">
+                ✦
+            </div>
+
+            <h2>
+                MEMBERS
+            </h2>
+
+            <p>
+                Pack numérique NOVA de
+                <strong>1K MEMBERS</strong>.
+                Sélectionne simplement la quantité souhaitée.
+            </p>
+
+            <div class="price">
+                5,49 €
+                <small>
+                    / 1K
+                </small>
+            </div>
+
+            <div class="product-meta">
+
+                <span class="meta">
+                    ⚡ Instantané
+                </span>
+
+                <span class="meta">
+                    🔒 Simple
+                </span>
+
+                <span class="meta">
+                    ✦ NOVA
+                </span>
+
+            </div>
 
             <button
-                id="cartButton"
-                class="headerButton"
+                class="btn btn-purple big-button"
+                id="cardChooseButton"
                 type="button"
-            >
-                🛒 Panier
-                <span id="cartCount">
-                    0
-                </span>
+                style="width:100%;margin-top:25px;">
+                Choisir la quantité
             </button>
 
         </div>
 
-    </header>
+    </div>
 
+</section>
 
-    <main>
+<section class="features">
 
-        <section class="hero">
+    <div class="features-title">
+        Pourquoi NOVA MEMBERS ?
+    </div>
 
-            <div class="heroGrid"></div>
+    <div class="features-grid">
 
-            <div class="heroContent">
-
-                <div class="heroBadge">
-                    ⚡ PACKS DISCORD PREMIUM
-                </div>
-
-
-                <h1 class="heroTitle">
-                    <span>MEMBERS</span>
-                </h1>
-
-
-                <p class="heroDescription">
-                    Développe ton serveur avec nos packs
-                    MEMBERS. Renseigne ton pseudo Discord
-                    et ton serveur avant de choisir ta quantité.
-                </p>
-
-
-                <div class="heroPrice">
-                    5,49 €
-                    <small>
-                        / 1K MEMBERS
-                    </small>
-                </div>
-
-
-                <div class="heroActions">
-
-                    <button
-                        id="chooseButton"
-                        class="primaryButton"
-                        type="button"
-                    >
-                        ⚡ Choisir mon pack
-                    </button>
-
-                    <button
-                        id="heroCartButton"
-                        class="secondaryButton"
-                        type="button"
-                    >
-                        🛒 Voir le panier
-                    </button>
-
-                </div>
-
+        <article class="feature">
+            <div class="feature-icon">
+                ⚡
             </div>
+            <h3>
+                Rapide
+            </h3>
+            <p>
+                Une interface conçue pour aller directement
+                à l'essentiel.
+            </p>
+        </article>
 
-        </section>
-
-
-        <section class="infoSection">
-
-            <div class="infoGrid">
-
-                <article class="infoCard">
-
-                    <div class="infoIcon">
-                        🔐
-                    </div>
-
-                    <div class="infoTitle">
-                        Informations Discord
-                    </div>
-
-                    <div class="infoText">
-                        Ton pseudo et ton serveur sont
-                        associés à ta commande.
-                    </div>
-
-                </article>
-
-
-                <article class="infoCard">
-
-                    <div class="infoIcon">
-                        ⚡
-                    </div>
-
-                    <div class="infoTitle">
-                        Quantité personnalisée
-                    </div>
-
-                    <div class="infoText">
-                        Choisis la quantité de packs MEMBERS
-                        directement depuis le panneau.
-                    </div>
-
-                </article>
-
-
-                <article class="infoCard">
-
-                    <div class="infoIcon">
-                        💳
-                    </div>
-
-                    <div class="infoTitle">
-                        Paiement PayPal
-                    </div>
-
-                    <div class="infoText">
-                        Le paiement est redirigé vers
-                        la page PayPal configurée.
-                    </div>
-
-                </article>
-
+        <article class="feature">
+            <div class="feature-icon">
+                ✦
             </div>
+            <h3>
+                Simple
+            </h3>
+            <p>
+                Choisis ta quantité, ajoute-la au panier
+                puis passe au paiement.
+            </p>
+        </article>
 
-        </section>
+        <article class="feature">
+            <div class="feature-icon">
+                🛒
+            </div>
+            <h3>
+                Panier
+            </h3>
+            <p>
+                Modifie facilement ta sélection avant
+                de continuer vers PayPal.
+            </p>
+        </article>
 
-    </main>
+    </div>
 
+</section>
 
-    <footer class="footer">
+</main>
 
-        <div class="footerLogo">
-            NOVASHOP
-        </div>
-
-        <div class="footerText">
-            MEMBERS • Technologie • Gaming
-        </div>
-
-    </footer>
+<footer>
+    NOVA MEMBERS • Tous droits réservés
+</footer>
 
 </div>
 
-
-<!-- ============================================================
+<!-- =======================================================
      OVERLAY
-============================================================ -->
+======================================================= -->
 
 <div
     id="drawerOverlay"
-    aria-hidden="true"
-></div>
+    aria-hidden="true">
+</div>
 
-
-<!-- ============================================================
+<!-- =======================================================
      QUANTITY DRAWER
-============================================================ -->
+======================================================= -->
 
 <aside
+    class="drawer"
     id="quantityDrawer"
-    class="drawer quantityDrawer"
-    aria-hidden="true"
->
+    aria-hidden="true">
 
-    <div class="drawerHeader">
+    <div class="drawer-header">
 
-        <h2 class="drawerTitle">
-            Choisir ton pack
-        </h2>
+        <div class="drawer-title">
+            Choisir la quantité
+        </div>
 
         <button
+            class="close-button"
             id="closeQuantity"
-            class="closeButton"
             type="button"
-            aria-label="Fermer"
-        >
+            aria-label="Fermer">
             ×
         </button>
 
     </div>
 
+    <div class="quantity-product">
 
-    <div class="formIntro">
-
-        <div class="formIntroTitle">
-            👤 Informations Discord
+        <div class="quantity-product-name">
+            1K MEMBERS
         </div>
 
-        <div class="formIntroText">
-            Indique ton pseudo Discord et le nom de
-            ton serveur. Aucun mot de passe Discord
-            ne sera demandé.
+        <div class="quantity-product-price">
+            5,49 € / unité
         </div>
 
-    </div>
+        <div class="quantity-box">
 
-
-    <div class="formGroup">
-
-        <label
-            class="formLabel"
-            for="discordUsername"
-        >
-            Pseudo Discord
-        </label>
-
-        <input
-            id="discordUsername"
-            class="formInput"
-            type="text"
-            maxlength="100"
-            autocomplete="off"
-            placeholder="Ex : Nova_123"
-        >
-
-        <div
-            id="usernameError"
-            class="fieldError"
-        ></div>
-
-    </div>
-
-
-    <div class="formGroup">
-
-        <label
-            class="formLabel"
-            for="discordServer"
-        >
-            Serveur Discord
-        </label>
-
-        <input
-            id="discordServer"
-            class="formInput"
-            type="text"
-            maxlength="100"
-            autocomplete="off"
-            placeholder="Ex : NovaShop"
-        >
-
-        <div
-            id="serverError"
-            class="fieldError"
-        ></div>
-
-    </div>
-
-
-    <div class="quantitySection">
-
-        <div class="quantityLabel">
-            Quantité de packs de 1K
-        </div>
-
-
-        <div class="quantityControls">
-
-            <button
-                id="minusButton"
-                class="quantityButton"
-                type="button"
-                aria-label="Diminuer"
-            >
-                −
-            </button>
-
-
-            <div
-                id="quantityValue"
-                class="quantityNumber"
-            >
-                1
+            <div class="quantity-label">
+                Nombre de packs
             </div>
 
+            <div class="quantity-control">
 
-            <button
-                id="plusButton"
-                class="quantityButton"
-                type="button"
-                aria-label="Augmenter"
-            >
-                +
-            </button>
+                <button
+                    class="quantity-button"
+                    id="minusButton"
+                    type="button">
+                    −
+                </button>
+
+                <div
+                    class="quantity-value"
+                    id="quantityValue">
+                    1
+                </div>
+
+                <button
+                    class="quantity-button"
+                    id="plusButton"
+                    type="button">
+                    +
+                </button>
+
+            </div>
 
         </div>
 
+        <div class="member-total">
 
-        <div
-            id="membersPreview"
-            class="quantityMembers"
-        >
-            1 000 MEMBERS
+            <div class="member-total-row">
+
+                <span>
+                    Packs
+                </span>
+
+                <strong id="summaryQuantity">
+                    1
+                </strong>
+
+            </div>
+
+            <div class="member-total-row">
+
+                <span>
+                    MEMBERS
+                </span>
+
+                <strong id="summaryMembers">
+                    1 000
+                </strong>
+
+            </div>
+
+            <div class="member-total-row">
+
+                <span>
+                    Total
+                </span>
+
+                <strong
+                    class="member-price"
+                    id="summaryPrice">
+                    5,49 €
+                </strong>
+
+            </div>
+
         </div>
 
-
-        <div
-            id="totalPreview"
-            class="pricePreview"
-        >
-            5,49 €
-        </div>
+        <button
+            class="add-cart-button"
+            id="addCartButton"
+            type="button">
+            🛒 Ajouter au panier
+        </button>
 
     </div>
 
-
-    <button
-        id="addCartButton"
-        class="primaryButton"
-        type="button"
-        style="
-            width:100%;
-            margin-top:25px;
-        "
-    >
-        🛒 Ajouter au panier
-    </button>
-
 </aside>
 
-
-<!-- ============================================================
+<!-- =======================================================
      CART DRAWER
-============================================================ -->
+======================================================= -->
 
 <aside
+    class="drawer"
     id="cartDrawer"
-    class="drawer cartDrawer"
-    aria-hidden="true"
->
+    aria-hidden="true">
 
-    <div class="drawerHeader">
+    <div class="drawer-header">
 
-        <h2 class="drawerTitle">
+        <div class="drawer-title">
             Ton panier
-        </h2>
+        </div>
 
         <button
+            class="close-button"
             id="closeCart"
-            class="closeButton"
             type="button"
-            aria-label="Fermer"
-        >
+            aria-label="Fermer">
             ×
         </button>
 
     </div>
 
-
-    <div
-        id="cartItems"
-        class="cartItems"
-    ></div>
-
-
-    <div class="cartBottom">
-
-        <div class="cartTotalRow">
-
-            <span>
-                Total
-            </span>
-
-            <strong
-                id="cartTotal"
-                class="cartTotalValue"
-            >
-                0,00 €
-            </strong>
-
-        </div>
-
-
-        <button
-            id="paypalButton"
-            class="paypalButton"
-            type="button"
-        >
-            Payer avec PayPal
-        </button>
-
-
-        <div class="paypalNote">
-            Le paiement ouvre la page PayPal de
-            NovaShop.
-        </div>
-
-    </div>
+    <div id="cartContent"></div>
 
 </aside>
 
-
-<!-- ============================================================
+<!-- =======================================================
      TOAST
-============================================================ -->
+======================================================= -->
 
-<div
-    id="toastContainer"
-    aria-live="polite"
-    aria-atomic="true"
-></div>
+<div id="toast"></div>
 
+<!-- =======================================================
+     LOADER SCRIPT
+     Ce script est volontairement placé AVANT APP.JS.
+     Il fonctionne même si APP.JS rencontre une erreur.
+======================================================= -->
 
-<!-- ============================================================
-     APP.JS
-============================================================ -->
+<script>
+(function () {
 
-<script src="./APP.JS"></script>
+    var loader = document.getElementById("loader");
+    var percent = document.getElementById("loaderPercent");
+    var bar = document.getElementById("loaderBarFill");
+    var status = document.getElementById("loaderStatus");
+    var site = document.getElementById("site");
+    var fire = document.getElementById("fireTransition");
+
+    var value = 0;
+    var started = Date.now();
+    var finished = false;
+
+    var statuses = [
+        "INITIALISATION...",
+        "CHARGEMENT NOVA...",
+        "PRÉPARATION...",
+        "CONNEXION...",
+        "CHARGEMENT DES ÉLÉMENTS...",
+        "FINALISATION..."
+    ];
+
+    function updateLoader() {
+
+        if (finished) {
+            return;
+        }
+
+        var elapsed = Date.now() - started;
+
+        value = Math.min(
+            100,
+            Math.floor((elapsed / 3000) * 100)
+        );
+
+        percent.textContent = value + "%";
+        bar.style.width = value + "%";
+
+        var index = Math.min(
+            statuses.length - 1,
+            Math.floor(value / 20)
+        );
+
+        status.textContent = statuses[index];
+
+        if (value >= 100) {
+            finishLoader();
+            return;
+        }
+
+        requestAnimationFrame(updateLoader);
+    }
+
+    function finishLoader() {
+
+        if (finished) {
+            return;
+        }
+
+        finished = true;
+
+        percent.textContent = "100%";
+        bar.style.width = "100%";
+        status.textContent = "PRÊT.";
+
+        setTimeout(function () {
+
+            fire.classList.add("active");
+
+            setTimeout(function () {
+                fire.classList.add("ash");
+            }, 1200);
+
+            setTimeout(function () {
+
+                loader.classList.add("hidden");
+                site.classList.add("visible");
+
+            }, 2500);
+
+        }, 150);
+
+    }
+
+    function emergencyReveal() {
+
+        if (finished) {
+            return;
+        }
+
+        finished = true;
+
+        loader.classList.add("hidden");
+        site.classList.add("visible");
+
+    }
+
+    window.setTimeout(function () {
+
+        if (!finished) {
+            finishLoader();
+        }
+
+    }, 3800);
+
+    window.setTimeout(function () {
+
+        if (!site.classList.contains("visible")) {
+            emergencyReveal();
+        }
+
+    }, 7000);
+
+    updateLoader();
+
+})();
+</script>
+
+<script src="./APP.JS" defer></script>
 
 </body>
 </html>
