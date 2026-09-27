@@ -5,7 +5,7 @@
 ============================================================
  NOVA MEMBERS
  APP.JS
- VERSION CORRIGÉE
+ VERSION FINALE
 ============================================================
 */
 
@@ -33,27 +33,11 @@
     let quantity = 1;
     let cart = [];
     let toastTimer = null;
+    let initialized = false;
 
     /*
     ========================================================
     DOM
-    ========================================================
-    */
-
-    let quantityDrawer = null;
-    let cartDrawer = null;
-    let drawerOverlay = null;
-    let quantityValue = null;
-    let summaryQuantity = null;
-    let summaryMembers = null;
-    let summaryPrice = null;
-    let cartContent = null;
-    let cartCount = null;
-    let toastElement = null;
-
-    /*
-    ========================================================
-    HELPERS
     ========================================================
     */
 
@@ -68,16 +52,18 @@
 
     function refreshElements() {
 
-        quantityDrawer = $("#quantityDrawer");
-        cartDrawer = $("#cartDrawer");
-        drawerOverlay = $("#drawerOverlay");
-        quantityValue = $("#quantityValue");
-        summaryQuantity = $("#summaryQuantity");
-        summaryMembers = $("#summaryMembers");
-        summaryPrice = $("#summaryPrice");
-        cartContent = $("#cartContent");
-        cartCount = $("#cartCount");
-        toastElement = $("#toast");
+        return {
+            quantityDrawer: $("#quantityDrawer"),
+            cartDrawer: $("#cartDrawer"),
+            drawerOverlay: $("#drawerOverlay"),
+            quantityValue: $("#quantityValue"),
+            summaryQuantity: $("#summaryQuantity"),
+            summaryMembers: $("#summaryMembers"),
+            summaryPrice: $("#summaryPrice"),
+            cartContent: $("#cartContent"),
+            cartCount: $("#cartCount"),
+            toast: $("#toast")
+        };
 
     }
 
@@ -89,7 +75,13 @@
 
     function formatPrice(value) {
 
-        return Number(value)
+        const number = Number(value);
+
+        if (!Number.isFinite(number)) {
+            return "0,00 €";
+        }
+
+        return number
             .toFixed(2)
             .replace(".", ",") + " €";
 
@@ -97,8 +89,13 @@
 
     function formatNumber(value) {
 
-        return Number(value)
-            .toLocaleString("fr-FR");
+        const number = Number(value);
+
+        if (!Number.isFinite(number)) {
+            return "0";
+        }
+
+        return number.toLocaleString("fr-FR");
 
     }
 
@@ -121,15 +118,15 @@
 
     function toast(message) {
 
-        refreshElements();
+        const elements = refreshElements();
 
-        if (!exists(toastElement)) {
+        if (!exists(elements.toast)) {
             return;
         }
 
-        toastElement.textContent = String(message);
+        elements.toast.textContent = String(message);
 
-        toastElement.classList.add("show");
+        elements.toast.classList.add("show");
 
         if (toastTimer !== null) {
             clearTimeout(toastTimer);
@@ -137,8 +134,8 @@
 
         toastTimer = setTimeout(function () {
 
-            if (exists(toastElement)) {
-                toastElement.classList.remove("show");
+            if (exists(elements.toast)) {
+                elements.toast.classList.remove("show");
             }
 
         }, 2500);
@@ -170,28 +167,34 @@
 
         quantity = clampQuantity(quantity);
 
-        refreshElements();
+        const elements = refreshElements();
 
-        if (exists(quantityValue)) {
-            quantityValue.textContent = String(quantity);
+        if (exists(elements.quantityValue)) {
+
+            elements.quantityValue.textContent =
+                String(quantity);
+
         }
 
-        if (exists(summaryQuantity)) {
-            summaryQuantity.textContent = String(quantity);
+        if (exists(elements.summaryQuantity)) {
+
+            elements.summaryQuantity.textContent =
+                String(quantity);
+
         }
 
-        if (exists(summaryMembers)) {
+        if (exists(elements.summaryMembers)) {
 
-            summaryMembers.textContent =
+            elements.summaryMembers.textContent =
                 formatNumber(
                     PRODUCT.members * quantity
                 );
 
         }
 
-        if (exists(summaryPrice)) {
+        if (exists(elements.summaryPrice)) {
 
-            summaryPrice.textContent =
+            elements.summaryPrice.textContent =
                 formatPrice(
                     PRODUCT.price * quantity
                 );
@@ -202,7 +205,8 @@
 
     function increaseQuantity() {
 
-        quantity = clampQuantity(quantity + 1);
+        quantity =
+            clampQuantity(quantity + 1);
 
         updateQuantityUI();
 
@@ -210,7 +214,8 @@
 
     function decreaseQuantity() {
 
-        quantity = clampQuantity(quantity - 1);
+        quantity =
+            clampQuantity(quantity - 1);
 
         updateQuantityUI();
 
@@ -218,7 +223,7 @@
 
     /*
     ========================================================
-    CART LOAD
+    LOAD CART
     ========================================================
     */
 
@@ -234,7 +239,8 @@
                 return;
             }
 
-            const parsed = JSON.parse(saved);
+            const parsed =
+                JSON.parse(saved);
 
             if (!Array.isArray(parsed)) {
                 cart = [];
@@ -255,7 +261,8 @@
 
                     return {
 
-                        id: item.id,
+                        id:
+                            item.id,
 
                         name:
                             item.name ||
@@ -285,7 +292,7 @@
         } catch (error) {
 
             console.error(
-                "NOVA MEMBERS : erreur panier.",
+                "NOVA MEMBERS : erreur de lecture du panier.",
                 error
             );
 
@@ -297,7 +304,7 @@
 
     /*
     ========================================================
-    CART SAVE
+    SAVE CART
     ========================================================
     */
 
@@ -310,12 +317,16 @@
                 JSON.stringify(cart)
             );
 
+            return true;
+
         } catch (error) {
 
             console.error(
-                "NOVA MEMBERS : impossible de sauvegarder le panier.",
+                "NOVA MEMBERS : erreur de sauvegarde.",
                 error
             );
+
+            return false;
 
         }
 
@@ -332,8 +343,18 @@
         return cart.reduce(
             function (total, item) {
 
-                return total +
-                    Number(item.quantity || 0);
+                const itemQuantity =
+                    Number(item.quantity);
+
+                if (
+                    !Number.isFinite(
+                        itemQuantity
+                    )
+                ) {
+                    return total;
+                }
+
+                return total + itemQuantity;
 
             },
             0
@@ -343,22 +364,14 @@
 
     function updateCartCount() {
 
-        refreshElements();
+        const elements = refreshElements();
 
-        if (!exists(cartCount)) {
+        if (!exists(elements.cartCount)) {
             return;
         }
 
-        const count = getCartCount();
-
-        cartCount.textContent = String(count);
-
-        /*
-        Si le compteur est dans un élément
-        caché ou stylisé, on le force visible.
-        */
-
-        cartCount.style.display = "";
+        elements.cartCount.textContent =
+            String(getCartCount());
 
     }
 
@@ -373,9 +386,22 @@
         return cart.reduce(
             function (total, item) {
 
+                const itemQuantity =
+                    Number(item.quantity);
+
+                const itemPrice =
+                    Number(item.price);
+
+                if (
+                    !Number.isFinite(itemQuantity) ||
+                    !Number.isFinite(itemPrice)
+                ) {
+                    return total;
+                }
+
                 return total +
-                    Number(item.quantity || 0) *
-                    Number(item.price || 0);
+                    itemQuantity *
+                    itemPrice;
 
             },
             0
@@ -391,26 +417,30 @@
 
     function setOverlay(active) {
 
-        refreshElements();
+        const elements = refreshElements();
 
-        if (!exists(drawerOverlay)) {
+        if (!exists(elements.drawerOverlay)) {
             return;
         }
 
         if (active) {
 
-            drawerOverlay.classList.add("active");
+            elements.drawerOverlay.classList.add(
+                "active"
+            );
 
-            drawerOverlay.setAttribute(
+            elements.drawerOverlay.setAttribute(
                 "aria-hidden",
                 "false"
             );
 
         } else {
 
-            drawerOverlay.classList.remove("active");
+            elements.drawerOverlay.classList.remove(
+                "active"
+            );
 
-            drawerOverlay.setAttribute(
+            elements.drawerOverlay.setAttribute(
                 "aria-hidden",
                 "true"
             );
@@ -421,24 +451,28 @@
 
     function closeDrawers() {
 
-        refreshElements();
+        const elements = refreshElements();
 
-        if (exists(quantityDrawer)) {
+        if (exists(elements.quantityDrawer)) {
 
-            quantityDrawer.classList.remove("open");
+            elements.quantityDrawer.classList.remove(
+                "open"
+            );
 
-            quantityDrawer.setAttribute(
+            elements.quantityDrawer.setAttribute(
                 "aria-hidden",
                 "true"
             );
 
         }
 
-        if (exists(cartDrawer)) {
+        if (exists(elements.cartDrawer)) {
 
-            cartDrawer.classList.remove("open");
+            elements.cartDrawer.classList.remove(
+                "open"
+            );
 
-            cartDrawer.setAttribute(
+            elements.cartDrawer.setAttribute(
                 "aria-hidden",
                 "true"
             );
@@ -453,32 +487,36 @@
 
     function openQuantity() {
 
-        refreshElements();
+        const elements = refreshElements();
 
-        if (!exists(quantityDrawer)) {
+        if (!exists(elements.quantityDrawer)) {
 
             console.error(
-                "NOVA MEMBERS : #quantityDrawer introuvable."
+                "NOVA MEMBERS : quantityDrawer introuvable."
             );
 
             return;
 
         }
 
-        if (exists(cartDrawer)) {
+        if (exists(elements.cartDrawer)) {
 
-            cartDrawer.classList.remove("open");
+            elements.cartDrawer.classList.remove(
+                "open"
+            );
 
-            cartDrawer.setAttribute(
+            elements.cartDrawer.setAttribute(
                 "aria-hidden",
                 "true"
             );
 
         }
 
-        quantityDrawer.classList.add("open");
+        elements.quantityDrawer.classList.add(
+            "open"
+        );
 
-        quantityDrawer.setAttribute(
+        elements.quantityDrawer.setAttribute(
             "aria-hidden",
             "false"
         );
@@ -493,43 +531,21 @@
 
     function openCart() {
 
-        refreshElements();
+        const elements = refreshElements();
 
-        if (!exists(cartDrawer)) {
+        if (!exists(elements.cartDrawer)) {
 
             console.error(
-                "NOVA MEMBERS : #cartDrawer introuvable."
+                "NOVA MEMBERS : cartDrawer introuvable."
             );
 
             return;
 
         }
 
-        if (exists(quantityDrawer)) {
-
-            quantityDrawer.classList.remove("open");
-
-            quantityDrawer.setAttribute(
-                "aria-hidden",
-                "true"
-            );
-
-        }
-
-        cartDrawer.classList.add("open");
-
-        cartDrawer.setAttribute(
-            "aria-hidden",
-            "false"
-        );
-
-        setOverlay(true);
-
-        document.body.style.overflow = "hidden";
-
         /*
-        On recharge le panier depuis le stockage
-        avant de l'afficher.
+        Recharge toujours les données avant
+        d'afficher le panier.
         */
 
         loadCart();
@@ -537,6 +553,32 @@
         updateCartCount();
 
         renderCart();
+
+        if (exists(elements.quantityDrawer)) {
+
+            elements.quantityDrawer.classList.remove(
+                "open"
+            );
+
+            elements.quantityDrawer.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+
+        }
+
+        elements.cartDrawer.classList.add(
+            "open"
+        );
+
+        elements.cartDrawer.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+        setOverlay(true);
+
+        document.body.style.overflow = "hidden";
 
     }
 
@@ -548,24 +590,21 @@
 
     function addToCart() {
 
-        quantity = clampQuantity(quantity);
+        quantity =
+            clampQuantity(quantity);
 
         /*
-        IMPORTANT :
-        On recharge le stockage avant l'ajout afin
-        d'éviter qu'une ancienne copie du panier
-        écrase les données.
+        Recharge le panier juste avant l'ajout.
         */
 
         loadCart();
 
-        let existing = cart.find(
-            function (item) {
+        let existing =
+            cart.find(function (item) {
 
                 return item.id === PRODUCT.id;
 
-            }
-        );
+            });
 
         if (existing) {
 
@@ -575,29 +614,50 @@
                     quantity
                 );
 
+            existing.name =
+                PRODUCT.name;
+
+            existing.members =
+                PRODUCT.members;
+
+            existing.price =
+                PRODUCT.price;
+
         } else {
 
             cart.push({
 
-                id: PRODUCT.id,
+                id:
+                    PRODUCT.id,
 
-                name: PRODUCT.name,
+                name:
+                    PRODUCT.name,
 
-                quantity: quantity,
+                quantity:
+                    quantity,
 
-                members: PRODUCT.members,
+                members:
+                    PRODUCT.members,
 
-                price: PRODUCT.price
+                price:
+                    PRODUCT.price
 
             });
 
         }
 
+        /*
+        Sauvegarde.
+        */
+
         saveCart();
 
         /*
-        Vérification immédiate du stockage.
+        Recharge immédiatement pour vérifier
+        que la donnée est bien présente.
         */
+
+        loadCart();
 
         updateCartCount();
 
@@ -620,8 +680,7 @@
         );
 
         /*
-        Fermeture du drawer quantité puis ouverture
-        du panier.
+        Ouvre le panier.
         */
 
         setTimeout(function () {
@@ -642,19 +701,24 @@
 
         loadCart();
 
-        cart = cart.filter(
-            function (item) {
+        cart =
+            cart.filter(function (item) {
+
                 return item.id !== id;
-            }
-        );
+
+            });
 
         saveCart();
+
+        loadCart();
 
         updateCartCount();
 
         renderCart();
 
-        toast("Produit retiré du panier.");
+        toast(
+            "Produit retiré du panier."
+        );
 
     }
 
@@ -666,15 +730,15 @@
 
     function renderCart() {
 
-        refreshElements();
+        const elements = refreshElements();
 
-        if (!exists(cartContent)) {
+        if (!exists(elements.cartContent)) {
             return;
         }
 
         if (cart.length === 0) {
 
-            cartContent.innerHTML = `
+            elements.cartContent.innerHTML = `
                 <div class="empty-cart">
 
                     <div class="empty-cart-icon">
@@ -689,10 +753,9 @@
                         class="btn btn-purple"
                         id="emptyChooseButton"
                         type="button"
-                        style="margin-top:20px;">
-
+                        style="margin-top:20px;"
+                    >
                         Choisir un pack
-
                     </button>
 
                 </div>
@@ -722,7 +785,8 @@
                 );
 
             const total =
-                itemQuantity * itemPrice;
+                itemQuantity *
+                itemPrice;
 
             html += `
                 <div class="cart-item">
@@ -734,7 +798,7 @@
                             <div class="cart-item-name">
                                 ${escapeHTML(
                                     item.name ||
-                                    "MEMBERS"
+                                    PRODUCT.name
                                 )}
                             </div>
 
@@ -767,10 +831,9 @@
                         type="button"
                         data-remove-id="${escapeHTML(
                             item.id
-                        )}">
-
+                        )}"
+                    >
                         Supprimer
-
                     </button>
 
                 </div>
@@ -778,7 +841,8 @@
 
         });
 
-        const total = getCartTotal();
+        const total =
+            getCartTotal();
 
         html += `
             <div class="cart-total">
@@ -798,16 +862,16 @@
                 <button
                     class="paypal-button"
                     id="paypalButton"
-                    type="button">
-
+                    type="button"
+                >
                     Continuer avec PayPal
-
                 </button>
 
             </div>
         `;
 
-        cartContent.innerHTML = html;
+        elements.cartContent.innerHTML =
+            html;
 
     }
 
@@ -823,20 +887,25 @@
 
         if (cart.length === 0) {
 
-            toast("Ton panier est vide.");
+            toast(
+                "Ton panier est vide."
+            );
 
             return;
 
         }
 
-        const total = getCartTotal();
+        const total =
+            getCartTotal();
 
         if (
             !Number.isFinite(total) ||
             total <= 0
         ) {
 
-            toast("Montant invalide.");
+            toast(
+                "Montant invalide."
+            );
 
             return;
 
@@ -850,7 +919,8 @@
             "/" +
             amount;
 
-        window.location.href = url;
+        window.location.href =
+            url;
 
     }
 
@@ -860,23 +930,24 @@
     ========================================================
     */
 
-    function setupGlobalButtonHandler() {
+    function setupClickHandler() {
 
         if (
             document.documentElement.dataset
-                .novaHandlerInstalled === "true"
+                .novaClickHandler === "true"
         ) {
             return;
         }
 
         document.documentElement.dataset
-            .novaHandlerInstalled = "true";
+            .novaClickHandler = "true";
 
         document.addEventListener(
             "click",
             function (event) {
 
-                const target = event.target;
+                const target =
+                    event.target;
 
                 if (
                     !(target instanceof Element)
@@ -891,7 +962,8 @@
                     return;
                 }
 
-                const id = button.id;
+                const id =
+                    button.id;
 
                 /*
                 ============================================
@@ -954,22 +1026,6 @@
 
                 /*
                 ============================================
-                PLUS
-                ============================================
-                */
-
-                if (id === "plusButton") {
-
-                    event.preventDefault();
-
-                    increaseQuantity();
-
-                    return;
-
-                }
-
-                /*
-                ============================================
                 MOINS
                 ============================================
                 */
@@ -979,6 +1035,22 @@
                     event.preventDefault();
 
                     decreaseQuantity();
+
+                    return;
+
+                }
+
+                /*
+                ============================================
+                PLUS
+                ============================================
+                */
+
+                if (id === "plusButton") {
+
+                    event.preventDefault();
+
+                    increaseQuantity();
 
                     return;
 
@@ -1057,25 +1129,25 @@
     ========================================================
     */
 
-    function bindOverlay() {
+    function setupOverlay() {
 
-        refreshElements();
+        const elements = refreshElements();
 
-        if (!exists(drawerOverlay)) {
+        if (!exists(elements.drawerOverlay)) {
             return;
         }
 
         if (
-            drawerOverlay.dataset
-                .novaOverlayBound === "true"
+            elements.drawerOverlay.dataset
+                .novaBound === "true"
         ) {
             return;
         }
 
-        drawerOverlay.dataset
-            .novaOverlayBound = "true";
+        elements.drawerOverlay.dataset
+            .novaBound = "true";
 
-        drawerOverlay.addEventListener(
+        elements.drawerOverlay.addEventListener(
             "click",
             function () {
 
@@ -1092,17 +1164,17 @@
     ========================================================
     */
 
-    function keyboardEvents() {
+    function setupKeyboard() {
 
         if (
             document.documentElement.dataset
-                .novaKeyboardBound === "true"
+                .novaKeyboard === "true"
         ) {
             return;
         }
 
         document.documentElement.dataset
-            .novaKeyboardBound = "true";
+            .novaKeyboard = "true";
 
         document.addEventListener(
             "keydown",
@@ -1300,7 +1372,8 @@
 
     function createEmbers() {
 
-        const container = $("#embers");
+        const container =
+            $("#embers");
 
         if (!exists(container)) {
             return;
@@ -1342,6 +1415,14 @@
             ember.style.height =
                 size * 2 + "px";
 
+            ember.style.setProperty(
+                "--drift",
+                (
+                    Math.random() * 100 -
+                    50
+                ) + "px"
+            );
+
             container.appendChild(ember);
 
         }
@@ -1356,6 +1437,12 @@
 
     function init() {
 
+        if (initialized) {
+            return;
+        }
+
+        initialized = true;
+
         refreshElements();
 
         loadCart();
@@ -1366,15 +1453,11 @@
 
         renderCart();
 
-        /*
-        Un seul gestionnaire de clics.
-        */
+        setupClickHandler();
 
-        setupGlobalButtonHandler();
+        setupOverlay();
 
-        bindOverlay();
-
-        keyboardEvents();
+        setupKeyboard();
 
         createStars();
 
@@ -1382,51 +1465,61 @@
 
         createEmbers();
 
-        /*
-        API PUBLIQUE
-        */
-
         window.NOVA_MEMBERS = {
 
             product: PRODUCT,
 
-            openQuantity: openQuantity,
+            openQuantity:
+                openQuantity,
 
-            openCart: openCart,
+            openCart:
+                openCart,
 
-            close: closeDrawers,
+            close:
+                closeDrawers,
 
-            addToCart: addToCart,
+            addToCart:
+                addToCart,
 
-            checkout: checkoutPayPal,
+            increaseQuantity:
+                increaseQuantity,
 
-            getCart: function () {
+            decreaseQuantity:
+                decreaseQuantity,
 
-                loadCart();
+            checkout:
+                checkoutPayPal,
 
-                return cart.slice();
+            getCart:
+                function () {
 
-            },
+                    loadCart();
 
-            getQuantity: function () {
+                    return cart.slice();
 
-                return quantity;
+                },
 
-            },
+            getQuantity:
+                function () {
 
-            setQuantity: function (value) {
+                    return quantity;
 
-                quantity =
-                    clampQuantity(value);
+                },
 
-                updateQuantityUI();
+            setQuantity:
+                function (value) {
 
-            }
+                    quantity =
+                        clampQuantity(value);
+
+                    updateQuantityUI();
+
+                }
 
         };
 
         console.log(
-            "NOVA MEMBERS : APP.JS chargé correctement."
+            "NOVA MEMBERS : APP.JS chargé. Panier actif."
         );
 
     }
