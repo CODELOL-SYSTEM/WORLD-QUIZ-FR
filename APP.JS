@@ -5,7 +5,6 @@
 ============================================================
  NOVA MEMBERS
  APP.JS
- Version robuste
 ============================================================
 */
 
@@ -13,7 +12,7 @@
 
     /*
     ========================================================
-    CONFIGURATION
+    CONFIG
     ========================================================
     */
 
@@ -36,17 +35,23 @@
 
     /*
     ========================================================
-    DOM
+    DOM HELPER
     ========================================================
     */
 
-    const $ = function (selector) {
-        return document.querySelector(selector);
-    };
+    function $(selector) {
 
-    const loader = $("#loader");
+        return document.querySelector(
+            selector
+        );
 
-    const site = $("#site");
+    }
+
+    /*
+    ========================================================
+    ELEMENTS
+    ========================================================
+    */
 
     const quantityDrawer =
         $("#quantityDrawer");
@@ -80,20 +85,22 @@
 
     /*
     ========================================================
-    SAFE ELEMENT CHECK
+    EXISTS
     ========================================================
     */
 
     function exists(element) {
 
-        return element !== null &&
-               element !== undefined;
+        return (
+            element !== null &&
+            element !== undefined
+        );
 
     }
 
     /*
     ========================================================
-    FORMAT PRICE
+    PRICE
     ========================================================
     */
 
@@ -107,7 +114,7 @@
 
     /*
     ========================================================
-    FORMAT NUMBER
+    NUMBER
     ========================================================
     */
 
@@ -115,6 +122,38 @@
 
         return Number(value)
             .toLocaleString("fr-FR");
+
+    }
+
+    /*
+    ========================================================
+    HTML ESCAPE
+    ========================================================
+    */
+
+    function escapeHTML(value) {
+
+        return String(value)
+            .replaceAll(
+                "&",
+                "&amp;"
+            )
+            .replaceAll(
+                "<",
+                "&lt;"
+            )
+            .replaceAll(
+                ">",
+                "&gt;"
+            )
+            .replaceAll(
+                '"',
+                "&quot;"
+            )
+            .replaceAll(
+                "'",
+                "&#039;"
+            );
 
     }
 
@@ -135,23 +174,35 @@
         toastElement.textContent =
             String(message);
 
-        toastElement.classList.add("show");
+        toastElement.classList.add(
+            "show"
+        );
 
         if (toastTimer) {
-            clearTimeout(toastTimer);
+
+            clearTimeout(
+                toastTimer
+            );
+
         }
 
-        toastTimer = setTimeout(function () {
+        toastTimer =
+            setTimeout(
+                function () {
 
-            toastElement.classList.remove("show");
+                    toastElement.classList.remove(
+                        "show"
+                    );
 
-        }, 2600);
+                },
+                2500
+            );
 
     }
 
     /*
     ========================================================
-    LOCAL STORAGE
+    LOAD CART
     ========================================================
     */
 
@@ -169,6 +220,7 @@
                 cart = [];
 
                 return;
+
             }
 
             const parsed =
@@ -179,19 +231,26 @@
                 cart = [];
 
                 return;
+
             }
 
-            cart = parsed.filter(function (item) {
+            cart =
+                parsed.filter(
+                    function (item) {
 
-                return item &&
-                       typeof item === "object";
+                        return (
+                            item &&
+                            typeof item ===
+                            "object"
+                        );
 
-            });
+                    }
+                );
 
         } catch (error) {
 
             console.warn(
-                "Impossible de charger le panier.",
+                "Erreur panier :",
                 error
             );
 
@@ -200,6 +259,12 @@
         }
 
     }
+
+    /*
+    ========================================================
+    SAVE CART
+    ========================================================
+    */
 
     function saveCart() {
 
@@ -213,7 +278,7 @@
         } catch (error) {
 
             console.warn(
-                "Impossible de sauvegarder le panier.",
+                "Impossible de sauvegarder.",
                 error
             );
 
@@ -223,11 +288,128 @@
 
     /*
     ========================================================
-    DRAWERS
+    QUANTITY CLAMP
     ========================================================
     */
 
-    function closeAllDrawers() {
+    function clampQuantity(value) {
+
+        let number =
+            parseInt(
+                value,
+                10
+            );
+
+        if (!Number.isFinite(number)) {
+            number = 1;
+        }
+
+        number =
+            Math.max(
+                1,
+                number
+            );
+
+        number =
+            Math.min(
+                999,
+                number
+            );
+
+        return number;
+
+    }
+
+    /*
+    ========================================================
+    UPDATE QUANTITY
+    ========================================================
+    */
+
+    function updateQuantityUI() {
+
+        quantity =
+            clampQuantity(
+                quantity
+            );
+
+        if (exists(quantityValue)) {
+
+            quantityValue.textContent =
+                String(quantity);
+
+        }
+
+        if (exists(summaryQuantity)) {
+
+            summaryQuantity.textContent =
+                String(quantity);
+
+        }
+
+        if (exists(summaryMembers)) {
+
+            summaryMembers.textContent =
+                formatNumber(
+                    PRODUCT.members *
+                    quantity
+                );
+
+        }
+
+        if (exists(summaryPrice)) {
+
+            summaryPrice.textContent =
+                formatPrice(
+                    PRODUCT.price *
+                    quantity
+                );
+
+        }
+
+    }
+
+    /*
+    ========================================================
+    PLUS
+    ========================================================
+    */
+
+    function increaseQuantity() {
+
+        quantity =
+            clampQuantity(
+                quantity + 1
+            );
+
+        updateQuantityUI();
+
+    }
+
+    /*
+    ========================================================
+    MINUS
+    ========================================================
+    */
+
+    function decreaseQuantity() {
+
+        quantity =
+            clampQuantity(
+                quantity - 1
+            );
+
+        updateQuantityUI();
+
+    }
+
+    /*
+    ========================================================
+    CLOSE DRAWERS
+    ========================================================
+    */
+
+    function closeDrawers() {
 
         if (exists(quantityDrawer)) {
 
@@ -268,13 +450,20 @@
 
         }
 
-        document.body.style.overflow = "";
+        document.body.style.overflow =
+            "";
 
     }
 
-    function openQuantityDrawer() {
+    /*
+    ========================================================
+    OPEN QUANTITY
+    ========================================================
+    */
 
-        closeAllDrawers();
+    function openQuantity() {
+
+        closeDrawers();
 
         if (!exists(quantityDrawer)) {
             return;
@@ -309,9 +498,15 @@
 
     }
 
-    function openCartDrawer() {
+    /*
+    ========================================================
+    OPEN CART
+    ========================================================
+    */
 
-        closeAllDrawers();
+    function openCart() {
+
+        closeDrawers();
 
         if (!exists(cartDrawer)) {
             return;
@@ -348,123 +543,50 @@
 
     /*
     ========================================================
-    QUANTITY
-    ========================================================
-    */
-
-    function clampQuantity(value) {
-
-        let number =
-            parseInt(value, 10);
-
-        if (!Number.isFinite(number)) {
-            number = 1;
-        }
-
-        number =
-            Math.max(1, number);
-
-        number =
-            Math.min(999, number);
-
-        return number;
-
-    }
-
-    function updateQuantityUI() {
-
-        quantity =
-            clampQuantity(quantity);
-
-        if (exists(quantityValue)) {
-
-            quantityValue.textContent =
-                String(quantity);
-
-        }
-
-        if (exists(summaryQuantity)) {
-
-            summaryQuantity.textContent =
-                String(quantity);
-
-        }
-
-        if (exists(summaryMembers)) {
-
-            summaryMembers.textContent =
-                formatNumber(
-                    PRODUCT.members *
-                    quantity
-                );
-
-        }
-
-        if (exists(summaryPrice)) {
-
-            summaryPrice.textContent =
-                formatPrice(
-                    PRODUCT.price *
-                    quantity
-                );
-
-        }
-
-    }
-
-    function increaseQuantity() {
-
-        quantity =
-            clampQuantity(quantity + 1);
-
-        updateQuantityUI();
-
-    }
-
-    function decreaseQuantity() {
-
-        quantity =
-            clampQuantity(quantity - 1);
-
-        updateQuantityUI();
-
-    }
-
-    /*
-    ========================================================
-    ADD TO CART
+    ADD CART
     ========================================================
     */
 
     function addToCart() {
 
         quantity =
-            clampQuantity(quantity);
+            clampQuantity(
+                quantity
+            );
 
         const existing =
-            cart.find(function (item) {
+            cart.find(
+                function (item) {
 
-                return item.id === PRODUCT.id;
+                    return (
+                        item.id ===
+                        PRODUCT.id
+                    );
 
-            });
+                }
+            );
 
         if (existing) {
 
             existing.quantity =
                 clampQuantity(
-                    Number(existing.quantity) +
-                    quantity
+                    Number(
+                        existing.quantity
+                    ) + quantity
                 );
 
         } else {
 
             cart.push({
 
-                id: PRODUCT.id,
+                id:
+                    PRODUCT.id,
 
-                name: PRODUCT.name,
+                name:
+                    PRODUCT.name,
 
-                quantity: quantity,
+                quantity:
+                    quantity,
 
                 members:
                     PRODUCT.members,
@@ -483,43 +605,27 @@
         toast(
             quantity +
             " pack" +
-            (quantity > 1 ? "s" : "") +
+            (
+                quantity > 1
+                    ? "s"
+                    : ""
+            ) +
             " ajouté" +
-            (quantity > 1 ? "s" : "") +
+            (
+                quantity > 1
+                    ? "s"
+                    : ""
+            ) +
             " au panier."
         );
 
-        setTimeout(function () {
+        setTimeout(
+            function () {
 
-            openCartDrawer();
+                openCart();
 
-        }, 250);
-
-    }
-
-    /*
-    ========================================================
-    REMOVE CART ITEM
-    ========================================================
-    */
-
-    function removeCartItem(id) {
-
-        cart =
-            cart.filter(function (item) {
-
-                return item.id !== id;
-
-            });
-
-        saveCart();
-
-        updateCartCount();
-
-        renderCart();
-
-        toast(
-            "Produit retiré du panier."
+            },
+            250
         );
 
     }
@@ -533,10 +639,17 @@
     function getCartCount() {
 
         return cart.reduce(
-            function (total, item) {
+            function (
+                total,
+                item
+            ) {
 
-                return total +
-                    Number(item.quantity || 0);
+                return (
+                    total +
+                    Number(
+                        item.quantity || 0
+                    )
+                );
 
             },
             0
@@ -551,7 +664,9 @@
         }
 
         cartCount.textContent =
-            String(getCartCount());
+            String(
+                getCartCount()
+            );
 
     }
 
@@ -564,20 +679,60 @@
     function getCartTotal() {
 
         return cart.reduce(
-            function (total, item) {
+            function (
+                total,
+                item
+            ) {
 
                 const itemQuantity =
-                    Number(item.quantity || 0);
+                    Number(
+                        item.quantity || 0
+                    );
 
                 const itemPrice =
-                    Number(item.price || 0);
+                    Number(
+                        item.price || 0
+                    );
 
-                return total +
+                return (
+                    total +
                     itemQuantity *
-                    itemPrice;
+                    itemPrice
+                );
 
             },
             0
+        );
+
+    }
+
+    /*
+    ========================================================
+    REMOVE
+    ========================================================
+    */
+
+    function removeCartItem(id) {
+
+        cart =
+            cart.filter(
+                function (item) {
+
+                    return (
+                        item.id !== id
+                    );
+
+                }
+            );
+
+        saveCart();
+
+        updateCartCount();
+
+        renderCart();
+
+        toast(
+            "Produit retiré du panier."
         );
 
     }
@@ -594,7 +749,7 @@
             return;
         }
 
-        if (!cart.length) {
+        if (cart.length === 0) {
 
             cartContent.innerHTML = `
                 <div class="empty-cart">
@@ -611,97 +766,120 @@
                         class="btn btn-purple"
                         id="emptyChooseButton"
                         type="button"
-                        style="margin-top:20px;">
+                        style="
+                            margin-top:20px;
+                        ">
+
                         Choisir un pack
+
                     </button>
 
                 </div>
             `;
 
-            const emptyButton =
+            const button =
                 $("#emptyChooseButton");
 
-            if (exists(emptyButton)) {
+            if (exists(button)) {
 
-                emptyButton.addEventListener(
+                button.addEventListener(
                     "click",
-                    function () {
-
-                        openQuantityDrawer();
-
-                    }
+                    openQuantity
                 );
 
             }
 
             return;
+
         }
 
         let html = "";
 
-        cart.forEach(function (item) {
+        cart.forEach(
+            function (item) {
 
-            const itemQuantity =
-                Number(item.quantity || 0);
+                const itemQuantity =
+                    Number(
+                        item.quantity || 0
+                    );
 
-            const itemMembers =
-                Number(
-                    item.members ||
-                    PRODUCT.members
-                );
+                const itemMembers =
+                    Number(
+                        item.members ||
+                        PRODUCT.members
+                    );
 
-            const itemPrice =
-                Number(
-                    item.price ||
-                    PRODUCT.price
-                );
+                const itemPrice =
+                    Number(
+                        item.price ||
+                        PRODUCT.price
+                    );
 
-            const total =
-                itemQuantity *
-                itemPrice;
+                const total =
+                    itemQuantity *
+                    itemPrice;
 
-            html += `
-                <div class="cart-item">
+                html += `
+                    <div class="cart-item">
 
-                    <div class="cart-item-top">
+                        <div class="cart-item-top">
 
-                        <div>
-                            <div class="cart-item-name">
-                                ${escapeHTML(
-                                    item.name || "MEMBERS"
+                            <div>
+
+                                <div
+                                    class="cart-item-name">
+
+                                    ${escapeHTML(
+                                        item.name ||
+                                        "MEMBERS"
+                                    )}
+
+                                </div>
+
+                                <div
+                                    class="cart-item-members">
+
+                                    ${formatNumber(
+                                        itemMembers *
+                                        itemQuantity
+                                    )}
+
+                                    MEMBERS
+
+                                    • Quantité :
+                                    ${itemQuantity}
+
+                                </div>
+
+                            </div>
+
+                            <div
+                                class="cart-item-price">
+
+                                ${formatPrice(
+                                    total
                                 )}
+
                             </div>
 
-                            <div class="cart-item-members">
-                                ${formatNumber(
-                                    itemMembers *
-                                    itemQuantity
-                                )} MEMBERS
-                                •
-                                Quantité :
-                                ${itemQuantity}
-                            </div>
                         </div>
 
-                        <div class="cart-item-price">
-                            ${formatPrice(total)}
-                        </div>
+                        <button
+                            class="cart-item-remove"
+                            type="button"
+                            data-remove-id="${escapeHTML(
+                                item.id
+                            )}">
+
+                            Supprimer
+
+                        </button>
 
                     </div>
+                `;
 
-                    <button
-                        class="cart-item-remove"
-                        type="button"
-                        data-remove-id="${escapeHTML(
-                            item.id
-                        )}">
-                        Supprimer
-                    </button>
-
-                </div>
-            `;
-
-        });
+            }
+        );
 
         const total =
             getCartTotal();
@@ -715,8 +893,13 @@
                         Total
                     </span>
 
-                    <strong class="cart-total-price">
-                        ${formatPrice(total)}
+                    <strong
+                        class="cart-total-price">
+
+                        ${formatPrice(
+                            total
+                        )}
+
                     </strong>
 
                 </div>
@@ -725,7 +908,9 @@
                     class="paypal-button"
                     id="paypalButton"
                     type="button">
+
                     Continuer avec PayPal
+
                 </button>
 
             </div>
@@ -734,34 +919,17 @@
         cartContent.innerHTML =
             html;
 
-        bindCartButtons();
+        bindCartActions();
 
     }
 
     /*
     ========================================================
-    ESCAPE HTML
+    CART ACTIONS
     ========================================================
     */
 
-    function escapeHTML(value) {
-
-        return String(value)
-            .replaceAll("&", "&amp;")
-            .replaceAll("<", "&lt;")
-            .replaceAll(">", "&gt;")
-            .replaceAll('"', "&quot;")
-            .replaceAll("'", "&#039;");
-
-    }
-
-    /*
-    ========================================================
-    CART BUTTONS
-    ========================================================
-    */
-
-    function bindCartButtons() {
+    function bindCartActions() {
 
         const removeButtons =
             document.querySelectorAll(
@@ -810,10 +978,7 @@
 
     function checkoutPayPal() {
 
-        const total =
-            getCartTotal();
-
-        if (!cart.length) {
+        if (cart.length === 0) {
 
             toast(
                 "Ton panier est vide."
@@ -823,22 +988,21 @@
 
         }
 
-        if (!(total > 0)) {
+        const total =
+            getCartTotal();
+
+        if (
+            !Number.isFinite(total) ||
+            total <= 0
+        ) {
 
             toast(
-                "Le montant du panier est invalide."
+                "Montant invalide."
             );
 
             return;
 
         }
-
-        /*
-        PayPal.me utilise le montant directement
-        dans l'URL.
-        Exemple :
-        https://paypal.me/SH0PNOVA/5.49
-        */
 
         const amount =
             total.toFixed(2);
@@ -855,11 +1019,11 @@
 
     /*
     ========================================================
-    BUTTON EVENTS
+    BUTTON HELPER
     ========================================================
     */
 
-    function bindButton(
+    function bind(
         selector,
         callback
     ) {
@@ -886,106 +1050,6 @@
 
     /*
     ========================================================
-    INITIALISATION
-    ========================================================
-    */
-
-    function init() {
-
-        loadCart();
-
-        updateQuantityUI();
-
-        updateCartCount();
-
-        renderCart();
-
-        bindButton(
-            "#chooseButton",
-            openQuantityDrawer
-        );
-
-        bindButton(
-            "#heroChooseButton",
-            openQuantityDrawer
-        );
-
-        bindButton(
-            "#cardChooseButton",
-            openQuantityDrawer
-        );
-
-        bindButton(
-            "#heroCartButton",
-            openCartDrawer
-        );
-
-        bindButton(
-            "#heroCartButton2",
-            openCartDrawer
-        );
-
-        bindButton(
-            "#closeQuantity",
-            closeAllDrawers
-        );
-
-        bindButton(
-            "#closeCart",
-            closeAllDrawers
-        );
-
-        bindButton(
-            "#minusButton",
-            decreaseQuantity
-        );
-
-        bindButton(
-            "#plusButton",
-            increaseQuantity
-        );
-
-        bindButton(
-            "#addCartButton",
-            addToCart
-        );
-
-        if (exists(drawerOverlay)) {
-
-            drawerOverlay.addEventListener(
-                "click",
-                closeAllDrawers
-            );
-
-        }
-
-        document.addEventListener(
-            "keydown",
-            function (event) {
-
-                if (event.key === "Escape") {
-
-                    closeAllDrawers();
-
-                }
-
-            }
-        );
-
-        createStars();
-
-        createLoaderParticles();
-
-        createEmbers();
-
-        console.log(
-            "NOVA MEMBERS : APP.JS chargé correctement."
-        );
-
-    }
-
-    /*
-    ========================================================
     STARS
     ========================================================
     */
@@ -999,26 +1063,19 @@
             return;
         }
 
-        const fragment =
-            document.createDocumentFragment();
-
         for (
-            let index = 0;
-            index < 130;
-            index++
+            let i = 0;
+            i < 150;
+            i++
         ) {
 
             const star =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
             star.className =
                 "star";
-
-            star.style.left =
-                Math.random() * 100 + "%";
-
-            star.style.top =
-                Math.random() * 100 + "%";
 
             const size =
                 Math.random() * 2 + 1;
@@ -1029,18 +1086,28 @@
             star.style.height =
                 size + "px";
 
-            star.style.animationDelay =
-                Math.random() * 3 + "s";
+            star.style.left =
+                Math.random() * 100 +
+                "%";
 
-            fragment.appendChild(
+            star.style.top =
+                Math.random() * 100 +
+                "%";
+
+            star.style.animationDelay =
+                Math.random() * 3 +
+                "s";
+
+            star.style.animationDuration =
+                1.5 +
+                Math.random() * 3 +
+                "s";
+
+            space.appendChild(
                 star
             );
 
         }
-
-        space.appendChild(
-            fragment
-        );
 
         createConstellations();
 
@@ -1062,18 +1129,26 @@
         }
 
         const points = [
-            [18,18],
-            [22,14],
-            [27,19],
-            [31,12],
-            [77,18],
-            [82,24],
-            [88,16],
-            [84,32],
-            [11,67],
-            [17,61],
-            [24,70],
-            [29,64]
+
+            [18, 18],
+            [23, 14],
+            [28, 20],
+            [33, 13],
+
+            [76, 17],
+            [82, 24],
+            [88, 16],
+            [84, 31],
+
+            [11, 67],
+            [17, 61],
+            [24, 70],
+            [30, 64],
+
+            [62, 73],
+            [68, 67],
+            [74, 75]
+
         ];
 
         points.forEach(
@@ -1118,22 +1193,26 @@
         }
 
         for (
-            let index = 0;
-            index < 40;
-            index++
+            let i = 0;
+            i < 45;
+            i++
         ) {
 
             const particle =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
             particle.className =
                 "loader-particle";
 
             particle.style.left =
-                Math.random() * 100 + "%";
+                Math.random() * 100 +
+                "%";
 
             particle.style.animationDelay =
-                Math.random() * 4 + "s";
+                Math.random() * 4 +
+                "s";
 
             particle.style.animationDuration =
                 3 +
@@ -1150,7 +1229,7 @@
 
     /*
     ========================================================
-    FIRE EMBERS
+    EMBERS
     ========================================================
     */
 
@@ -1164,37 +1243,42 @@
         }
 
         for (
-            let index = 0;
-            index < 75;
-            index++
+            let i = 0;
+            i < 90;
+            i++
         ) {
 
             const ember =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
             ember.className =
                 "ember";
 
             ember.style.left =
-                Math.random() * 100 + "%";
+                Math.random() * 100 +
+                "%";
 
             ember.style.animationDelay =
-                Math.random() * 1.7 + "s";
+                Math.random() * 2 +
+                "s";
 
             ember.style.animationDuration =
                 1.2 +
-                Math.random() * 1.7 +
+                Math.random() * 2 +
                 "s";
 
             const size =
                 2 +
-                Math.random() * 5;
+                Math.random() * 4;
 
             ember.style.width =
                 size + "px";
 
             ember.style.height =
-                size * 2 + "px";
+                size * 2 +
+                "px";
 
             container.appendChild(
                 ember
@@ -1206,37 +1290,145 @@
 
     /*
     ========================================================
-    PUBLIC API
+    KEYBOARD
     ========================================================
     */
 
-    window.NOVA_MEMBERS = {
+    function keyboardEvents() {
 
-        product: PRODUCT,
+        document.addEventListener(
+            "keydown",
+            function (event) {
 
-        getCart: function () {
+                if (
+                    event.key ===
+                    "Escape"
+                ) {
 
-            return cart.slice();
+                    closeDrawers();
 
-        },
+                }
 
-        getQuantity: function () {
+            }
+        );
 
-            return quantity;
+    }
 
-        },
+    /*
+    ========================================================
+    INITIALISATION
+    ========================================================
+    */
 
-        openQuantity: openQuantityDrawer,
+    function init() {
 
-        openCart: openCartDrawer,
+        loadCart();
 
-        closeDrawers: closeAllDrawers,
+        updateQuantityUI();
 
-        addToCart: addToCart,
+        updateCartCount();
 
-        checkout: checkoutPayPal
+        renderCart();
 
-    };
+        bind(
+            "#chooseButton",
+            openQuantity
+        );
+
+        bind(
+            "#heroChooseButton",
+            openQuantity
+        );
+
+        bind(
+            "#cardChooseButton",
+            openQuantity
+        );
+
+        bind(
+            "#heroCartButton",
+            openCart
+        );
+
+        bind(
+            "#heroCartButton2",
+            openCart
+        );
+
+        bind(
+            "#closeQuantity",
+            closeDrawers
+        );
+
+        bind(
+            "#closeCart",
+            closeDrawers
+        );
+
+        bind(
+            "#minusButton",
+            decreaseQuantity
+        );
+
+        bind(
+            "#plusButton",
+            increaseQuantity
+        );
+
+        bind(
+            "#addCartButton",
+            addToCart
+        );
+
+        if (exists(drawerOverlay)) {
+
+            drawerOverlay.addEventListener(
+                "click",
+                closeDrawers
+            );
+
+        }
+
+        createStars();
+
+        createLoaderParticles();
+
+        createEmbers();
+
+        keyboardEvents();
+
+        window.NOVA_MEMBERS = {
+
+            product:
+                PRODUCT,
+
+            openQuantity:
+                openQuantity,
+
+            openCart:
+                openCart,
+
+            close:
+                closeDrawers,
+
+            addToCart:
+                addToCart,
+
+            checkout:
+                checkoutPayPal,
+
+            getCart:
+                function () {
+                    return cart.slice();
+                }
+
+        };
+
+        console.log(
+            "NOVA MEMBERS : APP.JS chargé."
+        );
+
+    }
 
     /*
     ========================================================
