@@ -58,10 +58,6 @@
             outline-offset: 3px;
         }
 
-        /* ====================================================
-           SPACE
-        ==================================================== */
-
         #space {
             position: fixed;
             inset: 0;
@@ -83,7 +79,6 @@
         }
 
         @keyframes twinkle {
-
             0%,
             100% {
                 opacity: 0.15;
@@ -94,7 +89,6 @@
                 opacity: 1;
                 transform: scale(1.25);
             }
-
         }
 
         .constellation {
@@ -107,10 +101,6 @@
                 0 0 12px #9d4edd,
                 0 0 25px rgba(157, 78, 221, 0.6);
         }
-
-        /* ====================================================
-           LIGHTNING
-        ==================================================== */
 
         .lightning {
             position: fixed;
@@ -166,7 +156,6 @@
         }
 
         @keyframes lightningFlash {
-
             0%,
             88%,
             100% {
@@ -184,22 +173,13 @@
             94% {
                 opacity: 0.28;
             }
-
         }
-
-        /* ====================================================
-           SITE
-        ==================================================== */
 
         #site {
             position: relative;
             z-index: 10;
             min-height: 100vh;
         }
-
-        /* ====================================================
-           HEADER
-        ==================================================== */
 
         header {
             position: sticky;
@@ -251,10 +231,6 @@
             align-items: center;
             gap: 10px;
         }
-
-        /* ====================================================
-           BUTTONS
-        ==================================================== */
 
         .btn {
             position: relative;
@@ -323,10 +299,6 @@
             font-size: 11px;
             font-weight: 900;
         }
-
-        /* ====================================================
-           HERO
-        ==================================================== */
 
         .hero {
             position: relative;
@@ -415,10 +387,6 @@
             margin-top: 32px;
         }
 
-        /* ====================================================
-           HERO VISUAL
-        ==================================================== */
-
         .hero-visual {
             position: relative;
             display: grid;
@@ -446,7 +414,6 @@
         }
 
         @keyframes pulseGlow {
-
             0%,
             100% {
                 transform: scale(0.9);
@@ -457,7 +424,6 @@
                 transform: scale(1.1);
                 opacity: 1;
             }
-
         }
 
         .members-orb {
@@ -491,7 +457,6 @@
         }
 
         @keyframes orbFloat {
-
             0%,
             100% {
                 transform: translateY(0);
@@ -500,7 +465,6 @@
             50% {
                 transform: translateY(-14px);
             }
-
         }
 
         .orb-inner {
@@ -520,10 +484,6 @@
             font-weight: 800;
             letter-spacing: 2px;
         }
-
-        /* ====================================================
-           SECTIONS
-        ==================================================== */
 
         .section {
             max-width: 1150px;
@@ -552,10 +512,6 @@
                     52px
                 );
         }
-
-        /* ====================================================
-           PRODUCT
-        ==================================================== */
 
         .product-grid {
             display: grid;
@@ -674,10 +630,6 @@
             width: 100%;
         }
 
-        /* ====================================================
-           FEATURES
-        ==================================================== */
-
         .features {
             display: grid;
             grid-template-columns:
@@ -714,10 +666,6 @@
             line-height: 1.5;
         }
 
-        /* ====================================================
-           FOOTER
-        ==================================================== */
-
         footer {
             position: relative;
             z-index: 2;
@@ -730,10 +678,6 @@
             color: #706878;
             font-size: 13px;
         }
-
-        /* ====================================================
-           OVERLAY
-        ==================================================== */
 
         #drawerOverlay {
             position: fixed;
@@ -755,10 +699,6 @@
             visibility: visible;
             pointer-events: auto;
         }
-
-        /* ====================================================
-           DRAWERS
-        ==================================================== */
 
         .drawer {
             position: fixed;
@@ -811,10 +751,6 @@
                 translateX(0);
         }
 
-        /* ====================================================
-           DRAWER HEADER
-        ==================================================== */
-
         .drawer-header {
             display: flex;
             align-items: center;
@@ -858,10 +794,6 @@
             color: #958a9f;
             line-height: 1.6;
         }
-
-        /* ====================================================
-           QUANTITY
-        ==================================================== */
 
         .quantity-box {
             margin-top: 45px;
@@ -941,10 +873,6 @@
             width: 100%;
             margin-top: 25px;
         }
-
-        /* ====================================================
-           CART
-        ==================================================== */
 
         #cartContent {
             margin-top: 25px;
@@ -1065,10 +993,6 @@
                 rgba(168, 85, 247, 0.45);
         }
 
-        /* ====================================================
-           TOAST
-        ==================================================== */
-
         #toast {
             position: fixed;
             left: 50%;
@@ -1098,10 +1022,6 @@
             transform:
                 translate(-50%, 0);
         }
-
-        /* ====================================================
-           LOADER
-        ==================================================== */
 
         #loader {
             position: fixed;
@@ -1199,7 +1119,6 @@
         }
 
         @keyframes loaderPulse {
-
             0%,
             100% {
                 transform: scale(1);
@@ -1208,11 +1127,9 @@
             50% {
                 transform: scale(1.035);
             }
-
         }
 
         @keyframes loaderBar {
-
             from {
                 width: 0%;
             }
@@ -1220,12 +1137,7 @@
             to {
                 width: 100%;
             }
-
         }
-
-        /* ====================================================
-           LOADER PARTICLES
-        ==================================================== */
 
         #loaderParticles {
             position: absolute;
@@ -1250,7 +1162,6 @@
         }
 
         @keyframes particleRise {
-
             0% {
                 transform:
                     translateY(0)
@@ -1268,12 +1179,7 @@
                     scale(1.4);
                 opacity: 0;
             }
-
         }
-
-        /* ====================================================
-           FIRE
-        ==================================================== */
 
         #fireTransition {
             position: fixed;
@@ -1330,7 +1236,6 @@
         }
 
         @keyframes fireBurn {
-
             0% {
                 opacity: 0;
             }
@@ -1347,11 +1252,9 @@
                 opacity: 0;
                 visibility: hidden;
             }
-
         }
 
         @keyframes fireMove {
-
             0% {
                 transform:
                     translateY(30%)
@@ -1375,12 +1278,7 @@
                     scale(1.5);
                 opacity: 0;
             }
-
         }
-
-        /* ====================================================
-           EMBERS
-        ==================================================== */
 
         #embers {
             position: absolute;
@@ -1404,7 +1302,6 @@
         }
 
         @keyframes emberRise {
-
             0% {
                 transform:
                     translateY(0);
@@ -1423,12 +1320,7 @@
                     );
                 opacity: 0;
             }
-
         }
-
-        /* ====================================================
-           RESPONSIVE
-        ==================================================== */
 
         @media (max-width: 850px) {
 
@@ -1477,7 +1369,6 @@
                 min-width: 0;
                 padding: 22px;
             }
-
         }
 
         @media (max-width: 520px) {
@@ -1523,7 +1414,6 @@
                 flex-direction: column;
                 gap: 8px;
             }
-
         }
 
     </style>
@@ -1531,10 +1421,6 @@
 </head>
 
 <body>
-
-    <!-- ====================================================
-         LOADER
-    ==================================================== -->
 
     <div
         id="loader"
@@ -1561,22 +1447,12 @@
 
     </div>
 
-    <!-- ====================================================
-         FIRE TRANSITION
-    ==================================================== -->
-
     <div
         id="fireTransition"
         aria-hidden="true"
     >
-
         <div id="embers"></div>
-
     </div>
-
-    <!-- ====================================================
-         SPACE
-    ==================================================== -->
 
     <div id="space"></div>
 
@@ -1584,10 +1460,6 @@
     <div class="lightning"></div>
     <div class="lightning"></div>
     <div class="lightning"></div>
-
-    <!-- ====================================================
-         SITE
-    ==================================================== -->
 
     <main id="site">
 
@@ -1613,18 +1485,15 @@
                     type="button"
                 >
                     🛒
-
                     <span>
                         Panier
                     </span>
-
                     <span
                         class="cart-badge"
                         id="cartCount"
                     >
                         0
                     </span>
-
                 </button>
 
                 <button
@@ -1639,10 +1508,6 @@
 
         </header>
 
-        <!-- ==================================================
-             HERO
-        ================================================== -->
-
         <section class="hero">
 
             <div class="hero-content">
@@ -1656,22 +1521,17 @@
                 </div>
 
                 <h1>
-
                     Plus de
-
                     <span class="gradient-text">
                         MEMBERS.
                     </span>
-
                 </h1>
 
                 <p>
-
                     Choisis ton pack de MEMBERS,
                     sélectionne la quantité souhaitée
                     et retrouve directement ta commande
                     dans ton panier.
-
                 </p>
 
                 <div class="hero-actions">
@@ -1720,10 +1580,6 @@
 
         </section>
 
-        <!-- ==================================================
-             PRODUCT
-        ================================================== -->
-
         <section
             class="section"
             id="products"
@@ -1765,11 +1621,9 @@
                     </h3>
 
                     <p>
-
                         Un pack de 1 000 MEMBERS.
                         Augmente la quantité pour
                         commander plusieurs packs.
-
                     </p>
 
                     <div class="product-details">
@@ -1813,10 +1667,6 @@
             </div>
 
         </section>
-
-        <!-- ==================================================
-             FEATURES
-        ================================================== -->
 
         <section class="section">
 
@@ -1895,25 +1745,15 @@
         </section>
 
         <footer>
-
             © 2026 NOVA MEMBERS
-
         </footer>
 
     </main>
-
-    <!-- ====================================================
-         OVERLAY
-    ==================================================== -->
 
     <div
         id="drawerOverlay"
         aria-hidden="true"
     ></div>
-
-    <!-- ====================================================
-         QUANTITY DRAWER
-    ==================================================== -->
 
     <aside
         class="drawer"
@@ -2036,10 +1876,6 @@
 
     </aside>
 
-    <!-- ====================================================
-         CART DRAWER
-    ==================================================== -->
-
     <aside
         class="drawer"
         id="cartDrawer"
@@ -2098,108 +1934,13 @@
 
     </aside>
 
-    <!-- ====================================================
-         TOAST
-    ==================================================== -->
-
     <div
         id="toast"
         role="status"
         aria-live="polite"
     ></div>
 
-    <!-- ====================================================
-         APP.JS
-         IMPORTANT : aucun autre script panier ici
-    ==================================================== -->
-
-    <script
-        src="./APP.JS"
-        defer
-    ></script>
-
-    <!-- ====================================================
-         LOADER / ANIMATIONS
-    ==================================================== -->
-
-    <script>
-
-        (function () {
-
-            "use strict";
-
-            function startLoader() {
-
-                const loader =
-                    document.getElementById(
-                        "loader"
-                    );
-
-                const fire =
-                    document.getElementById(
-                        "fireTransition"
-                    );
-
-                /*
-                Le loader dure exactement 3 secondes.
-                */
-
-                setTimeout(function () {
-
-                    if (fire) {
-
-                        fire.classList.add(
-                            "active"
-                        );
-
-                    }
-
-                    if (loader) {
-
-                        loader.classList.add(
-                            "hidden"
-                        );
-
-                    }
-
-                    setTimeout(function () {
-
-                        if (fire) {
-
-                            fire.classList.remove(
-                                "active"
-                            );
-
-                        }
-
-                    }, 1800);
-
-                }, 3000);
-
-            }
-
-            if (
-                document.readyState ===
-                "loading"
-            ) {
-
-                document.addEventListener(
-                    "DOMContentLoaded",
-                    startLoader,
-                    {
-                        once: true
-                    }
-                );
-
-            } else {
-
-                startLoader();
-
-            }
-
-        })();
-
-    </script>
+    <script src="./APP.JS"></script>
 
 </body>
 
