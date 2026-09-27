@@ -1,1190 +1,1096 @@
+```html
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NovaShop</title>
-
-<style>
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
-
-:root{
-  --bg:#050912;
-  --bg2:#09111f;
-  --card:#0c1525;
-  --card2:#101b2e;
-  --text:#f4f7fb;
-  --muted:#8e9aae;
-  --line:#1d2a40;
-  --blue:#2d8cff;
-  --blue2:#1677e8;
-  --green:#25d695;
-  --danger:#ff5570;
-  --white:#fff;
-  --shadow:0 15px 45px rgba(0,0,0,.22);
-}
-
-body.light{
-  --bg:#f4f7fb;
-  --bg2:#ffffff;
-  --card:#ffffff;
-  --card2:#f0f4f9;
-  --text:#101722;
-  --muted:#647084;
-  --line:#dce3ec;
-  --shadow:0 12px 35px rgba(20,40,70,.12);
-}
-
-html{
-  scroll-behavior:smooth;
-}
-
-body{
-  min-height:100vh;
-  background:
-    radial-gradient(circle at 10% 0%,rgba(45,140,255,.12),transparent 30%),
-    var(--bg);
-  color:var(--text);
-  font-family:Arial,Helvetica,sans-serif;
-  transition:.25s;
-}
-
-button,
-input,
-select{
-  font:inherit;
-}
-
-button{
-  cursor:pointer;
-}
-
-a{
-  color:inherit;
-  text-decoration:none;
-}
-
-.container{
-  width:min(1400px,calc(100% - 32px));
-  margin:auto;
-}
-
-/* HEADER */
-
-header{
-  position:sticky;
-  top:0;
-  z-index:100;
-  backdrop-filter:blur(18px);
-  background:rgba(5,9,18,.82);
-  border-bottom:1px solid var(--line);
-}
-
-body.light header{
-  background:rgba(255,255,255,.86);
-}
-
-.header-inner{
-  min-height:72px;
-  display:flex;
-  align-items:center;
-  gap:18px;
-}
-
-.logo{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  font-size:22px;
-  font-weight:900;
-  white-space:nowrap;
-}
-
-.logo-mark{
-  width:36px;
-  height:36px;
-  border-radius:11px;
-  display:grid;
-  place-items:center;
-  background:linear-gradient(135deg,var(--blue),#64b4ff);
-  color:#fff;
-  box-shadow:0 8px 25px rgba(45,140,255,.3);
-}
-
-.search{
-  flex:1;
-  position:relative;
-}
-
-.search input{
-  width:100%;
-  height:44px;
-  padding:0 16px;
-  border-radius:13px;
-  border:1px solid var(--line);
-  outline:none;
-  background:var(--card);
-  color:var(--text);
-}
-
-.search input:focus{
-  border-color:var(--blue);
-}
-
-.header-actions{
-  display:flex;
-  gap:8px;
-}
-
-.icon-btn{
-  width:42px;
-  height:42px;
-  border:1px solid var(--line);
-  border-radius:12px;
-  background:var(--card);
-  color:var(--text);
-  position:relative;
-}
-
-.icon-btn:hover{
-  border-color:var(--blue);
-  transform:translateY(-1px);
-}
-
-.cart-badge{
-  position:absolute;
-  top:-5px;
-  right:-5px;
-  min-width:18px;
-  height:18px;
-  padding:0 5px;
-  border-radius:99px;
-  background:var(--green);
-  color:#04130d;
-  font-size:11px;
-  font-weight:900;
-  display:grid;
-  place-items:center;
-}
-
-/* HERO */
-
-.hero{
-  padding:58px 0 34px;
-}
-
-.hero-box{
-  min-height:320px;
-  border:1px solid var(--line);
-  border-radius:28px;
-  padding:48px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:30px;
-  overflow:hidden;
-  background:
-    radial-gradient(circle at 80% 20%,rgba(45,140,255,.24),transparent 32%),
-    linear-gradient(135deg,var(--card),var(--bg2));
-  box-shadow:var(--shadow);
-}
-
-.hero-text{
-  max-width:700px;
-}
-
-.hero h1{
-  font-size:clamp(38px,6vw,72px);
-  line-height:.95;
-  letter-spacing:-3px;
-  margin-bottom:22px;
-}
-
-.hero h1 span{
-  color:var(--blue);
-}
-
-.hero p{
-  color:var(--muted);
-  font-size:18px;
-  line-height:1.6;
-  margin-bottom:26px;
-}
-
-.hero-actions{
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-}
-
-.btn{
-  min-height:44px;
-  padding:0 18px;
-  border-radius:12px;
-  border:1px solid var(--line);
-  background:var(--card2);
-  color:var(--text);
-  font-weight:800;
-}
-
-.btn:hover{
-  transform:translateY(-1px);
-}
-
-.btn-primary{
-  background:var(--blue);
-  border-color:var(--blue);
-  color:#fff;
-}
-
-.btn-green{
-  background:var(--green);
-  border-color:var(--green);
-  color:#04130d;
-}
-
-.hero-art{
-  width:280px;
-  height:280px;
-  border-radius:50%;
-  background:
-    radial-gradient(circle,#2d8cff 0 4%,transparent 5%),
-    radial-gradient(circle,rgba(45,140,255,.25),transparent 60%);
-  box-shadow:0 0 90px rgba(45,140,255,.25);
-}
-
-/* TOOLBAR */
-
-.toolbar{
-  display:flex;
-  gap:12px;
-  align-items:center;
-  justify-content:space-between;
-  margin:20px 0;
-  flex-wrap:wrap;
-}
-
-.sort{
-  height:42px;
-  padding:0 13px;
-  border-radius:11px;
-  border:1px solid var(--line);
-  background:var(--card);
-  color:var(--text);
-}
-
-.count{
-  color:var(--muted);
-  font-size:14px;
-}
-
-/* CATEGORIES */
-
-.categories{
-  display:flex;
-  gap:8px;
-  overflow:auto;
-  padding:3px 0 14px;
-  scrollbar-width:thin;
-}
-
-.category{
-  flex:0 0 auto;
-  border:1px solid var(--line);
-  background:var(--card);
-  color:var(--muted);
-  border-radius:999px;
-  padding:9px 14px;
-  font-size:13px;
-  font-weight:800;
-}
-
-.category.active,
-.category:hover{
-  color:#fff;
-  border-color:var(--blue);
-  background:var(--blue);
-}
-
-/* PRODUCTS */
-
-.product-grid{
-  display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:14px;
-}
-
-.product{
-  min-width:0;
-  overflow:hidden;
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:16px;
-  box-shadow:0 8px 28px rgba(0,0,0,.10);
-  transition:.22s;
-}
-
-.product:hover{
-  transform:translateY(-4px);
-  border-color:rgba(45,140,255,.55);
-}
-
-.product-img{
-  height:165px;
-  position:relative;
-  background:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:12px;
-  overflow:hidden;
-}
-
-.product-img img{
-  width:100%;
-  height:100%;
-  max-width:100%;
-  max-height:100%;
-  object-fit:contain;
-  display:block;
-  transition:.3s;
-}
-
-.product:hover .product-img img{
-  transform:scale(1.035);
-}
-
-.favorite{
-  position:absolute;
-  top:9px;
-  right:9px;
-  width:32px;
-  height:32px;
-  border:0;
-  border-radius:10px;
-  background:rgba(5,9,18,.78);
-  color:#fff;
-  z-index:2;
-}
-
-.favorite.active{
-  color:#ff5570;
-}
-
-.new-badge{
-  position:absolute;
-  left:9px;
-  top:9px;
-  background:var(--green);
-  color:#04130d;
-  padding:5px 8px;
-  border-radius:8px;
-  font-size:10px;
-  font-weight:900;
-}
-
-.product-body{
-  padding:13px;
-}
-
-.product-category{
-  color:var(--blue);
-  font-size:11px;
-  font-weight:900;
-  text-transform:uppercase;
-  margin-bottom:7px;
-}
-
-.product h3{
-  font-size:14px;
-  line-height:1.35;
-  min-height:57px;
-}
-
-.rating{
-  color:#ffc933;
-  font-size:12px;
-  margin-top:7px;
-}
-
-.product-bottom{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:8px;
-  margin-top:11px;
-}
-
-.price{
-  font-size:18px;
-  font-weight:900;
-}
-
-.add{
-  border:0;
-  border-radius:10px;
-  background:var(--blue);
-  color:#fff;
-  padding:9px 12px;
-  font-size:12px;
-  font-weight:900;
-}
-
-/* SECTIONS */
-
-.section{
-  padding:70px 0;
-}
-
-.section-title{
-  font-size:30px;
-  margin-bottom:24px;
-}
-
-.info-grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:14px;
-}
-
-.info-card{
-  padding:22px;
-  border:1px solid var(--line);
-  border-radius:17px;
-  background:var(--card);
-}
-
-.info-card strong{
-  display:block;
-  margin-bottom:8px;
-}
-
-.info-card p{
-  color:var(--muted);
-  line-height:1.5;
-  font-size:14px;
-}
-
-.review-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:14px;
-}
-
-.review{
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:17px;
-  padding:20px;
-}
-
-.review-stars{
-  color:#ffc933;
-  margin-bottom:10px;
-}
-
-.review p{
-  color:var(--muted);
-  line-height:1.55;
-}
-
-/* FAQ */
-
-.faq{
-  border:1px solid var(--line);
-  border-radius:15px;
-  overflow:hidden;
-  background:var(--card);
-}
-
-.faq details{
-  border-bottom:1px solid var(--line);
-  padding:17px;
-}
-
-.faq details:last-child{
-  border-bottom:0;
-}
-
-.faq summary{
-  cursor:pointer;
-  font-weight:800;
-}
-
-.faq p{
-  color:var(--muted);
-  padding-top:12px;
-  line-height:1.5;
-}
-
-/* CART */
-
-.overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.62);
-  opacity:0;
-  pointer-events:none;
-  transition:.25s;
-  z-index:200;
-}
-
-.overlay.open{
-  opacity:1;
-  pointer-events:auto;
-}
-
-.cart-drawer{
-  position:fixed;
-  top:0;
-  right:0;
-  height:100vh;
-  width:min(440px,100%);
-  background:var(--card);
-  border-left:1px solid var(--line);
-  z-index:201;
-  transform:translateX(100%);
-  transition:.25s;
-  display:flex;
-  flex-direction:column;
-}
-
-.cart-drawer.open{
-  transform:translateX(0);
-}
-
-.cart-head{
-  height:70px;
-  padding:0 18px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  border-bottom:1px solid var(--line);
-}
-
-.cart-items{
-  flex:1;
-  overflow:auto;
-  padding:15px;
-}
-
-.cart-item{
-  display:grid;
-  grid-template-columns:70px 1fr auto;
-  gap:11px;
-  padding:11px 0;
-  border-bottom:1px solid var(--line);
-}
-
-.cart-item-img{
-  width:70px;
-  height:70px;
-  background:#fff;
-  border-radius:10px;
-  overflow:hidden;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-.cart-item-img img{
-  width:100%;
-  height:100%;
-  object-fit:contain;
-}
-
-.cart-item h4{
-  font-size:13px;
-  line-height:1.35;
-}
-
-.cart-item-price{
-  color:var(--blue);
-  font-weight:900;
-  margin-top:5px;
-}
-
-.qty{
-  display:flex;
-  align-items:center;
-  gap:6px;
-  margin-top:8px;
-}
-
-.qty button{
-  width:25px;
-  height:25px;
-  border:1px solid var(--line);
-  border-radius:7px;
-  background:var(--card2);
-  color:var(--text);
-}
-
-.remove{
-  color:var(--danger);
-  border:0;
-  background:none;
-  font-size:12px;
-  margin-top:5px;
-}
-
-.cart-footer{
-  padding:18px;
-  border-top:1px solid var(--line);
-}
-
-.cart-total{
-  display:flex;
-  justify-content:space-between;
-  font-size:20px;
-  font-weight:900;
-  margin-bottom:13px;
-}
-
-/* MODAL */
-
-.modal-layer{
-  position:fixed;
-  inset:0;
-  z-index:300;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:18px;
-  background:rgba(0,0,0,.68);
-}
-
-.modal-layer.open{
-  display:flex;
-}
-
-.modal{
-  width:min(620px,100%);
-  max-height:90vh;
-  overflow:auto;
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:20px;
-  box-shadow:var(--shadow);
-}
-
-.modal-head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:18px;
-  border-bottom:1px solid var(--line);
-}
-
-.modal-content{
-  padding:20px;
-}
-
-.modal-close{
-  width:36px;
-  height:36px;
-  border:1px solid var(--line);
-  border-radius:9px;
-  background:var(--card2);
-  color:var(--text);
-}
-
-.form{
-  display:grid;
-  gap:12px;
-}
-
-.form input,
-.form select,
-.form textarea{
-  width:100%;
-  border:1px solid var(--line);
-  border-radius:10px;
-  padding:12px;
-  outline:none;
-  background:var(--card2);
-  color:var(--text);
-}
-
-.form textarea{
-  min-height:90px;
-  resize:vertical;
-}
-
-.form label{
-  font-size:13px;
-  font-weight:800;
-}
-
-/* TOAST */
-
-.toast{
-  position:fixed;
-  right:18px;
-  bottom:18px;
-  z-index:500;
-  padding:13px 16px;
-  border-radius:12px;
-  background:#101b2e;
-  color:#fff;
-  border:1px solid #263954;
-  box-shadow:var(--shadow);
-  animation:toastIn .22s ease;
-}
-
-@keyframes toastIn{
-  from{
-    opacity:0;
-    transform:translateY(10px);
-  }
-  to{
-    opacity:1;
-    transform:translateY(0);
-  }
-}
-
-/* FOOTER */
-
-footer{
-  margin-top:40px;
-  padding:35px 0;
-  border-top:1px solid var(--line);
-  color:var(--muted);
-}
-
-.footer-inner{
-  display:flex;
-  justify-content:space-between;
-  gap:20px;
-  flex-wrap:wrap;
-}
-
-.empty{
-  grid-column:1/-1;
-  padding:60px 20px;
-  text-align:center;
-  border:1px dashed var(--line);
-  border-radius:18px;
-  color:var(--muted);
-}
-
-/* RESPONSIVE */
-
-@media(max-width:1100px){
-  .product-grid{
-    grid-template-columns:repeat(3,minmax(0,1fr));
-  }
-
-  .info-grid{
-    grid-template-columns:repeat(2,1fr);
-  }
-}
-
-@media(max-width:760px){
-  .header-inner{
-    flex-wrap:wrap;
-    padding:10px 0;
-  }
-
-  .search{
-    order:3;
-    flex-basis:100%;
-  }
-
-  .hero-box{
-    padding:30px;
-  }
-
-  .hero-art{
-    display:none;
-  }
-
-  .product-grid{
-    grid-template-columns:repeat(2,minmax(0,1fr));
-  }
-
-  .review-grid{
-    grid-template-columns:1fr;
-  }
-}
-
-@media(max-width:520px){
-  .container{
-    width:min(100% - 20px,1400px);
-  }
-
-  .hero{
-    padding-top:25px;
-  }
-
-  .hero-box{
-    padding:24px;
-    border-radius:20px;
-  }
-
-  .hero h1{
-    font-size:42px;
-  }
-
-  .product-grid{
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:9px;
-  }
-
-  .product{
-    border-radius:13px;
-  }
-
-  .product-img{
-    height:145px;
-    padding:9px;
-  }
-
-  .product-body{
-    padding:10px;
-  }
-
-  .product h3{
-    font-size:12px;
-    min-height:51px;
-  }
-
-  .price{
-    font-size:15px;
-  }
-
-  .add{
-    padding:8px 9px;
-    font-size:10px;
-  }
-
-  .info-grid{
-    grid-template-columns:1fr;
-  }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>NovaShop | Members</title>
+
+  <meta
+    name="description"
+    content="NovaShop - Members et produits digitaux."
+  >
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet"
+  >
+
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    :root {
+      --bg: #07030d;
+      --panel: rgba(20, 10, 32, 0.78);
+      --panel-2: rgba(30, 15, 48, 0.9);
+      --purple: #9b4dff;
+      --purple-2: #c47aff;
+      --pink: #ff4fd8;
+      --blue: #6d7cff;
+      --white: #ffffff;
+      --muted: #aaa1b7;
+      --border: rgba(180, 100, 255, 0.22);
+      --shadow: 0 25px 80px rgba(130, 35, 255, 0.22);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: "Inter", sans-serif;
+      background:
+        radial-gradient(circle at 50% -10%, rgba(139, 52, 255, 0.28), transparent 35%),
+        radial-gradient(circle at 90% 40%, rgba(255, 50, 215, 0.10), transparent 30%),
+        var(--bg);
+      color: var(--white);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    /* =========================
+       BACKGROUND
+    ========================= */
+
+    #space {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      border-radius: 50%;
+      background: white;
+      box-shadow: 0 0 8px rgba(255,255,255,.9);
+      animation: twinkle 2s infinite alternate;
+    }
+
+    .bolt {
+      position: absolute;
+      width: 3px;
+      height: 70px;
+      background: linear-gradient(
+        transparent,
+        #b96cff,
+        #fff,
+        #b96cff,
+        transparent
+      );
+      filter: drop-shadow(0 0 10px #9b4dff);
+      opacity: .5;
+      transform: rotate(25deg);
+      animation: lightning 4s infinite;
+    }
+
+    .constellation {
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      opacity: .18;
+      border: 1px solid rgba(185,108,255,.25);
+      border-radius: 50%;
+      box-shadow:
+        30px 20px 0 -74px white,
+        90px 50px 0 -74px white,
+        120px 110px 0 -74px white;
+      animation: floatConstellation 8s ease-in-out infinite;
+    }
+
+    @keyframes twinkle {
+      from {
+        opacity: .15;
+        transform: scale(.7);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1.4);
+      }
+    }
+
+    @keyframes lightning {
+      0%, 80%, 100% {
+        opacity: 0;
+      }
+      83% {
+        opacity: .9;
+      }
+      86% {
+        opacity: .1;
+      }
+      89% {
+        opacity: .8;
+      }
+    }
+
+    @keyframes floatConstellation {
+      0%, 100% {
+        transform: translateY(0) rotate(0deg);
+      }
+      50% {
+        transform: translateY(-25px) rotate(8deg);
+      }
+    }
+
+    /* =========================
+       HEADER
+    ========================= */
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      background: rgba(7,3,13,.78);
+      backdrop-filter: blur(20px);
+    }
+
+    .nav {
+      width: min(1180px, calc(100% - 32px));
+      margin: auto;
+      height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-weight: 900;
+      font-size: 21px;
+      letter-spacing: -.7px;
+    }
+
+    .logo-icon {
+      width: 39px;
+      height: 39px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      background:
+        linear-gradient(135deg, #9b4dff, #ff4fd8);
+      box-shadow:
+        0 0 30px rgba(155,77,255,.55);
+      font-size: 20px;
+    }
+
+    .logo span {
+      color: #c884ff;
+    }
+
+    .cart-button {
+      border: 1px solid var(--border);
+      background: rgba(155,77,255,.11);
+      color: white;
+      border-radius: 13px;
+      padding: 11px 17px;
+      transition: .25s;
+      font-weight: 700;
+    }
+
+    .cart-button:hover {
+      background: rgba(155,77,255,.24);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 35px rgba(155,77,255,.18);
+    }
+
+    #cartCount {
+      display: inline-grid;
+      place-items: center;
+      min-width: 23px;
+      height: 23px;
+      padding: 0 6px;
+      margin-left: 5px;
+      border-radius: 999px;
+      background: var(--purple);
+      font-size: 12px;
+    }
+
+    /* =========================
+       HERO
+    ========================= */
+
+    main {
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero {
+      width: min(1180px, calc(100% - 32px));
+      margin: auto;
+      min-height: 510px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 90px 0 70px;
+    }
+
+    .hero-content {
+      max-width: 850px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 13px;
+      border-radius: 999px;
+      border: 1px solid rgba(190,115,255,.28);
+      background: rgba(155,77,255,.09);
+      color: #dcaeff;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      box-shadow: 0 0 35px rgba(155,77,255,.08);
+    }
+
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      background: #b969ff;
+      border-radius: 50%;
+      box-shadow: 0 0 12px #b969ff;
+    }
+
+    h1 {
+      font-size: clamp(48px, 8vw, 92px);
+      line-height: .95;
+      letter-spacing: -5px;
+      font-weight: 900;
+      margin-bottom: 25px;
+    }
+
+    .gradient-text {
+      background: linear-gradient(
+        90deg,
+        #fff,
+        #c678ff,
+        #ff62dc,
+        #fff
+      );
+      background-size: 250%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: gradientMove 5s linear infinite;
+    }
+
+    @keyframes gradientMove {
+      to {
+        background-position: 250%;
+      }
+    }
+
+    .hero p {
+      max-width: 650px;
+      margin: auto;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.7;
+    }
+
+    /* =========================
+       STORE
+    ========================= */
+
+    .store {
+      width: min(1180px, calc(100% - 32px));
+      margin: auto;
+      padding: 20px 0 100px;
+    }
+
+    .section-title {
+      margin-bottom: 25px;
+    }
+
+    .section-title h2 {
+      font-size: 30px;
+      margin-bottom: 7px;
+    }
+
+    .section-title p {
+      color: var(--muted);
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 22px;
+    }
+
+    .product {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background:
+        linear-gradient(
+          145deg,
+          rgba(35,16,55,.94),
+          rgba(13,7,21,.96)
+        );
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      transition: .3s;
+    }
+
+    .product:hover {
+      transform: translateY(-7px);
+      border-color: rgba(200,125,255,.5);
+      box-shadow:
+        0 30px 90px rgba(130,35,255,.3),
+        inset 0 0 50px rgba(155,77,255,.04);
+    }
+
+    .product::before {
+      content: "";
+      position: absolute;
+      width: 230px;
+      height: 230px;
+      border-radius: 50%;
+      background: rgba(157,65,255,.17);
+      filter: blur(60px);
+      top: -100px;
+      right: -70px;
+      pointer-events: none;
+    }
+
+    .product-visual {
+      height: 230px;
+      border-radius: 18px;
+      background:
+        radial-gradient(
+          circle,
+          rgba(186,103,255,.25),
+          transparent 55%
+        ),
+        #0d0715;
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      margin-bottom: 22px;
+      border: 1px solid rgba(255,255,255,.07);
+    }
+
+    .visual-core {
+      width: 125px;
+      height: 125px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(
+          circle at 35% 30%,
+          white 0 2%,
+          #e0a6ff 3%,
+          #a44cff 20%,
+          #5a16a4 48%,
+          #18082b 72%
+        );
+      box-shadow:
+        0 0 25px #a94eff,
+        0 0 70px rgba(169,78,255,.8),
+        inset 0 0 35px rgba(255,255,255,.5);
+      animation: coreFloat 3.5s ease-in-out infinite;
+    }
+
+    .visual-core::before {
+      content: "✦";
+      font-size: 45px;
+      color: white;
+      text-shadow:
+        0 0 10px white,
+        0 0 25px #e8b9ff;
+    }
+
+    .orbit {
+      position: absolute;
+      width: 190px;
+      height: 70px;
+      border: 1px solid rgba(219,163,255,.45);
+      border-radius: 50%;
+      transform: rotate(-25deg);
+      animation: orbit 5s linear infinite;
+    }
+
+    .orbit:nth-child(2) {
+      width: 230px;
+      height: 95px;
+      transform: rotate(40deg);
+      animation-duration: 7s;
+    }
+
+    @keyframes coreFloat {
+      0%, 100% {
+        transform: translateY(0) scale(1);
+      }
+      50% {
+        transform: translateY(-8px) scale(1.03);
+      }
+    }
+
+    @keyframes orbit {
+      to {
+        transform: rotate(335deg);
+      }
+    }
+
+    .product h3 {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .product-description {
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+      margin-bottom: 18px;
+    }
+
+    .features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-bottom: 22px;
+    }
+
+    .feature {
+      padding: 6px 9px;
+      border-radius: 8px;
+      background: rgba(155,77,255,.09);
+      border: 1px solid rgba(155,77,255,.14);
+      color: #d4b1ff;
+      font-size: 12px;
+    }
+
+    .purchase-row {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .price small {
+      display: block;
+      color: #91869e;
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .price strong {
+      font-size: 28px;
+    }
+
+    .buy-btn {
+      border: 0;
+      color: white;
+      padding: 13px 18px;
+      border-radius: 13px;
+      font-weight: 800;
+      background: linear-gradient(
+        135deg,
+        #8d42ef,
+        #d04cff
+      );
+      box-shadow:
+        0 10px 30px rgba(155,77,255,.28);
+      transition: .25s;
+    }
+
+    .buy-btn:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow:
+        0 14px 40px rgba(155,77,255,.4);
+    }
+
+    /* =========================
+       MODAL
+    ========================= */
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      display: none;
+      place-items: center;
+      padding: 20px;
+      background: rgba(3,1,7,.76);
+      backdrop-filter: blur(14px);
+    }
+
+    .modal.active {
+      display: grid;
+    }
+
+    .modal-box {
+      width: min(520px, 100%);
+      max-height: 90vh;
+      overflow-y: auto;
+      border: 1px solid rgba(190,110,255,.3);
+      border-radius: 24px;
+      background:
+        linear-gradient(
+          145deg,
+          rgba(31,14,50,.98),
+          rgba(11,5,18,.99)
+        );
+      padding: 27px;
+      box-shadow: 0 30px 100px rgba(0,0,0,.6);
+      animation: modalIn .25s ease;
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: translateY(15px) scale(.97);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .modal-head h2 {
+      font-size: 24px;
+    }
+
+    .close {
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.05);
+      color: white;
+      font-size: 20px;
+    }
+
+    .quantity-label {
+      display: block;
+      color: #c8becf;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .quantity-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .quantity-box button {
+      width: 45px;
+      height: 45px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(155,77,255,.1);
+      color: white;
+      font-size: 23px;
+    }
+
+    #quantity {
+      flex: 1;
+      height: 45px;
+      min-width: 0;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,.25);
+      color: white;
+      border-radius: 12px;
+      text-align: center;
+      font-size: 17px;
+      font-weight: 700;
+      outline: none;
+    }
+
+    .quantity-info {
+      padding: 14px;
+      border-radius: 14px;
+      background: rgba(155,77,255,.08);
+      border: 1px solid rgba(155,77,255,.13);
+      color: #cdb8db;
+      font-size: 13px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 0;
+      border-top: 1px solid rgba(255,255,255,.08);
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      margin-bottom: 18px;
+    }
+
+    .total span {
+      color: var(--muted);
+    }
+
+    .total strong {
+      font-size: 28px;
+    }
+
+    .add-cart {
+      width: 100%;
+      border: 0;
+      border-radius: 14px;
+      padding: 15px;
+      color: white;
+      font-weight: 900;
+      background: linear-gradient(
+        135deg,
+        #873ee9,
+        #d34dff
+      );
+      margin-bottom: 9px;
+    }
+
+    .paypal-direct {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 14px;
+      padding: 14px;
+      color: white;
+      font-weight: 800;
+      background: rgba(255,255,255,.05);
+    }
+
+    /* =========================
+       CART
+    ========================= */
+
+    .cart-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+    }
+
+    .cart-item-icon {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: rgba(155,77,255,.15);
+      font-size: 20px;
+    }
+
+    .cart-item-info {
+      flex: 1;
+    }
+
+    .cart-item-info strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .cart-item-info span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .remove {
+      border: 0;
+      background: transparent;
+      color: #ff82df;
+      font-size: 13px;
+    }
+
+    .cart-total {
+      display: flex;
+      justify-content: space-between;
+      padding: 20px 0;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .paypal-btn {
+      width: 100%;
+      padding: 15px;
+      border: 0;
+      border-radius: 14px;
+      background: #ffc439;
+      color: #111;
+      font-weight: 900;
+      font-size: 16px;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 35px 10px;
+      color: var(--muted);
+    }
+
+    /* =========================
+       FOOTER
+    ========================= */
+
+    footer {
+      position: relative;
+      z-index: 2;
+      border-top: 1px solid rgba(255,255,255,.07);
+      padding: 35px 16px;
+      text-align: center;
+      color: #756b80;
+      font-size: 13px;
+    }
+
+    footer strong {
+      color: #b878ed;
+    }
+
+    /* =========================
+       TOAST
+    ========================= */
+
+    #toast {
+      position: fixed;
+      left: 50%;
+      bottom: 25px;
+      transform: translate(-50%, 100px);
+      z-index: 999;
+      padding: 13px 18px;
+      border-radius: 13px;
+      border: 1px solid rgba(195,120,255,.25);
+      background: rgba(24,10,38,.95);
+      color: white;
+      box-shadow: 0 15px 50px rgba(0,0,0,.45);
+      transition: .3s;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    #toast.show {
+      transform: translate(-50%, 0);
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        letter-spacing: -3px;
+      }
+
+      .hero {
+        padding-top: 65px;
+      }
+
+      .products {
+        grid-template-columns: 1fr;
+      }
+
+      .purchase-row {
+        align-items: center;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<header>
-  <div class="container header-inner">
+  <div id="space"></div>
 
-    <a class="logo" href="#">
-      <span class="logo-mark">N</span>
-      <span>NovaShop</span>
-    </a>
+  <header>
+    <nav class="nav">
 
-    <div class="search">
-      <input
-        id="searchInput"
-        type="search"
-        placeholder="Rechercher un produit..."
-        autocomplete="off"
+      <div class="logo">
+        <div class="logo-icon">✦</div>
+        NOVA<span>SHOP</span>
+      </div>
+
+      <button
+        class="cart-button"
+        id="openCart"
+        type="button"
       >
-    </div>
-
-    <div class="header-actions">
-
-      <button class="icon-btn" id="settingsBtn" title="Paramètres">
-        ⚙️
+        🛒 Panier
+        <span id="cartCount">0</span>
       </button>
 
-      <button class="icon-btn" id="accountBtn" title="Compte">
-        👤
-      </button>
+    </nav>
+  </header>
 
-      <button class="icon-btn" id="ordersBtn" title="Commandes">
-        📦
-      </button>
+  <main>
 
-      <button class="icon-btn" id="adminBtn" title="Administration" style="display:none">
-        🛠️
-      </button>
+    <section class="hero">
 
-      <button class="icon-btn" id="cartBtn" title="Panier">
-        🛒
-        <span class="cart-badge" id="cartBadge">0</span>
-      </button>
+      <div class="hero-content">
 
-    </div>
-
-  </div>
-</header>
-
-<main>
-
-<section class="hero">
-  <div class="container">
-    <div class="hero-box">
-
-      <div class="hero-text">
-        <h1>Bienvenue sur <span>NovaShop</span></h1>
-
-        <p>
-          Composants PC, périphériques gaming, smartphones,
-          écrans, accessoires et bien plus.
-        </p>
-
-        <div class="hero-actions">
-          <button class="btn btn-primary" id="heroCartBtn">
-            Voir mon panier
-          </button>
-
-          <a class="btn" href="#products">
-            Découvrir les produits
-          </a>
+        <div class="badge">
+          <span class="badge-dot"></span>
+          NOVASHOP • DIGITAL STORE
         </div>
-      </div>
 
-      <div class="hero-art"></div>
+        <h1>
+          <span class="gradient-text">
+            MEMBERS
+          </span>
+        </h1>
 
-    </div>
-  </div>
-</section>
-
-<section id="products" class="container">
-
-  <div class="toolbar">
-    <div>
-      <h2 class="section-title" style="margin-bottom:4px">
-        Produits
-      </h2>
-
-      <span class="count" id="productCount">
-        0 produits
-      </span>
-    </div>
-
-    <select class="sort" id="sortSelect">
-      <option value="default">Trier par défaut</option>
-      <option value="price-low">Prix croissant</option>
-      <option value="price-high">Prix décroissant</option>
-      <option value="name">Nom A-Z</option>
-      <option value="new">Nouveautés</option>
-    </select>
-  </div>
-
-  <div class="categories" id="categories"></div>
-
-  <div class="product-grid" id="productGrid"></div>
-
-</section>
-
-<section class="section">
-  <div class="container">
-
-    <h2 class="section-title">
-      Pourquoi NovaShop ?
-    </h2>
-
-    <div class="info-grid">
-
-      <div class="info-card">
-        <strong>⚡ Catalogue gaming</strong>
         <p>
-          Retrouvez composants PC, périphériques,
-          écrans, consoles et accessoires.
+          Accède à tes Members avec une expérience
+          NovaShop entièrement animée. Choisis la quantité
+          dont tu as besoin puis ajoute-la au panier.
         </p>
+
       </div>
 
-      <div class="info-card">
-        <strong>🛒 Panier simple</strong>
-        <p>
-          Ajoutez vos produits et gérez facilement
-          les quantités directement depuis le panier.
-        </p>
+    </section>
+
+    <section class="store">
+
+      <div class="section-title">
+        <h2>✦ Boutique</h2>
+        <p>Produit disponible maintenant</p>
       </div>
 
-      <div class="info-card">
-        <strong>🔐 Compte</strong>
-        <p>
-          Connectez-vous avec votre compte NovaShop
-          pour retrouver vos informations.
-        </p>
+      <div class="products">
+
+        <article class="product">
+
+          <div class="product-visual">
+
+            <div class="orbit"></div>
+            <div class="orbit"></div>
+
+            <div class="visual-core"></div>
+
+          </div>
+
+          <h3>MEMBERS</h3>
+
+          <p class="product-description">
+            Packs de Members numériques. Sélectionne
+            exactement le nombre de milliers de Members
+            que tu souhaites acheter.
+          </p>
+
+          <div class="features">
+            <span class="feature">⚡ Instantané</span>
+            <span class="feature">✦ Digital</span>
+            <span class="feature">🌌 Nova</span>
+            <span class="feature">🔒 Secure</span>
+          </div>
+
+          <div class="purchase-row">
+
+            <div class="price">
+              <small>À partir de</small>
+              <strong>5,49 €</strong>
+            </div>
+
+            <button
+              class="buy-btn"
+              id="buyMembers"
+              type="button"
+            >
+              Choisir
+            </button>
+
+          </div>
+
+        </article>
+
       </div>
 
-      <div class="info-card">
-        <strong>📦 Commandes</strong>
-        <p>
-          Retrouvez vos commandes et leur statut
-          depuis votre espace personnel.
-        </p>
+    </section>
+
+  </main>
+
+  <footer>
+    <strong>NOVASHOP</strong> © 2026
+    • Boutique digitale
+  </footer>
+
+
+  <!-- =========================
+       PRODUCT MODAL
+  ========================= -->
+
+  <div
+    class="modal"
+    id="productModal"
+    aria-hidden="true"
+  >
+
+    <div class="modal-box">
+
+      <div class="modal-head">
+
+        <h2>✦ MEMBERS</h2>
+
+        <button
+          class="close"
+          id="closeProduct"
+          type="button"
+        >
+          ×
+        </button>
+
       </div>
 
-    </div>
+      <label
+        class="quantity-label"
+        for="quantity"
+      >
+        Nombre de packs de 1K MEMBERS
+      </label>
 
-  </div>
-</section>
+      <div class="quantity-box">
 
-<section class="section">
-  <div class="container">
+        <button
+          id="minus"
+          type="button"
+        >
+          −
+        </button>
 
-    <h2 class="section-title">
-      Avis clients
-    </h2>
+        <input
+          id="quantity"
+          type="number"
+          min="1"
+          max="1000"
+          value="1"
+        >
 
-    <div class="review-grid">
+        <button
+          id="plus"
+          type="button"
+        >
+          +
+        </button>
 
-      <div class="review">
-        <div class="review-stars">★★★★★</div>
-        <p>
-          Catalogue clair et produits faciles à trouver.
-        </p>
       </div>
 
-      <div class="review">
-        <div class="review-stars">★★★★★</div>
-        <p>
-          Le panier est rapide et simple à utiliser.
-        </p>
+      <div class="quantity-info">
+        <strong>1K = 1 000 MEMBERS</strong><br>
+        Chaque pack coûte <strong>5,49 €</strong>.
+        Le total est calculé automatiquement.
       </div>
 
-      <div class="review">
-        <div class="review-stars">★★★★☆</div>
-        <p>
-          Bonne présentation des produits et des catégories.
-        </p>
-      </div>
+      <div class="total">
 
-    </div>
+        <span>Total</span>
 
-  </div>
-</section>
-
-<section class="section">
-  <div class="container">
-
-    <h2 class="section-title">
-      Retours & informations
-    </h2>
-
-    <div class="info-card">
-      <p>
-        Pour toute question concernant une commande,
-        contactez NovaShop via l'adresse :
-        <strong style="display:inline">
-          helpy.nova.sh0p@gmail.com
+        <strong id="productTotal">
+          5,49 €
         </strong>
-      </p>
-    </div>
 
-  </div>
-</section>
+      </div>
 
-<section class="section">
-  <div class="container">
-
-    <h2 class="section-title">
-      FAQ
-    </h2>
-
-    <div class="faq">
-
-      <details>
-        <summary>Comment ajouter un produit au panier ?</summary>
-        <p>
-          Cliquez simplement sur le bouton Ajouter au panier
-          depuis la fiche du produit.
-        </p>
-      </details>
-
-      <details>
-        <summary>Comment modifier la quantité ?</summary>
-        <p>
-          Ouvrez votre panier puis utilisez les boutons + et -.
-        </p>
-      </details>
-
-      <details>
-        <summary>Comment retrouver mes commandes ?</summary>
-        <p>
-          Utilisez le bouton 📦 dans l'en-tête.
-        </p>
-      </details>
-
-      <details>
-        <summary>Comment contacter NovaShop ?</summary>
-        <p>
-          Vous pouvez contacter NovaShop à
-          helpy.nova.sh0p@gmail.com.
-        </p>
-      </details>
-
-    </div>
-
-  </div>
-</section>
-
-</main>
-
-<div class="overlay" id="overlay"></div>
-
-<aside class="cart-drawer" id="cartDrawer">
-
-  <div class="cart-head">
-    <strong>Mon panier</strong>
-
-    <button class="modal-close" id="closeCart">
-      ✕
-    </button>
-  </div>
-
-  <div class="cart-items" id="cartItems"></div>
-
-  <div class="cart-footer">
-
-    <div class="cart-total">
-      <span>Total</span>
-      <span id="cartTotal">0,00 €</span>
-    </div>
-
-    <button class="btn btn-green" id="checkoutBtn" style="width:100%">
-      Commander
-    </button>
-
-  </div>
-
-</aside>
-
-<div class="modal-layer" id="modalLayer">
-
-  <div class="modal">
-
-    <div class="modal-head">
-      <h2 id="modalTitle">NovaShop</h2>
-
-      <button class="modal-close" id="modalClose">
-        ✕
+      <button
+        class="add-cart"
+        id="addToCart"
+        type="button"
+      >
+        🛒 Ajouter au panier
       </button>
-    </div>
 
-    <div class="modal-content" id="modalContent"></div>
+      <button
+        class="paypal-direct"
+        id="directPayPal"
+        type="button"
+      >
+        💳 Acheter directement avec PayPal
+      </button>
+
+    </div>
 
   </div>
 
-</div>
 
-<div id="toast"></div>
+  <!-- =========================
+       CART MODAL
+  ========================= -->
 
-<footer>
-  <div class="container footer-inner">
-    <div>
-      <strong>NovaShop</strong>
-      <div>Gaming • PC • Tech</div>
+  <div
+    class="modal"
+    id="cartModal"
+    aria-hidden="true"
+  >
+
+    <div class="modal-box">
+
+      <div class="modal-head">
+
+        <h2>🛒 Ton panier</h2>
+
+        <button
+          class="close"
+          id="closeCart"
+          type="button"
+        >
+          ×
+        </button>
+
+      </div>
+
+      <div id="cartItems"></div>
+
+      <div class="cart-total">
+
+        <span>Total</span>
+
+        <strong id="cartTotal">
+          0,00 €
+        </strong>
+
+      </div>
+
+      <button
+        class="paypal-btn"
+        id="checkoutPayPal"
+        type="button"
+      >
+        💳 Payer avec PayPal
+      </button>
+
     </div>
 
-    <a href="mailto:helpy.nova.sh0p@gmail.com">
-      helpy.nova.sh0p@gmail.com
-    </a>
   </div>
-</footer>
 
-<script type="module" src="./app.js"></script>
+
+  <div id="toast"></div>
+
+  <script src="app.js"></script>
 
 </body>
 </html>
+```
