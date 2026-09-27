@@ -9,45 +9,73 @@
 <title>NOVA MEMBERS</title>
 
 <style>
+
+/* =========================================================
+   RESET
+========================================================= */
+
 * {
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
-html,
-body {
+html {
     width: 100%;
     min-height: 100%;
+    background: #030205;
+    scroll-behavior: smooth;
 }
 
 body {
+    width: 100%;
     min-height: 100vh;
-    overflow-x: hidden;
     background:
-        radial-gradient(circle at 50% 15%, rgba(124,58,237,.18), transparent 35%),
-        radial-gradient(circle at 15% 80%, rgba(168,85,247,.08), transparent 30%),
-        #05030a;
-    color: #ffffff;
-    font-family: Inter, Arial, Helvetica, sans-serif;
+        radial-gradient(
+            circle at 50% 0%,
+            rgba(124, 58, 237, 0.18),
+            transparent 32%
+        ),
+        radial-gradient(
+            circle at 15% 70%,
+            rgba(168, 85, 247, 0.08),
+            transparent 25%
+        ),
+        #030205;
+    color: white;
+    font-family:
+        Inter,
+        Arial,
+        Helvetica,
+        sans-serif;
+    overflow-x: hidden;
 }
 
 /* =========================================================
    LOADER
-   ========================================================= */
+========================================================= */
 
 #loader {
     position: fixed;
     inset: 0;
+    width: 100%;
+    height: 100%;
     z-index: 99999;
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     background:
-        radial-gradient(circle at center, #170b29 0%, #09040f 45%, #020106 100%);
+        radial-gradient(
+            circle at center,
+            #1b0b32 0%,
+            #09040f 45%,
+            #020106 100%
+        );
+    opacity: 1;
+    visibility: visible;
     transition:
-        opacity .8s ease,
-        visibility .8s ease;
+        opacity 0.7s ease,
+        visibility 0.7s ease;
 }
 
 #loader.hidden {
@@ -57,110 +85,120 @@ body {
 }
 
 .loader-content {
-    width: min(90vw, 620px);
+    width: min(90%, 650px);
     text-align: center;
     position: relative;
-    z-index: 2;
+    z-index: 5;
 }
 
 .loader-logo {
-    font-size: clamp(42px, 8vw, 82px);
+    font-size: clamp(48px, 9vw, 90px);
+    line-height: 1;
     font-weight: 1000;
     letter-spacing: 12px;
-    color: #ffffff;
+    color: white;
     text-shadow:
-        0 0 10px rgba(168,85,247,.9),
-        0 0 30px rgba(124,58,237,.7),
-        0 0 70px rgba(124,58,237,.4);
-    animation: loaderPulse 1.2s ease-in-out infinite;
+        0 0 10px rgba(168, 85, 247, 1),
+        0 0 30px rgba(168, 85, 247, 0.8),
+        0 0 70px rgba(124, 58, 237, 0.7);
+    animation: loaderLogoPulse 1.2s ease-in-out infinite;
 }
 
 .loader-subtitle {
     margin-top: 12px;
     color: #c4b5fd;
     font-size: 13px;
-    letter-spacing: 5px;
-    font-weight: 800;
+    font-weight: 900;
+    letter-spacing: 6px;
 }
 
 .loader-ring {
-    width: 110px;
-    height: 110px;
+    width: 115px;
+    height: 115px;
     margin: 42px auto 28px;
     border-radius: 50%;
-    border: 2px solid rgba(168,85,247,.15);
+    border: 2px solid rgba(168, 85, 247, 0.12);
     border-top-color: #a855f7;
     border-right-color: #7c3aed;
     box-shadow:
-        0 0 25px rgba(124,58,237,.5),
-        inset 0 0 25px rgba(124,58,237,.15);
+        0 0 30px rgba(124, 58, 237, 0.4),
+        inset 0 0 25px rgba(124, 58, 237, 0.15);
     animation: loaderSpin 1s linear infinite;
     position: relative;
 }
 
-.loader-ring::before,
+.loader-ring::before {
+    content: "";
+    position: absolute;
+    inset: 13px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    border-left-color: #c084fc;
+    border-bottom-color: #9333ea;
+    animation: loaderReverse 1.4s linear infinite;
+}
+
 .loader-ring::after {
     content: "";
     position: absolute;
+    width: 28px;
+    height: 28px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
     border-radius: 50%;
-}
-
-.loader-ring::before {
-    inset: 13px;
-    border: 2px solid transparent;
-    border-left-color: #c084fc;
-    animation: loaderSpinReverse 1.4s linear infinite;
-}
-
-.loader-ring::after {
-    inset: 30px;
     background: #a855f7;
     box-shadow:
-        0 0 12px #a855f7,
-        0 0 30px #7c3aed;
-    animation: corePulse .8s ease-in-out infinite;
+        0 0 15px #a855f7,
+        0 0 35px #7c3aed;
+    animation: loaderCore 0.8s ease-in-out infinite;
 }
 
 .loader-status {
+    color: #e9d5ff;
     font-size: 14px;
     font-weight: 900;
     letter-spacing: 3px;
-    color: #e9d5ff;
 }
 
 .loader-percent {
-    margin-top: 13px;
-    font-size: 31px;
+    margin-top: 12px;
+    color: white;
+    font-size: 30px;
     font-weight: 1000;
-    color: #ffffff;
 }
 
 .loader-bar {
-    height: 7px;
     width: 100%;
+    height: 7px;
     margin-top: 20px;
-    background: rgba(255,255,255,.08);
     border-radius: 999px;
     overflow: hidden;
-    box-shadow: inset 0 0 10px rgba(0,0,0,.5);
+    background: rgba(255,255,255,0.08);
 }
 
 .loader-bar-fill {
     width: 0%;
     height: 100%;
     border-radius: inherit;
-    background: linear-gradient(90deg,#6d28d9,#a855f7,#d8b4fe);
+    background:
+        linear-gradient(
+            90deg,
+            #6d28d9,
+            #9333ea,
+            #c084fc
+        );
     box-shadow:
         0 0 12px #a855f7,
-        0 0 28px rgba(168,85,247,.7);
-    transition: width .08s linear;
+        0 0 30px rgba(168,85,247,0.6);
+    transition: width 0.08s linear;
 }
 
 .loader-particles {
     position: absolute;
     inset: 0;
-    pointer-events: none;
     overflow: hidden;
+    pointer-events: none;
 }
 
 .loader-particle {
@@ -170,12 +208,12 @@ body {
     border-radius: 50%;
     background: #c084fc;
     box-shadow: 0 0 10px #a855f7;
-    animation: particleFloat 4s linear infinite;
+    animation: loaderParticle 4s linear infinite;
 }
 
 /* =========================================================
    FIRE TRANSITION
-   ========================================================= */
+========================================================= */
 
 #fireTransition {
     position: fixed;
@@ -195,64 +233,118 @@ body {
 
 .fire-background {
     position: absolute;
-    inset: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100%;
     background:
-        radial-gradient(circle at 50% 110%,
-            rgba(255,255,255,.95) 0%,
-            rgba(255,200,60,.95) 7%,
-            rgba(255,100,0,.9) 16%,
-            rgba(130,20,0,.8) 29%,
-            rgba(15,5,20,.98) 55%,
-            #000 100%);
+        radial-gradient(
+            circle at 50% 110%,
+            rgba(255,255,255,0.95) 0%,
+            rgba(255,210,60,0.95) 7%,
+            rgba(255,90,0,0.95) 18%,
+            rgba(100,15,0,0.9) 35%,
+            rgba(10,4,15,0.98) 60%,
+            #000 100%
+        );
     transform: translateY(100%);
 }
 
 #fireTransition.active .fire-background {
-    animation: fireRise 2.1s ease-in forwards;
+    animation: fireRise 2s ease forwards;
 }
 
 .flames {
     position: absolute;
-    inset: auto 0 0;
-    height: 85%;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 90%;
     display: flex;
     align-items: flex-end;
     justify-content: center;
-    gap: 8px;
+    gap: 7px;
 }
 
 .flame {
-    width: 5vw;
-    min-width: 24px;
-    max-width: 85px;
-    height: 40%;
-    border-radius: 55% 45% 35% 35%;
+    width: clamp(25px, 5vw, 80px);
+    height: 50%;
+    border-radius:
+        55% 45% 35% 35%;
     transform-origin: bottom;
-    filter: blur(1px);
     background:
-        linear-gradient(to top,
-            #ffec80 0%,
-            #ff9d00 28%,
-            #ff3d00 62%,
-            rgba(120,0,0,.2) 100%);
+        linear-gradient(
+            to top,
+            #fff0a0 0%,
+            #ffad00 25%,
+            #ff3d00 60%,
+            rgba(100,0,0,0) 100%
+        );
     box-shadow:
-        0 0 20px #ff5e00,
-        0 0 60px rgba(255,60,0,.7);
-    opacity: .95;
+        0 0 20px #ff6500,
+        0 0 55px rgba(255,50,0,0.7);
+    filter: blur(1px);
 }
 
-.flame:nth-child(1) {height:48%; animation: flameDance .55s infinite alternate;}
-.flame:nth-child(2) {height:67%; animation: flameDance .42s infinite alternate-reverse;}
-.flame:nth-child(3) {height:39%; animation: flameDance .63s infinite alternate;}
-.flame:nth-child(4) {height:76%; animation: flameDance .48s infinite alternate-reverse;}
-.flame:nth-child(5) {height:55%; animation: flameDance .51s infinite alternate;}
-.flame:nth-child(6) {height:82%; animation: flameDance .39s infinite alternate-reverse;}
-.flame:nth-child(7) {height:45%; animation: flameDance .58s infinite alternate;}
-.flame:nth-child(8) {height:72%; animation: flameDance .44s infinite alternate-reverse;}
-.flame:nth-child(9) {height:51%; animation: flameDance .61s infinite alternate;}
-.flame:nth-child(10) {height:88%; animation: flameDance .37s infinite alternate-reverse;}
-.flame:nth-child(11) {height:43%; animation: flameDance .54s infinite alternate;}
-.flame:nth-child(12) {height:70%; animation: flameDance .43s infinite alternate-reverse;}
+.flame:nth-child(1) {
+    height: 47%;
+    animation: flameDance 0.5s infinite alternate;
+}
+
+.flame:nth-child(2) {
+    height: 65%;
+    animation: flameDance 0.43s infinite alternate-reverse;
+}
+
+.flame:nth-child(3) {
+    height: 40%;
+    animation: flameDance 0.61s infinite alternate;
+}
+
+.flame:nth-child(4) {
+    height: 76%;
+    animation: flameDance 0.46s infinite alternate-reverse;
+}
+
+.flame:nth-child(5) {
+    height: 55%;
+    animation: flameDance 0.55s infinite alternate;
+}
+
+.flame:nth-child(6) {
+    height: 84%;
+    animation: flameDance 0.39s infinite alternate-reverse;
+}
+
+.flame:nth-child(7) {
+    height: 45%;
+    animation: flameDance 0.58s infinite alternate;
+}
+
+.flame:nth-child(8) {
+    height: 72%;
+    animation: flameDance 0.44s infinite alternate-reverse;
+}
+
+.flame:nth-child(9) {
+    height: 50%;
+    animation: flameDance 0.62s infinite alternate;
+}
+
+.flame:nth-child(10) {
+    height: 88%;
+    animation: flameDance 0.37s infinite alternate-reverse;
+}
+
+.flame:nth-child(11) {
+    height: 44%;
+    animation: flameDance 0.54s infinite alternate;
+}
+
+.flame:nth-child(12) {
+    height: 69%;
+    animation: flameDance 0.42s infinite alternate-reverse;
+}
 
 .embers {
     position: absolute;
@@ -262,56 +354,41 @@ body {
 
 .ember {
     position: absolute;
-    bottom: -30px;
+    bottom: -20px;
     width: 4px;
     height: 9px;
     border-radius: 50%;
     background: #ffd166;
-    box-shadow: 0 0 10px #ff5e00;
-    animation: emberRise 1.7s linear forwards;
-}
-
-.ash-layer {
-    position: absolute;
-    inset: 0;
-    background:
-        radial-gradient(circle at 20% 40%, rgba(80,80,80,.7), transparent 2%),
-        radial-gradient(circle at 65% 30%, rgba(80,80,80,.6), transparent 2%),
-        radial-gradient(circle at 80% 65%, rgba(90,90,90,.5), transparent 2%),
-        #090909;
-    opacity: 0;
-}
-
-#fireTransition.ash .ash-layer {
-    animation: ashFade 1.2s ease forwards;
+    box-shadow: 0 0 10px #ff6500;
+    animation: emberRise 2s linear forwards;
 }
 
 /* =========================================================
-   STARS
-   ========================================================= */
+   SPACE
+========================================================= */
 
 #space {
     position: fixed;
     inset: 0;
-    z-index: -5;
+    z-index: 0;
     pointer-events: none;
     overflow: hidden;
 }
 
 .star {
     position: absolute;
-    width: 2px;
-    height: 2px;
     border-radius: 50%;
-    background: #ffffff;
-    box-shadow: 0 0 8px rgba(255,255,255,.9);
+    background: white;
+    box-shadow:
+        0 0 8px rgba(255,255,255,0.9);
     animation: starBlink 2s ease-in-out infinite alternate;
 }
 
 .constellation {
     position: absolute;
-    width: 2px;
-    height: 2px;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
     background: #c084fc;
     box-shadow:
         0 0 8px #a855f7,
@@ -319,45 +396,113 @@ body {
 }
 
 /* =========================================================
-   MAIN
-   ========================================================= */
+   LIGHTNING
+========================================================= */
+
+.lightning {
+    position: fixed;
+    z-index: 1;
+    width: 2px;
+    height: 250px;
+    pointer-events: none;
+    opacity: 0;
+    background:
+        linear-gradient(
+            to bottom,
+            transparent,
+            #c084fc,
+            white,
+            transparent
+        );
+    filter:
+        drop-shadow(0 0 8px #a855f7)
+        drop-shadow(0 0 20px #7c3aed);
+    transform: rotate(25deg);
+    animation: lightningFlash 4s infinite;
+}
+
+.lightning.one {
+    left: 12%;
+    top: 12%;
+}
+
+.lightning.two {
+    right: 14%;
+    top: 27%;
+    animation-delay: 1.3s;
+}
+
+.lightning.three {
+    left: 70%;
+    top: 7%;
+    animation-delay: 2.3s;
+}
+
+.lightning.four {
+    left: 30%;
+    top: 50%;
+    animation-delay: 3.1s;
+}
+
+/* =========================================================
+   SITE
+========================================================= */
 
 #site {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    min-height: 100vh;
     opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
     transform: translateY(15px);
     transition:
-        opacity 1s ease,
-        transform 1s ease;
+        opacity 0.8s ease,
+        transform 0.8s ease;
 }
 
 #site.visible {
-    opacity: 1;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
     transform: translateY(0);
 }
+
+/* =========================================================
+   HEADER
+========================================================= */
 
 header {
     position: sticky;
     top: 0;
     z-index: 100;
+    width: 100%;
     height: 76px;
+    padding:
+        0
+        5vw;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 5vw;
-    background: rgba(5,3,10,.72);
+    background:
+        rgba(5,3,10,0.76);
+    border-bottom:
+        1px solid rgba(168,85,247,0.15);
     backdrop-filter: blur(22px);
-    border-bottom: 1px solid rgba(168,85,247,.14);
 }
 
 .logo {
-    font-size: 24px;
+    color: white;
+    font-size: 25px;
     font-weight: 1000;
     letter-spacing: 4px;
 }
 
 .logo span {
     color: #a855f7;
-    text-shadow: 0 0 18px rgba(168,85,247,.7);
+    text-shadow:
+        0 0 20px #a855f7;
 }
 
 .nav-actions {
@@ -366,66 +511,97 @@ header {
     gap: 12px;
 }
 
+/* =========================================================
+   BUTTONS
+========================================================= */
+
 .btn {
     border: 0;
+    outline: none;
     cursor: pointer;
-    color: #fff;
-    font-weight: 900;
+    color: white;
     font-size: 14px;
+    font-weight: 900;
+    padding:
+        13px
+        18px;
     border-radius: 13px;
-    padding: 13px 18px;
     transition:
-        transform .2s ease,
-        box-shadow .2s ease,
-        background .2s ease;
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
 }
 
 .btn:hover {
     transform: translateY(-2px);
 }
 
+.btn:active {
+    transform: translateY(0);
+}
+
 .btn-purple {
-    background: linear-gradient(135deg,#7c3aed,#a855f7);
+    background:
+        linear-gradient(
+            135deg,
+            #6d28d9,
+            #9333ea,
+            #a855f7
+        );
     box-shadow:
-        0 8px 30px rgba(124,58,237,.3);
+        0 8px 30px rgba(124,58,237,0.28);
 }
 
 .btn-purple:hover {
     box-shadow:
-        0 12px 40px rgba(168,85,247,.5);
+        0 12px 40px rgba(168,85,247,0.48);
 }
 
 .btn-dark {
-    background: rgba(255,255,255,.07);
-    border: 1px solid rgba(255,255,255,.1);
+    background:
+        rgba(255,255,255,0.07);
+    border:
+        1px solid rgba(255,255,255,0.1);
 }
 
 .cart-count {
     display: inline-flex;
+    justify-content: center;
+    align-items: center;
     min-width: 21px;
     height: 21px;
-    align-items: center;
-    justify-content: center;
-    margin-left: 5px;
     padding: 0 6px;
+    margin-left: 5px;
     border-radius: 999px;
     background: #a855f7;
+    color: white;
     font-size: 11px;
 }
 
+/* =========================================================
+   HERO
+========================================================= */
+
 .hero {
-    min-height: calc(100vh - 76px);
+    position: relative;
+    z-index: 5;
+    width: 100%;
+    min-height:
+        calc(100vh - 76px);
+    padding:
+        75px 5vw
+        90px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 70px 5vw;
-    position: relative;
 }
 
 .hero-inner {
-    width: min(1150px,100%);
+    width: min(1150px, 100%);
     display: grid;
-    grid-template-columns: 1.05fr .95fr;
+    grid-template-columns:
+        1.05fr
+        0.95fr;
     gap: 70px;
     align-items: center;
 }
@@ -433,11 +609,15 @@ header {
 .badge {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 9px 13px;
+    gap: 9px;
+    padding:
+        9px
+        14px;
     border-radius: 999px;
-    background: rgba(168,85,247,.1);
-    border: 1px solid rgba(168,85,247,.25);
+    background:
+        rgba(168,85,247,0.1);
+    border:
+        1px solid rgba(168,85,247,0.25);
     color: #d8b4fe;
     font-size: 12px;
     font-weight: 900;
@@ -449,27 +629,35 @@ header {
     height: 7px;
     border-radius: 50%;
     background: #c084fc;
-    box-shadow: 0 0 12px #a855f7;
+    box-shadow:
+        0 0 12px #a855f7;
 }
 
 h1 {
     margin-top: 24px;
-    font-size: clamp(52px, 8vw, 108px);
-    line-height: .88;
-    letter-spacing: -5px;
+    font-size:
+        clamp(54px, 8vw, 110px);
+    line-height: 0.88;
+    letter-spacing: -6px;
     font-weight: 1000;
 }
 
 .gradient-text {
-    background: linear-gradient(100deg,#ffffff,#d8b4fe 42%,#9333ea);
+    background:
+        linear-gradient(
+            100deg,
+            white,
+            #d8b4fe 45%,
+            #9333ea
+        );
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
 }
 
 .hero-description {
-    margin-top: 27px;
     max-width: 610px;
+    margin-top: 28px;
     color: #a8a1b5;
     font-size: 17px;
     line-height: 1.7;
@@ -483,72 +671,94 @@ h1 {
 }
 
 .big-button {
-    padding: 17px 23px;
+    padding:
+        17px
+        23px;
     font-size: 15px;
 }
 
+/* =========================================================
+   PRODUCT CARD
+========================================================= */
+
 .product-card {
     position: relative;
-    min-height: 470px;
+    min-height: 490px;
     padding: 42px;
+    overflow: hidden;
     border-radius: 35px;
     background:
-        linear-gradient(145deg,
-            rgba(255,255,255,.09),
-            rgba(255,255,255,.025));
-    border: 1px solid rgba(168,85,247,.23);
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,0.09),
+            rgba(255,255,255,0.025)
+        );
+    border:
+        1px solid rgba(168,85,247,0.24);
     box-shadow:
-        0 30px 100px rgba(0,0,0,.4),
-        inset 0 0 70px rgba(124,58,237,.06);
-    overflow: hidden;
+        0 30px 100px rgba(0,0,0,0.45),
+        inset 0 0 70px rgba(124,58,237,0.06);
 }
 
 .product-card::before {
     content: "";
     position: absolute;
-    width: 300px;
-    height: 300px;
-    right: -100px;
-    top: -100px;
+    width: 330px;
+    height: 330px;
+    right: -110px;
+    top: -110px;
     border-radius: 50%;
-    background: rgba(168,85,247,.15);
-    filter: blur(50px);
+    background:
+        rgba(168,85,247,0.15);
+    filter: blur(55px);
 }
 
 .product-icon {
-    width: 100px;
-    height: 100px;
+    position: relative;
+    z-index: 2;
+    width: 105px;
+    height: 105px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 28px;
+    border-radius: 29px;
     background:
-        linear-gradient(135deg,
-            rgba(124,58,237,.3),
-            rgba(168,85,247,.12));
-    border: 1px solid rgba(192,132,252,.25);
-    font-size: 48px;
+        linear-gradient(
+            135deg,
+            rgba(124,58,237,0.32),
+            rgba(168,85,247,0.1)
+        );
+    border:
+        1px solid rgba(192,132,252,0.25);
+    font-size: 50px;
     box-shadow:
-        0 0 40px rgba(124,58,237,.25);
-    animation: floating 3s ease-in-out infinite;
+        0 0 40px rgba(124,58,237,0.28);
+    animation:
+        productFloat 3s ease-in-out infinite;
 }
 
 .product-card h2 {
+    position: relative;
+    z-index: 2;
     margin-top: 30px;
-    font-size: 43px;
+    font-size: 45px;
     font-weight: 1000;
     letter-spacing: -2px;
 }
 
 .product-card p {
+    position: relative;
+    z-index: 2;
     margin-top: 12px;
     color: #aaa2b6;
     line-height: 1.65;
 }
 
 .price {
+    position: relative;
+    z-index: 2;
     margin-top: 27px;
-    font-size: 44px;
+    font-size: 45px;
     font-weight: 1000;
 }
 
@@ -559,16 +769,21 @@ h1 {
 }
 
 .product-meta {
-    margin-top: 22px;
+    position: relative;
+    z-index: 2;
     display: flex;
-    gap: 10px;
     flex-wrap: wrap;
+    gap: 9px;
+    margin-top: 22px;
 }
 
 .meta {
-    padding: 8px 11px;
+    padding:
+        8px
+        11px;
     border-radius: 10px;
-    background: rgba(255,255,255,.055);
+    background:
+        rgba(255,255,255,0.055);
     color: #c4b5fd;
     font-size: 12px;
     font-weight: 800;
@@ -576,12 +791,17 @@ h1 {
 
 /* =========================================================
    FEATURES
-   ========================================================= */
+========================================================= */
 
 .features {
-    width: min(1150px,90%);
+    position: relative;
+    z-index: 5;
+    width: min(1150px, 90%);
     margin: 0 auto;
-    padding: 50px 0 120px;
+    padding:
+        30px
+        0
+        120px;
 }
 
 .features-title {
@@ -591,31 +811,36 @@ h1 {
 }
 
 .features-grid {
-    margin-top: 35px;
     display: grid;
-    grid-template-columns: repeat(3,1fr);
+    grid-template-columns:
+        repeat(3, 1fr);
     gap: 17px;
+    margin-top: 35px;
 }
 
 .feature {
-    padding: 27px;
+    padding: 28px;
     border-radius: 22px;
-    background: rgba(255,255,255,.035);
-    border: 1px solid rgba(255,255,255,.07);
+    background:
+        rgba(255,255,255,0.035);
+    border:
+        1px solid rgba(255,255,255,0.07);
     transition:
-        transform .25s ease,
-        border-color .25s ease,
-        background .25s ease;
+        transform 0.25s ease,
+        border-color 0.25s ease,
+        background 0.25s ease;
 }
 
 .feature:hover {
     transform: translateY(-6px);
-    border-color: rgba(168,85,247,.3);
-    background: rgba(168,85,247,.055);
+    border-color:
+        rgba(168,85,247,0.3);
+    background:
+        rgba(168,85,247,0.055);
 }
 
 .feature-icon {
-    font-size: 28px;
+    font-size: 29px;
 }
 
 .feature h3 {
@@ -631,51 +856,61 @@ h1 {
 }
 
 /* =========================================================
-   OVERLAY
-   ========================================================= */
+   DRAWER OVERLAY
+========================================================= */
 
 #drawerOverlay {
     position: fixed;
     inset: 0;
     z-index: 500;
-    background: rgba(0,0,0,.7);
+    background:
+        rgba(0,0,0,0.72);
     backdrop-filter: blur(7px);
     opacity: 0;
     visibility: hidden;
+    pointer-events: none;
     transition:
-        opacity .35s ease,
-        visibility .35s ease;
+        opacity 0.3s ease,
+        visibility 0.3s ease;
 }
 
 #drawerOverlay.active {
     opacity: 1;
     visibility: visible;
+    pointer-events: auto;
 }
 
 /* =========================================================
    DRAWERS
-   ========================================================= */
+========================================================= */
 
 .drawer {
     position: fixed;
     top: 0;
     bottom: 0;
-    width: min(50vw,560px);
-    min-width: 360px;
     z-index: 600;
-    background:
-        linear-gradient(160deg,#10091b,#08050d);
-    border-color: rgba(168,85,247,.18);
-    box-shadow: 0 0 80px rgba(0,0,0,.6);
-    transition: transform .42s cubic-bezier(.22,.8,.22,1);
+    width: min(50vw, 560px);
+    min-width: 360px;
     padding: 30px;
     overflow-y: auto;
+    background:
+        linear-gradient(
+            160deg,
+            #12091f,
+            #08050d
+        );
+    box-shadow:
+        0 0 80px rgba(0,0,0,0.65);
+    transition:
+        transform 0.42s
+        cubic-bezier(.22,.8,.22,1);
 }
 
 #quantityDrawer {
     left: 0;
     transform: translateX(-105%);
-    border-right: 1px solid rgba(168,85,247,.18);
+    border-right:
+        1px solid rgba(168,85,247,0.18);
 }
 
 #quantityDrawer.open {
@@ -685,7 +920,8 @@ h1 {
 #cartDrawer {
     right: 0;
     transform: translateX(105%);
-    border-left: 1px solid rgba(168,85,247,.18);
+    border-left:
+        1px solid rgba(168,85,247,0.18);
 }
 
 #cartDrawer.open {
@@ -694,11 +930,12 @@ h1 {
 
 .drawer-header {
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
     gap: 20px;
     padding-bottom: 22px;
-    border-bottom: 1px solid rgba(255,255,255,.07);
+    border-bottom:
+        1px solid rgba(255,255,255,0.07);
 }
 
 .drawer-title {
@@ -712,23 +949,33 @@ h1 {
     border: 0;
     border-radius: 13px;
     cursor: pointer;
-    background: rgba(255,255,255,.07);
-    color: #fff;
-    font-size: 22px;
-    transition: transform .2s ease, background .2s ease;
+    background:
+        rgba(255,255,255,0.07);
+    color: white;
+    font-size: 24px;
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease;
 }
 
 .close-button:hover {
     transform: rotate(90deg);
-    background: rgba(168,85,247,.2);
+    background:
+        rgba(168,85,247,0.2);
 }
+
+/* =========================================================
+   QUANTITY
+========================================================= */
 
 .quantity-product {
     margin-top: 28px;
     padding: 24px;
     border-radius: 22px;
-    background: rgba(255,255,255,.045);
-    border: 1px solid rgba(255,255,255,.07);
+    background:
+        rgba(255,255,255,0.045);
+    border:
+        1px solid rgba(255,255,255,0.07);
 }
 
 .quantity-product-name {
@@ -753,14 +1000,16 @@ h1 {
 }
 
 .quantity-control {
-    margin-top: 12px;
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
     padding: 8px;
     border-radius: 17px;
-    background: rgba(0,0,0,.28);
-    border: 1px solid rgba(255,255,255,.08);
+    background:
+        rgba(0,0,0,0.28);
+    border:
+        1px solid rgba(255,255,255,0.08);
 }
 
 .quantity-button {
@@ -768,15 +1017,22 @@ h1 {
     height: 48px;
     border: 0;
     border-radius: 13px;
-    background: rgba(168,85,247,.12);
-    color: #fff;
-    font-size: 25px;
     cursor: pointer;
+    background:
+        rgba(168,85,247,0.12);
+    color: white;
+    font-size: 25px;
+}
+
+.quantity-button:hover {
+    background:
+        rgba(168,85,247,0.25);
 }
 
 .quantity-value {
     min-width: 80px;
     text-align: center;
+    color: white;
     font-size: 22px;
     font-weight: 1000;
 }
@@ -785,8 +1041,10 @@ h1 {
     margin-top: 25px;
     padding: 20px;
     border-radius: 17px;
-    background: rgba(124,58,237,.09);
-    border: 1px solid rgba(168,85,247,.17);
+    background:
+        rgba(124,58,237,0.09);
+    border:
+        1px solid rgba(168,85,247,0.17);
 }
 
 .member-total-row {
@@ -797,15 +1055,15 @@ h1 {
 }
 
 .member-total-row + .member-total-row {
-    margin-top: 10px;
+    margin-top: 11px;
 }
 
 .member-total strong {
-    color: #fff;
+    color: white;
 }
 
 .member-price {
-    color: #c084fc !important;
+    color: #d8b4fe !important;
     font-size: 23px;
 }
 
@@ -816,20 +1074,28 @@ h1 {
     border: 0;
     border-radius: 15px;
     cursor: pointer;
-    color: #fff;
-    background: linear-gradient(135deg,#7c3aed,#a855f7);
+    color: white;
+    background:
+        linear-gradient(
+            135deg,
+            #6d28d9,
+            #9333ea,
+            #a855f7
+        );
     font-size: 15px;
     font-weight: 1000;
-    box-shadow: 0 12px 35px rgba(124,58,237,.25);
+    box-shadow:
+        0 12px 35px rgba(124,58,237,0.25);
 }
 
 .add-cart-button:hover {
-    box-shadow: 0 15px 45px rgba(168,85,247,.45);
+    box-shadow:
+        0 15px 45px rgba(168,85,247,0.45);
 }
 
 /* =========================================================
    CART
-   ========================================================= */
+========================================================= */
 
 .empty-cart {
     margin-top: 50px;
@@ -839,7 +1105,7 @@ h1 {
 
 .empty-cart-icon {
     font-size: 55px;
-    opacity: .7;
+    opacity: 0.7;
 }
 
 .empty-cart p {
@@ -850,8 +1116,10 @@ h1 {
     margin-top: 20px;
     padding: 20px;
     border-radius: 19px;
-    background: rgba(255,255,255,.045);
-    border: 1px solid rgba(255,255,255,.07);
+    background:
+        rgba(255,255,255,0.045);
+    border:
+        1px solid rgba(255,255,255,0.07);
 }
 
 .cart-item-top {
@@ -867,6 +1135,7 @@ h1 {
 .cart-item-price {
     color: #c084fc;
     font-weight: 900;
+    white-space: nowrap;
 }
 
 .cart-item-members {
@@ -888,13 +1157,14 @@ h1 {
 .cart-total {
     margin-top: 28px;
     padding-top: 22px;
-    border-top: 1px solid rgba(255,255,255,.08);
+    border-top:
+        1px solid rgba(255,255,255,0.08);
 }
 
 .cart-total-row {
     display: flex;
     justify-content: space-between;
-    font-size: 16px;
+    align-items: center;
 }
 
 .cart-total-price {
@@ -914,108 +1184,86 @@ h1 {
     color: #111;
     font-size: 15px;
     font-weight: 1000;
-    transition: transform .2s ease, box-shadow .2s ease;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 .paypal-button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(255,196,57,.25);
+    box-shadow:
+        0 10px 30px rgba(255,196,57,0.3);
 }
 
 /* =========================================================
    TOAST
-   ========================================================= */
+========================================================= */
 
 #toast {
     position: fixed;
     left: 50%;
     bottom: 25px;
     z-index: 1000;
-    transform: translate(-50%,20px);
-    opacity: 0;
-    visibility: hidden;
-    padding: 13px 18px;
+    padding:
+        13px
+        18px;
     border-radius: 13px;
-    background: rgba(20,12,30,.94);
-    border: 1px solid rgba(168,85,247,.3);
-    box-shadow: 0 15px 40px rgba(0,0,0,.4);
-    color: #fff;
+    background:
+        rgba(20,12,30,0.96);
+    border:
+        1px solid rgba(168,85,247,0.3);
+    box-shadow:
+        0 15px 40px rgba(0,0,0,0.4);
+    color: white;
     font-size: 13px;
     font-weight: 800;
+    opacity: 0;
+    visibility: hidden;
+    transform:
+        translate(-50%, 20px);
     transition:
-        opacity .3s ease,
-        transform .3s ease,
-        visibility .3s ease;
+        opacity 0.3s ease,
+        visibility 0.3s ease,
+        transform 0.3s ease;
 }
 
 #toast.show {
     opacity: 1;
     visibility: visible;
-    transform: translate(-50%,0);
-}
-
-/* =========================================================
-   LIGHTNING
-   ========================================================= */
-
-.lightning {
-    position: fixed;
-    pointer-events: none;
-    z-index: -1;
-    width: 1px;
-    height: 180px;
-    background: linear-gradient(
-        to bottom,
-        transparent,
-        rgba(192,132,252,.8),
-        transparent
-    );
-    transform: rotate(25deg);
-    filter: blur(.3px);
-    opacity: 0;
-    animation: lightningFlash 4s infinite;
-}
-
-.lightning.one {
-    left: 12%;
-    top: 15%;
-}
-
-.lightning.two {
-    right: 15%;
-    top: 30%;
-    animation-delay: 1.2s;
-}
-
-.lightning.three {
-    left: 72%;
-    top: 9%;
-    animation-delay: 2.2s;
+    transform:
+        translate(-50%, 0);
 }
 
 /* =========================================================
    FOOTER
-   ========================================================= */
+========================================================= */
 
 footer {
-    padding: 40px 5vw;
+    position: relative;
+    z-index: 5;
+    padding:
+        40px 5vw;
     text-align: center;
     color: #686170;
-    border-top: 1px solid rgba(255,255,255,.05);
+    border-top:
+        1px solid rgba(255,255,255,0.05);
     font-size: 12px;
 }
 
 /* =========================================================
    RESPONSIVE
-   ========================================================= */
+========================================================= */
 
 @media (max-width: 850px) {
+
     header {
-        padding: 0 20px;
+        padding:
+            0 20px;
     }
 
     .hero {
-        padding: 55px 20px;
+        padding:
+            55px 20px 80px;
     }
 
     .hero-inner {
@@ -1023,12 +1271,9 @@ footer {
         gap: 45px;
     }
 
-    h1 {
-        letter-spacing: -3px;
-    }
-
     .features {
-        width: calc(100% - 40px);
+        width:
+            calc(100% - 40px);
     }
 
     .features-grid {
@@ -1043,11 +1288,18 @@ footer {
     .nav-actions .btn-dark {
         display: none;
     }
+
 }
 
 @media (max-width: 520px) {
+
     .logo {
         font-size: 19px;
+    }
+
+    h1 {
+        font-size: 56px;
+        letter-spacing: -4px;
     }
 
     .hero-description {
@@ -1055,16 +1307,16 @@ footer {
     }
 
     .product-card {
-        padding: 27px;
         min-height: auto;
+        padding: 27px;
     }
 
     .product-card h2 {
-        font-size: 34px;
+        font-size: 35px;
     }
 
     .price {
-        font-size: 37px;
+        font-size: 38px;
     }
 
     .hero-buttons {
@@ -1078,150 +1330,215 @@ footer {
     .drawer {
         padding: 22px;
     }
+
 }
 
 /* =========================================================
    ANIMATIONS
-   ========================================================= */
+========================================================= */
 
 @keyframes loaderSpin {
+
+    from {
+        transform: rotate(0deg);
+    }
+
     to {
         transform: rotate(360deg);
     }
+
 }
 
-@keyframes loaderSpinReverse {
+@keyframes loaderReverse {
+
+    from {
+        transform: rotate(0deg);
+    }
+
     to {
         transform: rotate(-360deg);
     }
+
 }
 
-@keyframes loaderPulse {
-    0%,100% {
+@keyframes loaderLogoPulse {
+
+    0%,
+    100% {
         transform: scale(1);
-        opacity: .8;
+        opacity: 0.85;
     }
+
     50% {
-        transform: scale(1.035);
+        transform: scale(1.04);
         opacity: 1;
     }
+
 }
 
-@keyframes corePulse {
-    0%,100% {
-        transform: scale(.8);
-        opacity: .7;
+@keyframes loaderCore {
+
+    0%,
+    100% {
+        transform:
+            translate(-50%, -50%)
+            scale(0.8);
+        opacity: 0.7;
     }
+
     50% {
-        transform: scale(1.15);
+        transform:
+            translate(-50%, -50%)
+            scale(1.15);
         opacity: 1;
     }
+
 }
 
-@keyframes particleFloat {
+@keyframes loaderParticle {
+
     from {
-        transform: translateY(110vh) scale(.4);
+        transform:
+            translateY(110vh)
+            scale(0.4);
         opacity: 0;
     }
+
     15% {
         opacity: 1;
     }
+
     to {
-        transform: translateY(-20vh) scale(1.2);
+        transform:
+            translateY(-20vh)
+            scale(1.2);
         opacity: 0;
     }
+
 }
 
 @keyframes fireRise {
+
     from {
-        transform: translateY(100%);
+        transform:
+            translateY(100%);
     }
+
     to {
-        transform: translateY(0);
+        transform:
+            translateY(0);
     }
+
 }
 
 @keyframes flameDance {
+
     from {
-        transform: scaleY(.82) rotate(-4deg);
+        transform:
+            scaleY(0.8)
+            rotate(-4deg);
     }
+
     to {
-        transform: scaleY(1.13) rotate(5deg);
+        transform:
+            scaleY(1.15)
+            rotate(5deg);
     }
+
 }
 
 @keyframes emberRise {
+
     0% {
-        transform: translateY(0) translateX(0) scale(.5);
+        transform:
+            translateY(0)
+            translateX(0)
+            scale(0.5);
         opacity: 0;
     }
+
     15% {
         opacity: 1;
     }
+
     100% {
-        transform: translateY(-110vh) translateX(90px) scale(0);
+        transform:
+            translateY(-110vh)
+            translateX(100px)
+            scale(0);
         opacity: 0;
     }
-}
 
-@keyframes ashFade {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes floating {
-    0%,100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-10px);
-    }
 }
 
 @keyframes starBlink {
+
     from {
-        opacity: .2;
-        transform: scale(.7);
+        opacity: 0.2;
+        transform: scale(0.7);
     }
+
     to {
         opacity: 1;
         transform: scale(1.4);
     }
+
 }
 
 @keyframes lightningFlash {
-    0%,82%,100% {
+
+    0%,
+    80%,
+    100% {
         opacity: 0;
     }
+
+    82% {
+        opacity: 0.9;
+    }
+
+    83% {
+        opacity: 0;
+    }
+
     84% {
-        opacity: .8;
+        opacity: 0.65;
     }
-    85% {
-        opacity: 0;
-    }
+
     86% {
-        opacity: .45;
-    }
-    88% {
         opacity: 0;
     }
+
 }
+
+@keyframes productFloat {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+}
+
 </style>
 </head>
 
 <body>
 
-<!-- =======================================================
+<!-- =====================================================
      LOADER
-======================================================= -->
+===================================================== -->
 
 <div id="loader">
 
-    <div class="loader-particles" id="loaderParticles"></div>
+    <div
+        class="loader-particles"
+        id="loaderParticles">
+    </div>
 
     <div class="loader-content">
 
@@ -1235,34 +1552,41 @@ footer {
 
         <div class="loader-ring"></div>
 
-        <div class="loader-status" id="loaderStatus">
+        <div
+            class="loader-status"
+            id="loaderStatus">
             INITIALISATION...
         </div>
 
-        <div class="loader-percent" id="loaderPercent">
+        <div
+            class="loader-percent"
+            id="loaderPercent">
             0%
         </div>
 
         <div class="loader-bar">
+
             <div
                 class="loader-bar-fill"
                 id="loaderBarFill">
             </div>
+
         </div>
 
     </div>
 
 </div>
 
-<!-- =======================================================
+<!-- =====================================================
      FIRE
-======================================================= -->
+===================================================== -->
 
 <div id="fireTransition">
 
     <div class="fire-background"></div>
 
     <div class="flames">
+
         <div class="flame"></div>
         <div class="flame"></div>
         <div class="flame"></div>
@@ -1275,230 +1599,284 @@ footer {
         <div class="flame"></div>
         <div class="flame"></div>
         <div class="flame"></div>
+
     </div>
 
-    <div class="embers" id="embers"></div>
-
-    <div class="ash-layer"></div>
+    <div
+        class="embers"
+        id="embers">
+    </div>
 
 </div>
 
-<!-- =======================================================
-     SPACE
-======================================================= -->
+<!-- =====================================================
+     BACKGROUND
+===================================================== -->
 
 <div id="space"></div>
 
 <div class="lightning one"></div>
 <div class="lightning two"></div>
 <div class="lightning three"></div>
+<div class="lightning four"></div>
 
-<!-- =======================================================
+<!-- =====================================================
      SITE
-======================================================= -->
+===================================================== -->
 
 <div id="site">
 
-<header>
+    <header>
 
-    <div class="logo">
-        NOVA<span>.</span>
-    </div>
-
-    <div class="nav-actions">
-
-        <button
-            class="btn btn-dark"
-            id="heroCartButton"
-            type="button">
-            🛒 Panier
-            <span
-                class="cart-count"
-                id="cartCount">
-                0
-            </span>
-        </button>
-
-        <button
-            class="btn btn-purple"
-            id="chooseButton"
-            type="button">
-            Choisir
-        </button>
-
-    </div>
-
-</header>
-
-<main>
-
-<section class="hero">
-
-    <div class="hero-inner">
-
-        <div>
-
-            <div class="badge">
-                <span class="badge-dot"></span>
-                NOVA MEMBERS
-            </div>
-
-            <h1>
-                <span class="gradient-text">
-                    1K
-                </span>
-                MEMBERS.
-            </h1>
-
-            <p class="hero-description">
-                Obtiens ton pack de 1 000 MEMBERS avec une expérience
-                simple, rapide et entièrement pensée pour NOVA.
-            </p>
-
-            <div class="hero-buttons">
-
-                <button
-                    class="btn btn-purple big-button"
-                    id="heroChooseButton"
-                    type="button">
-                    ✦ Choisir mon pack
-                </button>
-
-                <button
-                    class="btn btn-dark big-button"
-                    id="heroCartButton2"
-                    type="button">
-                    🛒 Ouvrir le panier
-                </button>
-
-            </div>
-
+        <div class="logo">
+            NOVA<span>.</span>
         </div>
 
-        <div class="product-card">
-
-            <div class="product-icon">
-                ✦
-            </div>
-
-            <h2>
-                MEMBERS
-            </h2>
-
-            <p>
-                Pack numérique NOVA de
-                <strong>1K MEMBERS</strong>.
-                Sélectionne simplement la quantité souhaitée.
-            </p>
-
-            <div class="price">
-                5,49 €
-                <small>
-                    / 1K
-                </small>
-            </div>
-
-            <div class="product-meta">
-
-                <span class="meta">
-                    ⚡ Instantané
-                </span>
-
-                <span class="meta">
-                    🔒 Simple
-                </span>
-
-                <span class="meta">
-                    ✦ NOVA
-                </span>
-
-            </div>
+        <div class="nav-actions">
 
             <button
-                class="btn btn-purple big-button"
-                id="cardChooseButton"
-                type="button"
-                style="width:100%;margin-top:25px;">
-                Choisir la quantité
+                class="btn btn-dark"
+                id="heroCartButton"
+                type="button">
+
+                🛒 Panier
+
+                <span
+                    class="cart-count"
+                    id="cartCount">
+                    0
+                </span>
+
+            </button>
+
+            <button
+                class="btn btn-purple"
+                id="chooseButton"
+                type="button">
+
+                Choisir
+
             </button>
 
         </div>
 
-    </div>
+    </header>
 
-</section>
+    <main>
 
-<section class="features">
+        <section class="hero">
 
-    <div class="features-title">
-        Pourquoi NOVA MEMBERS ?
-    </div>
+            <div class="hero-inner">
 
-    <div class="features-grid">
+                <div>
 
-        <article class="feature">
-            <div class="feature-icon">
-                ⚡
+                    <div class="badge">
+
+                        <span
+                            class="badge-dot">
+                        </span>
+
+                        NOVA MEMBERS
+
+                    </div>
+
+                    <h1>
+
+                        <span class="gradient-text">
+                            1K
+                        </span>
+
+                        MEMBERS.
+
+                    </h1>
+
+                    <p class="hero-description">
+
+                        Obtiens ton pack de
+                        <strong>
+                            1 000 MEMBERS
+                        </strong>
+                        avec une expérience simple,
+                        rapide et entièrement pensée
+                        pour NOVA.
+
+                    </p>
+
+                    <div class="hero-buttons">
+
+                        <button
+                            class="btn btn-purple big-button"
+                            id="heroChooseButton"
+                            type="button">
+
+                            ✦ Choisir mon pack
+
+                        </button>
+
+                        <button
+                            class="btn btn-dark big-button"
+                            id="heroCartButton2"
+                            type="button">
+
+                            🛒 Ouvrir le panier
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <div class="product-card">
+
+                    <div class="product-icon">
+                        ✦
+                    </div>
+
+                    <h2>
+                        MEMBERS
+                    </h2>
+
+                    <p>
+
+                        Pack numérique NOVA de
+                        <strong>
+                            1K MEMBERS
+                        </strong>.
+                        Choisis simplement la quantité
+                        souhaitée.
+
+                    </p>
+
+                    <div class="price">
+
+                        5,49 €
+
+                        <small>
+                            / 1K
+                        </small>
+
+                    </div>
+
+                    <div class="product-meta">
+
+                        <span class="meta">
+                            ⚡ Rapide
+                        </span>
+
+                        <span class="meta">
+                            🔒 Simple
+                        </span>
+
+                        <span class="meta">
+                            ✦ NOVA
+                        </span>
+
+                    </div>
+
+                    <button
+                        class="btn btn-purple big-button"
+                        id="cardChooseButton"
+                        type="button"
+                        style="
+                            width:100%;
+                            margin-top:25px;
+                        ">
+
+                        Choisir la quantité
+
+                    </button>
+
+                </div>
+
             </div>
-            <h3>
-                Rapide
-            </h3>
-            <p>
-                Une interface conçue pour aller directement
-                à l'essentiel.
-            </p>
-        </article>
 
-        <article class="feature">
-            <div class="feature-icon">
-                ✦
+        </section>
+
+        <section class="features">
+
+            <div class="features-title">
+                Pourquoi NOVA MEMBERS ?
             </div>
-            <h3>
-                Simple
-            </h3>
-            <p>
-                Choisis ta quantité, ajoute-la au panier
-                puis passe au paiement.
-            </p>
-        </article>
 
-        <article class="feature">
-            <div class="feature-icon">
-                🛒
+            <div class="features-grid">
+
+                <article class="feature">
+
+                    <div class="feature-icon">
+                        ⚡
+                    </div>
+
+                    <h3>
+                        Rapide
+                    </h3>
+
+                    <p>
+                        Une interface pensée
+                        pour aller directement
+                        à l'essentiel.
+                    </p>
+
+                </article>
+
+                <article class="feature">
+
+                    <div class="feature-icon">
+                        ✦
+                    </div>
+
+                    <h3>
+                        Simple
+                    </h3>
+
+                    <p>
+                        Choisis ta quantité,
+                        ajoute-la au panier puis
+                        continue vers le paiement.
+                    </p>
+
+                </article>
+
+                <article class="feature">
+
+                    <div class="feature-icon">
+                        🛒
+                    </div>
+
+                    <h3>
+                        Panier
+                    </h3>
+
+                    <p>
+                        Vérifie ta commande
+                        avant de continuer.
+                    </p>
+
+                </article>
+
             </div>
-            <h3>
-                Panier
-            </h3>
-            <p>
-                Modifie facilement ta sélection avant
-                de continuer vers PayPal.
-            </p>
-        </article>
 
-    </div>
+        </section>
 
-</section>
+    </main>
 
-</main>
-
-<footer>
-    NOVA MEMBERS • Tous droits réservés
-</footer>
+    <footer>
+        NOVA MEMBERS • Tous droits réservés
+    </footer>
 
 </div>
 
-<!-- =======================================================
+<!-- =====================================================
      OVERLAY
-======================================================= -->
+===================================================== -->
 
 <div
     id="drawerOverlay"
     aria-hidden="true">
 </div>
 
-<!-- =======================================================
+<!-- =====================================================
      QUANTITY DRAWER
-======================================================= -->
+===================================================== -->
 
 <aside
     class="drawer"
@@ -1516,7 +1894,9 @@ footer {
             id="closeQuantity"
             type="button"
             aria-label="Fermer">
+
             ×
+
         </button>
 
     </div>
@@ -1543,20 +1923,26 @@ footer {
                     class="quantity-button"
                     id="minusButton"
                     type="button">
+
                     −
+
                 </button>
 
                 <div
                     class="quantity-value"
                     id="quantityValue">
+
                     1
+
                 </div>
 
                 <button
                     class="quantity-button"
                     id="plusButton"
                     type="button">
+
                     +
+
                 </button>
 
             </div>
@@ -1598,7 +1984,9 @@ footer {
                 <strong
                     class="member-price"
                     id="summaryPrice">
+
                     5,49 €
+
                 </strong>
 
             </div>
@@ -1609,16 +1997,18 @@ footer {
             class="add-cart-button"
             id="addCartButton"
             type="button">
+
             🛒 Ajouter au panier
+
         </button>
 
     </div>
 
 </aside>
 
-<!-- =======================================================
+<!-- =====================================================
      CART DRAWER
-======================================================= -->
+===================================================== -->
 
 <aside
     class="drawer"
@@ -1636,7 +2026,9 @@ footer {
             id="closeCart"
             type="button"
             aria-label="Fermer">
+
             ×
+
         </button>
 
     </div>
@@ -1645,138 +2037,213 @@ footer {
 
 </aside>
 
-<!-- =======================================================
+<!-- =====================================================
      TOAST
-======================================================= -->
+===================================================== -->
 
 <div id="toast"></div>
 
-<!-- =======================================================
+<!-- =====================================================
      LOADER SCRIPT
-     Ce script est volontairement placé AVANT APP.JS.
-     Il fonctionne même si APP.JS rencontre une erreur.
-======================================================= -->
+===================================================== -->
 
 <script>
+
 (function () {
 
-    var loader = document.getElementById("loader");
-    var percent = document.getElementById("loaderPercent");
-    var bar = document.getElementById("loaderBarFill");
-    var status = document.getElementById("loaderStatus");
-    var site = document.getElementById("site");
-    var fire = document.getElementById("fireTransition");
+    "use strict";
 
-    var value = 0;
-    var started = Date.now();
-    var finished = false;
+    const loader =
+        document.getElementById("loader");
 
-    var statuses = [
+    const site =
+        document.getElementById("site");
+
+    const fire =
+        document.getElementById("fireTransition");
+
+    const percent =
+        document.getElementById("loaderPercent");
+
+    const bar =
+        document.getElementById("loaderBarFill");
+
+    const status =
+        document.getElementById("loaderStatus");
+
+    let progress = 0;
+
+    let finished = false;
+
+    const messages = [
         "INITIALISATION...",
         "CHARGEMENT NOVA...",
         "PRÉPARATION...",
-        "CONNEXION...",
-        "CHARGEMENT DES ÉLÉMENTS...",
-        "FINALISATION..."
+        "CHARGEMENT DU PRODUIT...",
+        "FINALISATION...",
+        "PRÊT."
     ];
 
-    function updateLoader() {
+    function showSite() {
 
-        if (finished) {
+        if (!site) {
             return;
         }
 
-        var elapsed = Date.now() - started;
-
-        value = Math.min(
-            100,
-            Math.floor((elapsed / 3000) * 100)
-        );
-
-        percent.textContent = value + "%";
-        bar.style.width = value + "%";
-
-        var index = Math.min(
-            statuses.length - 1,
-            Math.floor(value / 20)
-        );
-
-        status.textContent = statuses[index];
-
-        if (value >= 100) {
-            finishLoader();
-            return;
-        }
-
-        requestAnimationFrame(updateLoader);
-    }
-
-    function finishLoader() {
-
-        if (finished) {
-            return;
-        }
-
-        finished = true;
-
-        percent.textContent = "100%";
-        bar.style.width = "100%";
-        status.textContent = "PRÊT.";
-
-        setTimeout(function () {
-
-            fire.classList.add("active");
-
-            setTimeout(function () {
-                fire.classList.add("ash");
-            }, 1200);
-
-            setTimeout(function () {
-
-                loader.classList.add("hidden");
-                site.classList.add("visible");
-
-            }, 2500);
-
-        }, 150);
-
-    }
-
-    function emergencyReveal() {
-
-        if (finished) {
-            return;
-        }
-
-        finished = true;
-
-        loader.classList.add("hidden");
+        site.style.opacity = "1";
+        site.style.visibility = "visible";
+        site.style.pointerEvents = "auto";
         site.classList.add("visible");
 
     }
 
-    window.setTimeout(function () {
+    function hideLoader() {
+
+        if (!loader) {
+            return;
+        }
+
+        loader.classList.add("hidden");
+
+        setTimeout(function () {
+
+            loader.style.display = "none";
+
+        }, 800);
+
+    }
+
+    function finish() {
+
+        if (finished) {
+            return;
+        }
+
+        finished = true;
+
+        progress = 100;
+
+        if (percent) {
+            percent.textContent = "100%";
+        }
+
+        if (bar) {
+            bar.style.width = "100%";
+        }
+
+        if (status) {
+            status.textContent = "PRÊT.";
+        }
+
+        if (fire) {
+            fire.classList.add("active");
+        }
+
+        /*
+         * LE SITE EST AFFICHÉ ICI AVANT
+         * LA DISPARITION DU LOADER.
+         */
+
+        setTimeout(function () {
+
+            showSite();
+
+        }, 1700);
+
+        setTimeout(function () {
+
+            hideLoader();
+
+        }, 2200);
+
+        setTimeout(function () {
+
+            if (fire) {
+                fire.classList.remove("active");
+            }
+
+        }, 3500);
+
+    }
+
+    const interval =
+        setInterval(function () {
+
+            if (finished) {
+                clearInterval(interval);
+                return;
+            }
+
+            progress += 2;
+
+            if (progress > 100) {
+                progress = 100;
+            }
+
+            if (percent) {
+                percent.textContent =
+                    progress + "%";
+            }
+
+            if (bar) {
+                bar.style.width =
+                    progress + "%";
+            }
+
+            if (status) {
+
+                const index =
+                    Math.min(
+                        Math.floor(
+                            progress / 20
+                        ),
+                        messages.length - 1
+                    );
+
+                status.textContent =
+                    messages[index];
+
+            }
+
+            if (progress >= 100) {
+
+                clearInterval(interval);
+
+                finish();
+
+            }
+
+        }, 60);
+
+    /*
+     * SÉCURITÉ ABSOLUE :
+     * le site sera visible au plus tard
+     * après 6 secondes.
+     */
+
+    setTimeout(function () {
 
         if (!finished) {
-            finishLoader();
+
+            clearInterval(interval);
+
+            showSite();
+
+            hideLoader();
+
         }
 
-    }, 3800);
-
-    window.setTimeout(function () {
-
-        if (!site.classList.contains("visible")) {
-            emergencyReveal();
-        }
-
-    }, 7000);
-
-    updateLoader();
+    }, 6000);
 
 })();
+
 </script>
 
-<script src="./APP.JS" defer></script>
+<!-- =====================================================
+     APP.JS
+===================================================== -->
+
+<script src="./APP.JS"></script>
 
 </body>
 </html>
