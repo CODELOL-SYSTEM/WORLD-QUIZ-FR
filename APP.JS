@@ -6,16 +6,11 @@
  NOVA MEMBERS
  APP.JS
  VERSION FINALE
+ PANIER + QUANTITE + LOADER + ANIMATIONS
 ============================================================
 */
 
 (function () {
-
-    /*
-    ========================================================
-    CONFIG
-    ========================================================
-    */
 
     const PRODUCT = {
         id: "members-1k",
@@ -41,30 +36,8 @@
     ========================================================
     */
 
-    function $(selector) {
-        return document.querySelector(selector);
-    }
-
-    function exists(element) {
-        return element !== null &&
-               element !== undefined;
-    }
-
-    function refreshElements() {
-
-        return {
-            quantityDrawer: $("#quantityDrawer"),
-            cartDrawer: $("#cartDrawer"),
-            drawerOverlay: $("#drawerOverlay"),
-            quantityValue: $("#quantityValue"),
-            summaryQuantity: $("#summaryQuantity"),
-            summaryMembers: $("#summaryMembers"),
-            summaryPrice: $("#summaryPrice"),
-            cartContent: $("#cartContent"),
-            cartCount: $("#cartCount"),
-            toast: $("#toast")
-        };
-
+    function $(id) {
+        return document.getElementById(id);
     }
 
     /*
@@ -84,7 +57,6 @@
         return number
             .toFixed(2)
             .replace(".", ",") + " €";
-
     }
 
     function formatNumber(value) {
@@ -96,7 +68,6 @@
         }
 
         return number.toLocaleString("fr-FR");
-
     }
 
     function escapeHTML(value) {
@@ -107,7 +78,6 @@
             .replace(/>/g, "&gt;")
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#039;");
-
     }
 
     /*
@@ -118,15 +88,16 @@
 
     function toast(message) {
 
-        const elements = refreshElements();
+        const element = $("toast");
 
-        if (!exists(elements.toast)) {
+        if (!element) {
             return;
         }
 
-        elements.toast.textContent = String(message);
+        element.textContent =
+            String(message);
 
-        elements.toast.classList.add("show");
+        element.classList.add("show");
 
         if (toastTimer !== null) {
             clearTimeout(toastTimer);
@@ -134,12 +105,9 @@
 
         toastTimer = setTimeout(function () {
 
-            if (exists(elements.toast)) {
-                elements.toast.classList.remove("show");
-            }
+            element.classList.remove("show");
 
         }, 2500);
-
     }
 
     /*
@@ -150,80 +118,103 @@
 
     function clampQuantity(value) {
 
-        let number = parseInt(value, 10);
+        let number =
+            parseInt(value, 10);
 
         if (!Number.isFinite(number)) {
             number = 1;
         }
 
-        number = Math.max(1, number);
-        number = Math.min(999, number);
+        number =
+            Math.max(1, number);
+
+        number =
+            Math.min(999, number);
 
         return number;
-
     }
 
     function updateQuantityUI() {
 
-        quantity = clampQuantity(quantity);
+        quantity =
+            clampQuantity(quantity);
 
-        const elements = refreshElements();
+        const quantityValue =
+            $("quantityValue");
 
-        if (exists(elements.quantityValue)) {
+        const summaryQuantity =
+            $("summaryQuantity");
 
-            elements.quantityValue.textContent =
+        const summaryMembers =
+            $("summaryMembers");
+
+        const summaryPrice =
+            $("summaryPrice");
+
+        if (quantityValue) {
+
+            quantityValue.textContent =
                 String(quantity);
-
         }
 
-        if (exists(elements.summaryQuantity)) {
+        if (summaryQuantity) {
 
-            elements.summaryQuantity.textContent =
+            summaryQuantity.textContent =
                 String(quantity);
-
         }
 
-        if (exists(elements.summaryMembers)) {
+        if (summaryMembers) {
 
-            elements.summaryMembers.textContent =
+            summaryMembers.textContent =
                 formatNumber(
-                    PRODUCT.members * quantity
+                    PRODUCT.members *
+                    quantity
                 );
-
         }
 
-        if (exists(elements.summaryPrice)) {
+        if (summaryPrice) {
 
-            elements.summaryPrice.textContent =
+            summaryPrice.textContent =
                 formatPrice(
-                    PRODUCT.price * quantity
+                    PRODUCT.price *
+                    quantity
                 );
-
         }
-
     }
 
     function increaseQuantity() {
 
         quantity =
-            clampQuantity(quantity + 1);
+            clampQuantity(
+                quantity + 1
+            );
 
         updateQuantityUI();
 
+        toast(
+            "Quantité : " +
+            quantity
+        );
     }
 
     function decreaseQuantity() {
 
         quantity =
-            clampQuantity(quantity - 1);
+            clampQuantity(
+                quantity - 1
+            );
 
         updateQuantityUI();
 
+        toast(
+            "Quantité : " +
+            quantity
+        );
     }
 
     /*
     ========================================================
-    LOAD CART
+    CART STORAGE
     ========================================================
     */
 
@@ -232,10 +223,14 @@
         try {
 
             const saved =
-                localStorage.getItem(STORAGE_KEY);
+                localStorage.getItem(
+                    STORAGE_KEY
+                );
 
             if (!saved) {
+
                 cart = [];
+
                 return;
             }
 
@@ -243,70 +238,63 @@
                 JSON.parse(saved);
 
             if (!Array.isArray(parsed)) {
+
                 cart = [];
+
                 return;
             }
 
-            cart = parsed
-                .filter(function (item) {
+            cart =
+                parsed
+                    .filter(function (item) {
 
-                    return (
-                        item &&
-                        typeof item === "object" &&
-                        typeof item.id === "string"
-                    );
+                        return (
+                            item &&
+                            typeof item === "object" &&
+                            typeof item.id === "string"
+                        );
 
-                })
-                .map(function (item) {
+                    })
+                    .map(function (item) {
 
-                    return {
+                        return {
 
-                        id:
-                            item.id,
+                            id:
+                                item.id,
 
-                        name:
-                            item.name ||
-                            PRODUCT.name,
+                            name:
+                                item.name ||
+                                PRODUCT.name,
 
-                        quantity:
-                            clampQuantity(
-                                item.quantity
-                            ),
+                            quantity:
+                                clampQuantity(
+                                    item.quantity
+                                ),
 
-                        members:
-                            Number(
-                                item.members ||
-                                PRODUCT.members
-                            ),
+                            members:
+                                Number(
+                                    item.members ||
+                                    PRODUCT.members
+                                ),
 
-                        price:
-                            Number(
-                                item.price ||
-                                PRODUCT.price
-                            )
-
-                    };
-
-                });
+                            price:
+                                Number(
+                                    item.price ||
+                                    PRODUCT.price
+                                )
+                        };
+                    });
 
         } catch (error) {
 
             console.error(
-                "NOVA MEMBERS : erreur de lecture du panier.",
+                "NOVA MEMBERS : erreur panier.",
                 error
             );
 
             cart = [];
-
         }
-
     }
-
-    /*
-    ========================================================
-    SAVE CART
-    ========================================================
-    */
 
     function saveCart() {
 
@@ -322,14 +310,12 @@
         } catch (error) {
 
             console.error(
-                "NOVA MEMBERS : erreur de sauvegarde.",
+                "NOVA MEMBERS : impossible de sauvegarder.",
                 error
             );
 
             return false;
-
         }
-
     }
 
     /*
@@ -344,7 +330,9 @@
             function (total, item) {
 
                 const itemQuantity =
-                    Number(item.quantity);
+                    Number(
+                        item.quantity || 0
+                    );
 
                 if (
                     !Number.isFinite(
@@ -354,25 +342,28 @@
                     return total;
                 }
 
-                return total + itemQuantity;
-
+                return (
+                    total +
+                    itemQuantity
+                );
             },
             0
         );
-
     }
 
     function updateCartCount() {
 
-        const elements = refreshElements();
+        const element =
+            $("cartCount");
 
-        if (!exists(elements.cartCount)) {
+        if (!element) {
             return;
         }
 
-        elements.cartCount.textContent =
-            String(getCartCount());
-
+        element.textContent =
+            String(
+                getCartCount()
+            );
     }
 
     /*
@@ -387,26 +378,73 @@
             function (total, item) {
 
                 const itemQuantity =
-                    Number(item.quantity);
+                    Number(
+                        item.quantity || 0
+                    );
 
                 const itemPrice =
-                    Number(item.price);
+                    Number(
+                        item.price || 0
+                    );
 
                 if (
-                    !Number.isFinite(itemQuantity) ||
-                    !Number.isFinite(itemPrice)
+                    !Number.isFinite(
+                        itemQuantity
+                    ) ||
+                    !Number.isFinite(
+                        itemPrice
+                    )
                 ) {
                     return total;
                 }
 
-                return total +
+                return (
+                    total +
                     itemQuantity *
-                    itemPrice;
-
+                    itemPrice
+                );
             },
             0
         );
+    }
 
+    /*
+    ========================================================
+    OVERLAY
+    ========================================================
+    */
+
+    function setOverlay(active) {
+
+        const overlay =
+            $("drawerOverlay");
+
+        if (!overlay) {
+            return;
+        }
+
+        if (active) {
+
+            overlay.classList.add(
+                "active"
+            );
+
+            overlay.setAttribute(
+                "aria-hidden",
+                "false"
+            );
+
+        } else {
+
+            overlay.classList.remove(
+                "active"
+            );
+
+            overlay.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+        }
     }
 
     /*
@@ -415,171 +453,143 @@
     ========================================================
     */
 
-    function setOverlay(active) {
-
-        const elements = refreshElements();
-
-        if (!exists(elements.drawerOverlay)) {
-            return;
-        }
-
-        if (active) {
-
-            elements.drawerOverlay.classList.add(
-                "active"
-            );
-
-            elements.drawerOverlay.setAttribute(
-                "aria-hidden",
-                "false"
-            );
-
-        } else {
-
-            elements.drawerOverlay.classList.remove(
-                "active"
-            );
-
-            elements.drawerOverlay.setAttribute(
-                "aria-hidden",
-                "true"
-            );
-
-        }
-
-    }
-
     function closeDrawers() {
 
-        const elements = refreshElements();
+        const quantityDrawer =
+            $("quantityDrawer");
 
-        if (exists(elements.quantityDrawer)) {
+        const cartDrawer =
+            $("cartDrawer");
 
-            elements.quantityDrawer.classList.remove(
+        if (quantityDrawer) {
+
+            quantityDrawer.classList.remove(
                 "open"
             );
 
-            elements.quantityDrawer.setAttribute(
+            quantityDrawer.setAttribute(
                 "aria-hidden",
                 "true"
             );
-
         }
 
-        if (exists(elements.cartDrawer)) {
+        if (cartDrawer) {
 
-            elements.cartDrawer.classList.remove(
+            cartDrawer.classList.remove(
                 "open"
             );
 
-            elements.cartDrawer.setAttribute(
+            cartDrawer.setAttribute(
                 "aria-hidden",
                 "true"
             );
-
         }
 
         setOverlay(false);
 
-        document.body.style.overflow = "";
-
+        document.body.style.overflow =
+            "";
     }
 
     function openQuantity() {
 
-        const elements = refreshElements();
+        const quantityDrawer =
+            $("quantityDrawer");
 
-        if (!exists(elements.quantityDrawer)) {
+        const cartDrawer =
+            $("cartDrawer");
+
+        if (!quantityDrawer) {
 
             console.error(
                 "NOVA MEMBERS : quantityDrawer introuvable."
             );
 
             return;
-
         }
 
-        if (exists(elements.cartDrawer)) {
+        if (cartDrawer) {
 
-            elements.cartDrawer.classList.remove(
+            cartDrawer.classList.remove(
                 "open"
             );
 
-            elements.cartDrawer.setAttribute(
+            cartDrawer.setAttribute(
                 "aria-hidden",
                 "true"
             );
-
         }
 
-        elements.quantityDrawer.classList.add(
+        quantityDrawer.classList.add(
             "open"
         );
 
-        elements.quantityDrawer.setAttribute(
+        quantityDrawer.setAttribute(
             "aria-hidden",
             "false"
         );
 
         setOverlay(true);
 
-        document.body.style.overflow = "hidden";
+        document.body.style.overflow =
+            "hidden";
 
         updateQuantityUI();
-
     }
 
     function openCart() {
 
-        const elements = refreshElements();
+        const cartDrawer =
+            $("cartDrawer");
 
-        if (!exists(elements.cartDrawer)) {
+        const quantityDrawer =
+            $("quantityDrawer");
+
+        if (!cartDrawer) {
 
             console.error(
                 "NOVA MEMBERS : cartDrawer introuvable."
             );
 
             return;
-
         }
 
         /*
-        Recharge toujours les données avant
-        d'afficher le panier.
+        IMPORTANT :
+        on ne recharge PAS localStorage ici.
+        Le panier actuel en mémoire est la source
+        utilisée après un ajout.
         */
-
-        loadCart();
 
         updateCartCount();
 
         renderCart();
 
-        if (exists(elements.quantityDrawer)) {
+        if (quantityDrawer) {
 
-            elements.quantityDrawer.classList.remove(
+            quantityDrawer.classList.remove(
                 "open"
             );
 
-            elements.quantityDrawer.setAttribute(
+            quantityDrawer.setAttribute(
                 "aria-hidden",
                 "true"
             );
-
         }
 
-        elements.cartDrawer.classList.add(
+        cartDrawer.classList.add(
             "open"
         );
 
-        elements.cartDrawer.setAttribute(
+        cartDrawer.setAttribute(
             "aria-hidden",
             "false"
         );
 
         setOverlay(true);
 
-        document.body.style.overflow = "hidden";
-
+        document.body.style.overflow =
+            "hidden";
     }
 
     /*
@@ -593,24 +603,22 @@
         quantity =
             clampQuantity(quantity);
 
-        /*
-        Recharge le panier juste avant l'ajout.
-        */
-
-        loadCart();
-
-        let existing =
+        const existing =
             cart.find(function (item) {
 
-                return item.id === PRODUCT.id;
-
+                return (
+                    item.id ===
+                    PRODUCT.id
+                );
             });
 
         if (existing) {
 
             existing.quantity =
                 clampQuantity(
-                    Number(existing.quantity || 0) +
+                    Number(
+                        existing.quantity || 0
+                    ) +
                     quantity
                 );
 
@@ -641,27 +649,24 @@
 
                 price:
                     PRODUCT.price
-
             });
-
         }
 
-        /*
-        Sauvegarde.
-        */
-
-        saveCart();
-
-        /*
-        Recharge immédiatement pour vérifier
-        que la donnée est bien présente.
-        */
-
-        loadCart();
+        const saved =
+            saveCart();
 
         updateCartCount();
 
         renderCart();
+
+        if (!saved) {
+
+            toast(
+                "Erreur de sauvegarde du panier."
+            );
+
+            return;
+        }
 
         toast(
             quantity +
@@ -679,16 +684,11 @@
             " au panier."
         );
 
-        /*
-        Ouvre le panier.
-        */
-
         setTimeout(function () {
 
             openCart();
 
-        }, 150);
-
+        }, 180);
     }
 
     /*
@@ -699,18 +699,17 @@
 
     function removeCartItem(id) {
 
-        loadCart();
+        if (!id) {
+            return;
+        }
 
         cart =
             cart.filter(function (item) {
 
                 return item.id !== id;
-
             });
 
         saveCart();
-
-        loadCart();
 
         updateCartCount();
 
@@ -719,7 +718,6 @@
         toast(
             "Produit retiré du panier."
         );
-
     }
 
     /*
@@ -730,15 +728,18 @@
 
     function renderCart() {
 
-        const elements = refreshElements();
+        const cartContent =
+            $("cartContent");
 
-        if (!exists(elements.cartContent)) {
+        if (!cartContent) {
             return;
         }
 
+        updateCartCount();
+
         if (cart.length === 0) {
 
-            elements.cartContent.innerHTML = `
+            cartContent.innerHTML = `
                 <div class="empty-cart">
 
                     <div class="empty-cart-icon">
@@ -761,8 +762,9 @@
                 </div>
             `;
 
-            return;
+            bindDynamicCartButtons();
 
+            return;
         }
 
         let html = "";
@@ -770,7 +772,9 @@
         cart.forEach(function (item) {
 
             const itemQuantity =
-                Number(item.quantity || 0);
+                clampQuantity(
+                    item.quantity
+                );
 
             const itemMembers =
                 Number(
@@ -829,16 +833,13 @@
                     <button
                         class="cart-item-remove"
                         type="button"
-                        data-remove-id="${escapeHTML(
-                            item.id
-                        )}"
+                        data-remove-id="${escapeHTML(item.id)}"
                     >
                         Supprimer
                     </button>
 
                 </div>
             `;
-
         });
 
         const total =
@@ -870,9 +871,70 @@
             </div>
         `;
 
-        elements.cartContent.innerHTML =
+        cartContent.innerHTML =
             html;
 
+        bindDynamicCartButtons();
+    }
+
+    /*
+    ========================================================
+    DYNAMIC CART BUTTONS
+    ========================================================
+    */
+
+    function bindDynamicCartButtons() {
+
+        const emptyChoose =
+            $("emptyChooseButton");
+
+        if (emptyChoose) {
+
+            emptyChoose.onclick =
+                function (event) {
+
+                    event.preventDefault();
+
+                    openQuantity();
+                };
+        }
+
+        const paypalButton =
+            $("paypalButton");
+
+        if (paypalButton) {
+
+            paypalButton.onclick =
+                function (event) {
+
+                    event.preventDefault();
+
+                    checkoutPayPal();
+                };
+        }
+
+        const removeButtons =
+            document.querySelectorAll(
+                "[data-remove-id]"
+            );
+
+        removeButtons.forEach(
+            function (button) {
+
+                button.onclick =
+                    function (event) {
+
+                        event.preventDefault();
+
+                        const id =
+                            button.getAttribute(
+                                "data-remove-id"
+                            );
+
+                        removeCartItem(id);
+                    };
+            }
+        );
     }
 
     /*
@@ -883,8 +945,6 @@
 
     function checkoutPayPal() {
 
-        loadCart();
-
         if (cart.length === 0) {
 
             toast(
@@ -892,7 +952,6 @@
             );
 
             return;
-
         }
 
         const total =
@@ -908,7 +967,6 @@
             );
 
             return;
-
         }
 
         const amount =
@@ -921,206 +979,95 @@
 
         window.location.href =
             url;
-
     }
 
     /*
     ========================================================
-    CLICK HANDLER UNIQUE
+    STATIC BUTTONS
     ========================================================
     */
 
-    function setupClickHandler() {
+    function bindButton(id, callback) {
 
-        if (
-            document.documentElement.dataset
-                .novaClickHandler === "true"
-        ) {
+        const button =
+            $(id);
+
+        if (!button) {
+
+            console.error(
+                "NOVA MEMBERS : bouton introuvable #" +
+                id
+            );
+
             return;
         }
 
-        document.documentElement.dataset
-            .novaClickHandler = "true";
+        /*
+        Supprime une ancienne fonction éventuelle.
+        */
 
-        document.addEventListener(
-            "click",
+        button.onclick = null;
+
+        button.onclick =
             function (event) {
 
-                const target =
-                    event.target;
+                event.preventDefault();
 
-                if (
-                    !(target instanceof Element)
-                ) {
-                    return;
-                }
+                callback();
+            };
+    }
 
-                const button =
-                    target.closest("button");
+    function setupButtons() {
 
-                if (!button) {
-                    return;
-                }
-
-                const id =
-                    button.id;
-
-                /*
-                ============================================
-                CHOISIR
-                ============================================
-                */
-
-                if (
-                    id === "chooseButton" ||
-                    id === "heroChooseButton" ||
-                    id === "cardChooseButton" ||
-                    id === "emptyChooseButton"
-                ) {
-
-                    event.preventDefault();
-
-                    openQuantity();
-
-                    return;
-
-                }
-
-                /*
-                ============================================
-                PANIER
-                ============================================
-                */
-
-                if (
-                    id === "heroCartButton" ||
-                    id === "heroCartButton2"
-                ) {
-
-                    event.preventDefault();
-
-                    openCart();
-
-                    return;
-
-                }
-
-                /*
-                ============================================
-                FERMER
-                ============================================
-                */
-
-                if (
-                    id === "closeQuantity" ||
-                    id === "closeCart"
-                ) {
-
-                    event.preventDefault();
-
-                    closeDrawers();
-
-                    return;
-
-                }
-
-                /*
-                ============================================
-                MOINS
-                ============================================
-                */
-
-                if (id === "minusButton") {
-
-                    event.preventDefault();
-
-                    decreaseQuantity();
-
-                    return;
-
-                }
-
-                /*
-                ============================================
-                PLUS
-                ============================================
-                */
-
-                if (id === "plusButton") {
-
-                    event.preventDefault();
-
-                    increaseQuantity();
-
-                    return;
-
-                }
-
-                /*
-                ============================================
-                AJOUTER AU PANIER
-                ============================================
-                */
-
-                if (id === "addCartButton") {
-
-                    event.preventDefault();
-
-                    addToCart();
-
-                    return;
-
-                }
-
-                /*
-                ============================================
-                PAYPAL
-                ============================================
-                */
-
-                if (id === "paypalButton") {
-
-                    event.preventDefault();
-
-                    checkoutPayPal();
-
-                    return;
-
-                }
-
-                /*
-                ============================================
-                SUPPRIMER
-                ============================================
-                */
-
-                if (
-                    button.hasAttribute(
-                        "data-remove-id"
-                    )
-                ) {
-
-                    event.preventDefault();
-
-                    const removeId =
-                        button.getAttribute(
-                            "data-remove-id"
-                        );
-
-                    if (removeId) {
-
-                        removeCartItem(
-                            removeId
-                        );
-
-                    }
-
-                }
-
-            },
-            false
+        bindButton(
+            "chooseButton",
+            openQuantity
         );
 
+        bindButton(
+            "heroChooseButton",
+            openQuantity
+        );
+
+        bindButton(
+            "cardChooseButton",
+            openQuantity
+        );
+
+        bindButton(
+            "heroCartButton",
+            openCart
+        );
+
+        bindButton(
+            "heroCartButton2",
+            openCart
+        );
+
+        bindButton(
+            "closeQuantity",
+            closeDrawers
+        );
+
+        bindButton(
+            "closeCart",
+            closeDrawers
+        );
+
+        bindButton(
+            "minusButton",
+            decreaseQuantity
+        );
+
+        bindButton(
+            "plusButton",
+            increaseQuantity
+        );
+
+        bindButton(
+            "addCartButton",
+            addToCart
+        );
     }
 
     /*
@@ -1131,31 +1078,18 @@
 
     function setupOverlay() {
 
-        const elements = refreshElements();
+        const overlay =
+            $("drawerOverlay");
 
-        if (!exists(elements.drawerOverlay)) {
+        if (!overlay) {
             return;
         }
 
-        if (
-            elements.drawerOverlay.dataset
-                .novaBound === "true"
-        ) {
-            return;
-        }
-
-        elements.drawerOverlay.dataset
-            .novaBound = "true";
-
-        elements.drawerOverlay.addEventListener(
-            "click",
+        overlay.onclick =
             function () {
 
                 closeDrawers();
-
-            }
-        );
-
+            };
     }
 
     /*
@@ -1166,27 +1100,17 @@
 
     function setupKeyboard() {
 
-        if (
-            document.documentElement.dataset
-                .novaKeyboard === "true"
-        ) {
-            return;
-        }
-
-        document.documentElement.dataset
-            .novaKeyboard = "true";
-
-        document.addEventListener(
-            "keydown",
+        document.onkeydown =
             function (event) {
 
-                if (event.key === "Escape") {
+                if (
+                    event.key ===
+                    "Escape"
+                ) {
+
                     closeDrawers();
                 }
-
-            }
-        );
-
+            };
     }
 
     /*
@@ -1197,26 +1121,36 @@
 
     function createStars() {
 
-        const space = $("#space");
+        const space =
+            $("space");
 
-        if (!exists(space)) {
+        if (!space) {
             return;
         }
 
         if (
-            space.dataset.starsCreated === "true"
+            space.dataset.starsCreated ===
+            "true"
         ) {
             return;
         }
 
-        space.dataset.starsCreated = "true";
+        space.dataset.starsCreated =
+            "true";
 
-        for (let i = 0; i < 150; i++) {
+        for (
+            let i = 0;
+            i < 150;
+            i++
+        ) {
 
             const star =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
-            star.className = "star";
+            star.className =
+                "star";
 
             const size =
                 Math.random() * 2 + 1;
@@ -1228,13 +1162,16 @@
                 size + "px";
 
             star.style.left =
-                Math.random() * 100 + "%";
+                Math.random() * 100 +
+                "%";
 
             star.style.top =
-                Math.random() * 100 + "%";
+                Math.random() * 100 +
+                "%";
 
             star.style.animationDelay =
-                Math.random() * 3 + "s";
+                Math.random() * 3 +
+                "s";
 
             star.style.animationDuration =
                 1.5 +
@@ -1242,11 +1179,9 @@
                 "s";
 
             space.appendChild(star);
-
         }
 
         createConstellations();
-
     }
 
     /*
@@ -1257,20 +1192,23 @@
 
     function createConstellations() {
 
-        const space = $("#space");
+        const space =
+            $("space");
 
-        if (!exists(space)) {
+        if (!space) {
             return;
         }
 
         if (
-            space.dataset.constellationsCreated ===
+            space.dataset
+                .constellationsCreated ===
             "true"
         ) {
             return;
         }
 
-        space.dataset.constellationsCreated =
+        space.dataset
+            .constellationsCreated =
             "true";
 
         const points = [
@@ -1293,27 +1231,30 @@
             [62, 73],
             [68, 67],
             [74, 75]
-
         ];
 
-        points.forEach(function (point) {
+        points.forEach(
+            function (point) {
 
-            const element =
-                document.createElement("div");
+                const element =
+                    document.createElement(
+                        "div"
+                    );
 
-            element.className =
-                "constellation";
+                element.className =
+                    "constellation";
 
-            element.style.left =
-                point[0] + "%";
+                element.style.left =
+                    point[0] + "%";
 
-            element.style.top =
-                point[1] + "%";
+                element.style.top =
+                    point[1] + "%";
 
-            space.appendChild(element);
-
-        });
-
+                space.appendChild(
+                    element
+                );
+            }
+        );
     }
 
     /*
@@ -1325,43 +1266,53 @@
     function createLoaderParticles() {
 
         const container =
-            $("#loaderParticles");
+            $("loaderParticles");
 
-        if (!exists(container)) {
+        if (!container) {
             return;
         }
 
         if (
-            container.dataset.created === "true"
+            container.dataset.created ===
+            "true"
         ) {
             return;
         }
 
-        container.dataset.created = "true";
+        container.dataset.created =
+            "true";
 
-        for (let i = 0; i < 45; i++) {
+        for (
+            let i = 0;
+            i < 45;
+            i++
+        ) {
 
             const particle =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
             particle.className =
                 "loader-particle";
 
             particle.style.left =
-                Math.random() * 100 + "%";
+                Math.random() * 100 +
+                "%";
 
             particle.style.animationDelay =
-                Math.random() * 4 + "s";
+                Math.random() * 4 +
+                "s";
 
             particle.style.animationDuration =
                 3 +
                 Math.random() * 4 +
                 "s";
 
-            container.appendChild(particle);
-
+            container.appendChild(
+                particle
+            );
         }
-
     }
 
     /*
@@ -1373,32 +1324,43 @@
     function createEmbers() {
 
         const container =
-            $("#embers");
+            $("embers");
 
-        if (!exists(container)) {
+        if (!container) {
             return;
         }
 
         if (
-            container.dataset.created === "true"
+            container.dataset.created ===
+            "true"
         ) {
             return;
         }
 
-        container.dataset.created = "true";
+        container.dataset.created =
+            "true";
 
-        for (let i = 0; i < 90; i++) {
+        for (
+            let i = 0;
+            i < 90;
+            i++
+        ) {
 
             const ember =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
-            ember.className = "ember";
+            ember.className =
+                "ember";
 
             ember.style.left =
-                Math.random() * 100 + "%";
+                Math.random() * 100 +
+                "%";
 
             ember.style.animationDelay =
-                Math.random() * 2 + "s";
+                Math.random() * 2 +
+                "s";
 
             ember.style.animationDuration =
                 1.2 +
@@ -1413,7 +1375,8 @@
                 size + "px";
 
             ember.style.height =
-                size * 2 + "px";
+                size * 2 +
+                "px";
 
             ember.style.setProperty(
                 "--drift",
@@ -1423,10 +1386,65 @@
                 ) + "px"
             );
 
-            container.appendChild(ember);
+            container.appendChild(
+                ember
+            );
+        }
+    }
 
+    /*
+    ========================================================
+    LOADER
+    ========================================================
+    */
+
+    function startLoader() {
+
+        const loader =
+            $("loader");
+
+        const fire =
+            $("fireTransition");
+
+        if (!loader) {
+            return;
         }
 
+        /*
+        3 secondes avant la transition.
+        */
+
+        setTimeout(
+            function () {
+
+                if (fire) {
+
+                    fire.classList.add(
+                        "active"
+                    );
+                }
+
+                loader.classList.add(
+                    "hidden"
+                );
+
+                setTimeout(
+                    function () {
+
+                        if (fire) {
+
+                            fire.classList.remove(
+                                "active"
+                            );
+                        }
+
+                    },
+                    1800
+                );
+
+            },
+            3000
+        );
     }
 
     /*
@@ -1443,7 +1461,10 @@
 
         initialized = true;
 
-        refreshElements();
+        /*
+        Charge le panier UNE SEULE FOIS
+        au démarrage.
+        */
 
         loadCart();
 
@@ -1453,7 +1474,7 @@
 
         renderCart();
 
-        setupClickHandler();
+        setupButtons();
 
         setupOverlay();
 
@@ -1465,9 +1486,16 @@
 
         createEmbers();
 
+        startLoader();
+
+        /*
+        API globale utile si besoin.
+        */
+
         window.NOVA_MEMBERS = {
 
-            product: PRODUCT,
+            product:
+                PRODUCT,
 
             openQuantity:
                 openQuantity,
@@ -1493,35 +1521,30 @@
             getCart:
                 function () {
 
-                    loadCart();
-
                     return cart.slice();
-
                 },
 
             getQuantity:
                 function () {
 
                     return quantity;
-
                 },
 
             setQuantity:
                 function (value) {
 
                     quantity =
-                        clampQuantity(value);
+                        clampQuantity(
+                            value
+                        );
 
                     updateQuantityUI();
-
                 }
-
         };
 
         console.log(
-            "NOVA MEMBERS : APP.JS chargé. Panier actif."
+            "NOVA MEMBERS : APP.JS chargé correctement."
         );
-
     }
 
     /*
@@ -1531,7 +1554,8 @@
     */
 
     if (
-        document.readyState === "loading"
+        document.readyState ===
+        "loading"
     ) {
 
         document.addEventListener(
@@ -1545,7 +1569,6 @@
     } else {
 
         init();
-
     }
 
 })();
