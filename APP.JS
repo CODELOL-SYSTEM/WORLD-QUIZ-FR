@@ -1,217 +1,172 @@
 ```javascript
 "use strict";
 
-/*
-==============================================================
- NOVA SHOP
- MEMBERS STORE
-==============================================================
-*/
+document.addEventListener("DOMContentLoaded", () => {
 
-document.addEventListener("DOMContentLoaded", function () {
-
-  /* ==========================================================
-     CONFIG
-  ========================================================== */
+  /* =======================================================
+     CONFIGURATION
+  ======================================================= */
 
   const PAYPAL_USERNAME = "SH0PNOVA";
-
   const MEMBER_PRICE = 5.49;
-  const MEMBER_AMOUNT = 1000;
+  const STORAGE_KEY = "novashop_members_cart";
 
-  const CART_KEY = "novashop_members_cart";
+  let quantity = 1;
+  let cart = [];
 
-
-  /* ==========================================================
+  /* =======================================================
      DOM
-  ========================================================== */
+  ======================================================= */
 
-  const chooseMembers =
-    document.getElementById("chooseMembers");
+  const pageLoader = document.getElementById("pageLoader");
+  const stars = document.getElementById("stars");
 
-  const openCartButton =
-    document.getElementById("openCart");
+  const chooseMembersBtn =
+    document.getElementById("chooseMembersBtn");
 
-  const closeProduct =
-    document.getElementById("closeProduct");
+  const heroCartBtn =
+    document.getElementById("heroCartBtn");
 
-  const closeCart =
-    document.getElementById("closeCart");
+  const quantityDrawer =
+    document.getElementById("quantityDrawer");
 
-  const quantityMinus =
-    document.getElementById("quantityMinus");
+  const cartDrawer =
+    document.getElementById("cartDrawer");
 
-  const quantityPlus =
-    document.getElementById("quantityPlus");
+  const drawerOverlay =
+    document.getElementById("drawerOverlay");
 
-  const quantityInput =
-    document.getElementById("quantity");
+  const closeQuantityBtn =
+    document.getElementById("closeQuantityBtn");
 
-  const addToCart =
-    document.getElementById("addToCart");
+  const closeCartBtn =
+    document.getElementById("closeCartBtn");
 
-  const directPayPal =
-    document.getElementById("directPayPal");
+  const decreaseBtn =
+    document.getElementById("decreaseBtn");
 
-  const checkoutPayPal =
-    document.getElementById("checkoutPayPal");
+  const increaseBtn =
+    document.getElementById("increaseBtn");
 
-  const productModal =
-    document.getElementById("productModal");
+  const quantityValue =
+    document.getElementById("quantityValue");
 
-  const cartModal =
-    document.getElementById("cartModal");
+  const memberAmountLabel =
+    document.getElementById("memberAmountLabel");
 
-  const productTotal =
-    document.getElementById("productTotal");
+  const quantityTotal =
+    document.getElementById("quantityTotal");
+
+  const addToCartBtn =
+    document.getElementById("addToCartBtn");
 
   const cartItems =
     document.getElementById("cartItems");
 
+  const cartCount =
+    document.getElementById("cartCount");
+
   const cartTotal =
     document.getElementById("cartTotal");
 
-  const cartCount =
-    document.getElementById("cartCount");
+  const paypalBtn =
+    document.getElementById("paypalBtn");
 
   const toast =
     document.getElementById("toast");
 
-
-  /* ==========================================================
-     VERIFICATION DOM
-  ========================================================== */
+  /* =======================================================
+     VERIFICATION
+  ======================================================= */
 
   const requiredElements = [
-    chooseMembers,
-    openCartButton,
-    closeProduct,
-    closeCart,
-    quantityMinus,
-    quantityPlus,
-    quantityInput,
-    addToCart,
-    directPayPal,
-    checkoutPayPal,
-    productModal,
-    cartModal,
-    productTotal,
+    pageLoader,
+    chooseMembersBtn,
+    heroCartBtn,
+    quantityDrawer,
+    cartDrawer,
+    drawerOverlay,
+    closeQuantityBtn,
+    closeCartBtn,
+    decreaseBtn,
+    increaseBtn,
+    quantityValue,
+    memberAmountLabel,
+    quantityTotal,
+    addToCartBtn,
     cartItems,
-    cartTotal,
     cartCount,
+    cartTotal,
+    paypalBtn,
     toast
   ];
 
-  const missingElements =
-    requiredElements.filter(
-      element => !element
-    );
-
-  if (missingElements.length > 0) {
-
+  if (requiredElements.some(element => !element)) {
     console.error(
-      "NovaShop : éléments HTML manquants.",
-      missingElements
+      "NOVASHOP : un ou plusieurs éléments HTML sont introuvables."
     );
-
     return;
   }
 
-
-  /* ==========================================================
-     CART
-  ========================================================== */
-
-  let cart = loadCart();
-
-
-  /* ==========================================================
-     PRICE
-  ========================================================== */
+  /* =======================================================
+     UTILITAIRES
+  ======================================================= */
 
   function formatPrice(value) {
-
-    return new Intl.NumberFormat(
-      "fr-FR",
-      {
-        style: "currency",
-        currency: "EUR"
-      }
-    ).format(value);
-
+    return Number(value).toLocaleString("fr-FR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }) + " €";
   }
 
+  function showToast(message) {
 
-  function normalizeQuantity(value) {
+    toast.textContent = message;
+    toast.classList.add("show");
 
-    let number =
-      Number(value);
+    clearTimeout(showToast.timer);
 
-    if (!Number.isFinite(number)) {
-      number = 1;
-    }
-
-    number =
-      Math.floor(number);
-
-    if (number < 1) {
-      number = 1;
-    }
-
-    if (number > 1000) {
-      number = 1000;
-    }
-
-    return number;
-
+    showToast.timer = setTimeout(() => {
+      toast.classList.remove("show");
+    }, 2600);
   }
 
-
-  function getPrice(quantity) {
-
-    return (
-      normalizeQuantity(quantity) *
-      MEMBER_PRICE
-    );
-
-  }
-
-
-  function getMembers(quantity) {
-
-    return (
-      normalizeQuantity(quantity) *
-      MEMBER_AMOUNT
-    );
-
-  }
-
-
-  /* ==========================================================
-     STORAGE
-  ========================================================== */
+  /* =======================================================
+     LOCAL STORAGE
+  ======================================================= */
 
   function loadCart() {
 
     try {
 
       const saved =
-        localStorage.getItem(
-          CART_KEY
-        );
+        localStorage.getItem(STORAGE_KEY);
 
       if (!saved) {
-        return [];
+        cart = [];
+        return;
       }
 
-      const data =
-        JSON.parse(saved);
+      const parsed = JSON.parse(saved);
 
-      if (!Array.isArray(data)) {
-        return [];
+      if (!Array.isArray(parsed)) {
+        cart = [];
+        return;
       }
 
-      return data;
+      cart = parsed
+        .filter(item =>
+          item &&
+          item.product === "MEMBERS" &&
+          Number.isFinite(Number(item.quantity))
+        )
+        .map(item => ({
+          product: "MEMBERS",
+          quantity: Math.max(
+            1,
+            Math.floor(Number(item.quantity))
+          )
+        }));
 
     } catch (error) {
 
@@ -220,19 +175,16 @@ document.addEventListener("DOMContentLoaded", function () {
         error
       );
 
-      return [];
-
+      cart = [];
     }
-
   }
-
 
   function saveCart() {
 
     try {
 
       localStorage.setItem(
-        CART_KEY,
+        STORAGE_KEY,
         JSON.stringify(cart)
       );
 
@@ -242,1118 +194,444 @@ document.addEventListener("DOMContentLoaded", function () {
         "Impossible de sauvegarder le panier :",
         error
       );
-
     }
-
   }
 
+  /* =======================================================
+     QUANTITY
+  ======================================================= */
 
-  /* ==========================================================
-     TOAST
-  ========================================================== */
+  function normalizeQuantity() {
 
-  let toastTimeout;
-
-  function showToast(message) {
-
-    toast.textContent =
-      message;
-
-    toast.classList.add(
-      "show"
-    );
-
-    clearTimeout(
-      toastTimeout
-    );
-
-    toastTimeout =
-      setTimeout(
-        function () {
-
-          toast.classList.remove(
-            "show"
-          );
-
-        },
-        2300
-      );
-
-  }
-
-
-  /* ==========================================================
-     MODAL
-  ========================================================== */
-
-  function openModal(modal) {
-
-    if (!modal) {
-      return;
-    }
-
-    modal.classList.add(
-      "active"
-    );
-
-    document.body.style.overflow =
-      "hidden";
-
-  }
-
-
-  function closeModal(modal) {
-
-    if (!modal) {
-      return;
-    }
-
-    modal.classList.remove(
-      "active"
-    );
-
-    if (
-      !productModal.classList.contains(
-        "active"
-      ) &&
-      !cartModal.classList.contains(
-        "active"
+    quantity = Math.max(
+      1,
+      Math.min(
+        1000,
+        Math.floor(Number(quantity) || 1)
       )
-    ) {
-
-      document.body.style.overflow =
-        "";
-
-    }
-
-  }
-
-
-  /* ==========================================================
-     PRODUCT MODAL
-  ========================================================== */
-
-  function openProductModal() {
-
-    quantityInput.value = 1;
-
-    updateProductTotal();
-
-    openModal(
-      productModal
     );
-
   }
 
+  function updateQuantityUI() {
 
-  function updateProductTotal() {
+    normalizeQuantity();
 
-    const quantity =
-      normalizeQuantity(
-        quantityInput.value
-      );
-
-    quantityInput.value =
+    quantityValue.textContent =
       quantity;
 
-    productTotal.textContent =
-      formatPrice(
-        getPrice(quantity)
-      );
+    memberAmountLabel.textContent =
+      `${quantity}K MEMBERS`;
 
+    quantityTotal.textContent =
+      formatPrice(quantity * MEMBER_PRICE);
   }
 
+  /* =======================================================
+     DRAWERS
+  ======================================================= */
 
-  /* ==========================================================
+  function closeDrawers() {
+
+    quantityDrawer.classList.remove("open");
+    cartDrawer.classList.remove("open");
+    drawerOverlay.classList.remove("open");
+
+    document.body.style.overflow = "";
+  }
+
+  function openQuantityDrawer() {
+
+    closeDrawers();
+
+    updateQuantityUI();
+
+    quantityDrawer.classList.add("open");
+    drawerOverlay.classList.add("open");
+
+    document.body.style.overflow = "hidden";
+  }
+
+  function openCartDrawer() {
+
+    closeDrawers();
+
+    renderCart();
+
+    cartDrawer.classList.add("open");
+    drawerOverlay.classList.add("open");
+
+    document.body.style.overflow = "hidden";
+  }
+
+  /* =======================================================
      CHOOSE BUTTON
-  ========================================================== */
+  ======================================================= */
 
-  chooseMembers.addEventListener(
+  chooseMembersBtn.addEventListener(
     "click",
-    function () {
+    () => {
 
-      openProductModal();
+      quantity = 1;
+
+      openQuantityDrawer();
 
     }
   );
 
+  /* =======================================================
+     CLOSE BUTTONS
+  ======================================================= */
 
-  /* ==========================================================
-     QUANTITY MINUS
-  ========================================================== */
-
-  quantityMinus.addEventListener(
+  closeQuantityBtn.addEventListener(
     "click",
-    function () {
-
-      const current =
-        normalizeQuantity(
-          quantityInput.value
-        );
-
-      quantityInput.value =
-        Math.max(
-          1,
-          current - 1
-        );
-
-      updateProductTotal();
-
-    }
+    closeDrawers
   );
 
-
-  /* ==========================================================
-     QUANTITY PLUS
-  ========================================================== */
-
-  quantityPlus.addEventListener(
+  closeCartBtn.addEventListener(
     "click",
-    function () {
+    closeDrawers
+  );
 
-      const current =
-        normalizeQuantity(
-          quantityInput.value
-        );
+  drawerOverlay.addEventListener(
+    "click",
+    closeDrawers
+  );
 
-      quantityInput.value =
-        Math.min(
-          1000,
-          current + 1
-        );
+  /* =======================================================
+     QUANTITY BUTTONS
+  ======================================================= */
 
-      updateProductTotal();
+  decreaseBtn.addEventListener(
+    "click",
+    () => {
+
+      if (quantity > 1) {
+        quantity--;
+        updateQuantityUI();
+      }
 
     }
   );
 
+  increaseBtn.addEventListener(
+    "click",
+    () => {
 
-  /* ==========================================================
-     QUANTITY INPUT
-  ========================================================== */
-
-  quantityInput.addEventListener(
-    "input",
-    function () {
-
-      updateProductTotal();
+      if (quantity < 1000) {
+        quantity++;
+        updateQuantityUI();
+      } else {
+        showToast(
+          "Quantité maximale atteinte."
+        );
+      }
 
     }
   );
 
-
-  /* ==========================================================
+  /* =======================================================
      ADD TO CART
-  ========================================================== */
+  ======================================================= */
 
-  addToCart.addEventListener(
+  addToCartBtn.addEventListener(
     "click",
-    function () {
+    () => {
 
-      const quantity =
-        normalizeQuantity(
-          quantityInput.value
-        );
-
+      normalizeQuantity();
 
       const existing =
         cart.find(
-          function (item) {
-
-            return (
-              item.id === "members"
-            );
-
-          }
+          item => item.product === "MEMBERS"
         );
-
 
       if (existing) {
 
-        existing.quantity =
-          Math.min(
-            1000,
-            normalizeQuantity(
-              existing.quantity
-            ) + quantity
-          );
+        existing.quantity += quantity;
 
       } else {
 
         cart.push({
-
-          id: "members",
-
-          name: "MEMBERS",
-
-          quantity: quantity,
-
-          unitPrice: MEMBER_PRICE
-
+          product: "MEMBERS",
+          quantity: quantity
         });
 
       }
 
-
       saveCart();
-
       updateCartCount();
 
-      closeModal(
-        productModal
-      );
+      addToCartBtn.textContent =
+        "✓ Ajouté au panier";
+
+      setTimeout(() => {
+
+        addToCartBtn.textContent =
+          "🛒 Ajouter au panier";
+
+      }, 900);
 
       showToast(
-        getMembers(quantity)
-          .toLocaleString("fr-FR") +
-        " MEMBERS ajoutés au panier"
+        `${quantity}K MEMBERS ajouté${quantity > 1 ? "s" : ""} au panier.`
       );
+
+      setTimeout(() => {
+
+        openCartDrawer();
+
+      }, 250);
 
     }
   );
 
+  /* =======================================================
+     CART
+  ======================================================= */
 
-  /* ==========================================================
-     OPEN CART
-  ========================================================== */
+  function getTotalQuantity() {
 
-  openCartButton.addEventListener(
-    "click",
-    function () {
+    return cart.reduce(
+      (total, item) =>
+        total + Number(item.quantity),
+      0
+    );
+  }
 
-      renderCart();
+  function getCartTotal() {
 
-      openModal(
-        cartModal
-      );
+    return cart.reduce(
+      (total, item) =>
+        total +
+        Number(item.quantity) * MEMBER_PRICE,
+      0
+    );
+  }
 
-    }
-  );
+  function updateCartCount() {
 
+    cartCount.textContent =
+      getTotalQuantity();
 
-  /* ==========================================================
-     RENDER CART
-  ========================================================== */
+  }
 
   function renderCart() {
 
-    cartItems.innerHTML =
-      "";
-
+    cartItems.innerHTML = "";
 
     if (cart.length === 0) {
 
       cartItems.innerHTML = `
-        <div class="empty-cart">
-          <div style="font-size:34px;margin-bottom:12px;">
-            🛒
-          </div>
-
+        <div class="empty">
+          <div class="emptyIcon">🛒</div>
           Ton panier est vide.
-          <br>
-          Ajoute ton premier pack MEMBERS.
         </div>
       `;
 
       cartTotal.textContent =
-        formatPrice(0);
+        "0,00 €";
+
+      paypalBtn.disabled = true;
 
       return;
-
     }
 
+    cart.forEach((item, index) => {
 
-    let total = 0;
+      const total =
+        Number(item.quantity) * MEMBER_PRICE;
 
+      const element =
+        document.createElement("div");
 
-    cart.forEach(
-      function (item, index) {
+      element.className = "cartItem";
 
-        const quantity =
-          normalizeQuantity(
-            item.quantity
-          );
-
-        const unitPrice =
-          Number(
-            item.unitPrice
-          ) || MEMBER_PRICE;
-
-        const itemTotal =
-          quantity * unitPrice;
-
-        const members =
-          getMembers(quantity);
-
-        total +=
-          itemTotal;
-
-
-        const itemElement =
-          document.createElement(
-            "div"
-          );
-
-        itemElement.className =
-          "cart-item";
-
-
-        itemElement.innerHTML = `
-
-          <div class="cart-item-icon">
-            ✦
+      element.innerHTML = `
+        <div>
+          <div class="cartItemName">
+            MEMBERS
           </div>
 
-          <div class="cart-item-info">
-
-            <strong>
-              MEMBERS
-            </strong>
-
-            <span>
-              ${members.toLocaleString("fr-FR")}
-              MEMBERS
-              ·
-              ${formatPrice(itemTotal)}
-            </span>
-
+          <div class="cartItemInfo">
+            ${item.quantity}K MEMBERS
           </div>
 
           <button
             type="button"
-            class="remove-button"
+            class="remove"
             data-index="${index}"
           >
             Supprimer
           </button>
+        </div>
 
-        `;
+        <div class="cartItemPrice">
+          ${formatPrice(total)}
+        </div>
+      `;
 
+      cartItems.appendChild(element);
 
-        cartItems.appendChild(
-          itemElement
-        );
-
-      }
-    );
-
+    });
 
     cartTotal.textContent =
-      formatPrice(total);
+      formatPrice(getCartTotal());
 
+    paypalBtn.disabled = false;
 
     const removeButtons =
-      cartItems.querySelectorAll(
-        ".remove-button"
-      );
+      cartItems.querySelectorAll(".remove");
 
+    removeButtons.forEach(button => {
 
-    removeButtons.forEach(
-      function (button) {
+      button.addEventListener(
+        "click",
+        () => {
 
-        button.addEventListener(
-          "click",
-          function () {
+          const index =
+            Number(button.dataset.index);
 
-            const index =
-              Number(
-                button.dataset.index
-              );
-
-            if (
-              Number.isInteger(index) &&
-              index >= 0 &&
-              index < cart.length
-            ) {
-
-              cart.splice(
-                index,
-                1
-              );
-
-              saveCart();
-
-              updateCartCount();
-
-              renderCart();
-
-              showToast(
-                "Produit retiré du panier"
-              );
-
-            }
-
+          if (
+            !Number.isInteger(index) ||
+            !cart[index]
+          ) {
+            return;
           }
-        );
 
-      }
-    );
+          cart.splice(index, 1);
 
-  }
+          saveCart();
+          updateCartCount();
+          renderCart();
 
-
-  /* ==========================================================
-     CART COUNT
-  ========================================================== */
-
-  function updateCartCount() {
-
-    let count = 0;
-
-
-    cart.forEach(
-      function (item) {
-
-        count +=
-          normalizeQuantity(
-            item.quantity
+          showToast(
+            "Produit retiré du panier."
           );
 
-      }
-    );
+        }
+      );
 
-
-    cartCount.textContent =
-      count;
+    });
 
   }
 
-
-  /* ==========================================================
-     CLOSE PRODUCT
-  ========================================================== */
-
-  closeProduct.addEventListener(
+  heroCartBtn.addEventListener(
     "click",
-    function () {
-
-      closeModal(
-        productModal
-      );
-
-    }
+    openCartDrawer
   );
 
-
-  /* ==========================================================
-     CLOSE CART
-  ========================================================== */
-
-  closeCart.addEventListener(
-    "click",
-    function () {
-
-      closeModal(
-        cartModal
-      );
-
-    }
-  );
-
-
-  /* ==========================================================
-     CLICK OUTSIDE
-  ========================================================== */
-
-  productModal.addEventListener(
-    "click",
-    function (event) {
-
-      if (
-        event.target ===
-        productModal
-      ) {
-
-        closeModal(
-          productModal
-        );
-
-      }
-
-    }
-  );
-
-
-  cartModal.addEventListener(
-    "click",
-    function (event) {
-
-      if (
-        event.target ===
-        cartModal
-      ) {
-
-        closeModal(
-          cartModal
-        );
-
-      }
-
-    }
-  );
-
-
-  /* ==========================================================
-     ESCAPE
-  ========================================================== */
-
-  document.addEventListener(
-    "keydown",
-    function (event) {
-
-      if (
-        event.key ===
-        "Escape"
-      ) {
-
-        closeModal(
-          productModal
-        );
-
-        closeModal(
-          cartModal
-        );
-
-      }
-
-    }
-  );
-
-
-  /* ==========================================================
+  /* =======================================================
      PAYPAL
-  ========================================================== */
+  ======================================================= */
 
-  function openPayPal(amount) {
-
-    const cleanAmount =
-      Number(amount);
-
-
-    if (
-      !Number.isFinite(
-        cleanAmount
-      ) ||
-      cleanAmount <= 0
-    ) {
-
-      showToast(
-        "Montant invalide"
-      );
-
-      return;
-
-    }
-
-
-    const amountString =
-      cleanAmount.toFixed(2);
-
-
-    const paypalUrl =
-      "https://paypal.me/" +
-      PAYPAL_USERNAME +
-      "/" +
-      amountString;
-
-
-    window.open(
-      paypalUrl,
-      "_blank",
-      "noopener,noreferrer"
-    );
-
-  }
-
-
-  /* ==========================================================
-     DIRECT PAYPAL
-  ========================================================== */
-
-  directPayPal.addEventListener(
+  paypalBtn.addEventListener(
     "click",
-    function () {
-
-      const quantity =
-        normalizeQuantity(
-          quantityInput.value
-        );
+    () => {
 
       const total =
-        getPrice(quantity);
+        getCartTotal();
 
-      openPayPal(
-        total
-      );
-
-    }
-  );
-
-
-  /* ==========================================================
-     CART PAYPAL
-  ========================================================== */
-
-  checkoutPayPal.addEventListener(
-    "click",
-    function () {
-
-      if (
-        cart.length === 0
-      ) {
+      if (total <= 0) {
 
         showToast(
-          "Ton panier est vide"
+          "Ton panier est vide."
         );
 
         return;
-
       }
 
+      const amount =
+        total.toFixed(2);
 
-      let total = 0;
+      const paypalUrl =
+        `https://paypal.me/${PAYPAL_USERNAME}/${amount}`;
 
+      /*
+       * Navigation directe pour éviter
+       * les blocages de popup du navigateur.
+       */
 
-      cart.forEach(
-        function (item) {
-
-          const quantity =
-            normalizeQuantity(
-              item.quantity
-            );
-
-          const unitPrice =
-            Number(
-              item.unitPrice
-            ) || MEMBER_PRICE;
-
-          total +=
-            quantity * unitPrice;
-
-        }
-      );
-
-
-      openPayPal(
-        total
-      );
+      window.location.href =
+        paypalUrl;
 
     }
   );
 
+  /* =======================================================
+     ESC
+  ======================================================= */
 
-  /* ==========================================================
+  document.addEventListener(
+    "keydown",
+    event => {
+
+      if (event.key === "Escape") {
+        closeDrawers();
+      }
+
+    }
+  );
+
+  /* =======================================================
      STARS
-  ========================================================== */
+  ======================================================= */
 
   function createStars() {
 
-    const container =
-      document.getElementById(
-        "stars"
-      );
-
-
-    if (!container) {
+    if (!stars) {
       return;
     }
 
-
     const amount =
-      window.innerWidth < 700
-        ? 80
-        : 170;
+      window.innerWidth < 600
+        ? 55
+        : 100;
 
+    const fragment =
+      document.createDocumentFragment();
 
-    for (
-      let i = 0;
-      i < amount;
-      i++
-    ) {
+    for (let i = 0; i < amount; i++) {
 
       const star =
-        document.createElement(
-          "div"
-        );
+        document.createElement("span");
 
-      star.className =
-        "star";
-
-
-      const size =
-        Math.random() > .92
-          ? 3
-          : Math.random() > .7
-            ? 2
-            : 1;
-
-
-      star.style.width =
-        size + "px";
-
-      star.style.height =
-        size + "px";
-
+      star.className = "star";
 
       star.style.left =
-        Math.random() * 100 + "%";
+        `${Math.random() * 100}%`;
 
       star.style.top =
-        Math.random() * 100 + "%";
-
-
-      star.style.setProperty(
-        "--duration",
-        5 + Math.random() * 9 + "s"
-      );
-
-      star.style.setProperty(
-        "--blink",
-        1.5 + Math.random() * 4 + "s"
-      );
-
-      star.style.setProperty(
-        "--move-x",
-        -20 + Math.random() * 40 + "px"
-      );
-
-      star.style.setProperty(
-        "--move-y",
-        -20 + Math.random() * 40 + "px"
-      );
-
+        `${Math.random() * 100}%`;
 
       star.style.animationDelay =
-        Math.random() * 7 + "s";
+        `${Math.random() * 4}s`;
 
+      star.style.animationDuration =
+        `${2 + Math.random() * 4}s`;
 
-      container.appendChild(
-        star
-      );
-
+      fragment.appendChild(star);
     }
 
+    stars.appendChild(fragment);
   }
 
-
-  /* ==========================================================
-     CONSTELLATIONS
-  ========================================================== */
-
-  function createConstellations() {
-
-    const container =
-      document.getElementById(
-        "constellations"
-      );
-
-
-    if (!container) {
-      return;
-    }
-
-
-    const patterns = [
-
-      {
-        left: "7%",
-        top: "16%",
-        points: [
-          [15, 25],
-          [75, 10],
-          [125, 55],
-          [165, 35],
-          [105, 105]
-        ],
-        lines: [
-          [0, 1],
-          [1, 2],
-          [2, 3],
-          [2, 4]
-        ]
-      },
-
-      {
-        left: "72%",
-        top: "21%",
-        points: [
-          [25, 80],
-          [70, 30],
-          [120, 70],
-          [165, 20],
-          [145, 115]
-        ],
-        lines: [
-          [0, 1],
-          [1, 2],
-          [2, 3],
-          [2, 4]
-        ]
-      }
-
-    ];
-
-
-    patterns.forEach(
-      function (pattern) {
-
-        const constellation =
-          document.createElement(
-            "div"
-          );
-
-        constellation.className =
-          "constellation";
-
-        constellation.style.left =
-          pattern.left;
-
-        constellation.style.top =
-          pattern.top;
-
-
-        pattern.points.forEach(
-          function (point) {
-
-            const element =
-              document.createElement(
-                "span"
-              );
-
-            element.className =
-              "point";
-
-            element.style.left =
-              point[0] + "px";
-
-            element.style.top =
-              point[1] + "px";
-
-            constellation.appendChild(
-              element
-            );
-
-          }
-        );
-
-
-        pattern.lines.forEach(
-          function (connection) {
-
-            const start =
-              pattern.points[
-                connection[0]
-              ];
-
-            const end =
-              pattern.points[
-                connection[1]
-              ];
-
-
-            const dx =
-              end[0] - start[0];
-
-            const dy =
-              end[1] - start[1];
-
-
-            const length =
-              Math.sqrt(
-                dx * dx +
-                dy * dy
-              );
-
-
-            const angle =
-              Math.atan2(
-                dy,
-                dx
-              ) *
-              180 /
-              Math.PI;
-
-
-            const line =
-              document.createElement(
-                "span"
-              );
-
-            line.className =
-              "line";
-
-            line.style.left =
-              start[0] + "px";
-
-            line.style.top =
-              start[1] + "px";
-
-            line.style.width =
-              length + "px";
-
-            line.style.transform =
-              "rotate(" +
-              angle +
-              "deg)";
-
-
-            constellation.appendChild(
-              line
-            );
-
-          }
-        );
-
-
-        container.appendChild(
-          constellation
-        );
-
-      }
-    );
-
-  }
-
-
-  /* ==========================================================
-     LIGHTNINGS
-  ========================================================== */
-
-  function createLightnings() {
-
-    const container =
-      document.getElementById(
-        "lightnings"
-      );
-
-
-    if (!container) {
-      return;
-    }
-
-
-    const amount =
-      window.innerWidth < 700
-        ? 4
-        : 8;
-
-
-    for (
-      let i = 0;
-      i < amount;
-      i++
-    ) {
-
-      const lightning =
-        document.createElement(
-          "div"
-        );
-
-      lightning.className =
-        "lightning";
-
-
-      lightning.style.left =
-        Math.random() * 100 + "%";
-
-      lightning.style.top =
-        Math.random() * 100 + "%";
-
-
-      lightning.style.transform =
-        "rotate(" +
-        (-35 + Math.random() * 70) +
-        "deg)";
-
-
-      lightning.style.animationDelay =
-        Math.random() * 7 + "s";
-
-
-      container.appendChild(
-        lightning
-      );
-
-    }
-
-  }
-
-
-  /* ==========================================================
-     MOUSE PARALLAX
-  ========================================================== */
-
-  window.addEventListener(
-    "mousemove",
-    function (event) {
-
-      const mouseX =
-        (
-          event.clientX /
-          window.innerWidth -
-          .5
-        ) * 2;
-
-
-      const mouseY =
-        (
-          event.clientY /
-          window.innerHeight -
-          .5
-        ) * 2;
-
-
-      const constellations =
-        document.querySelectorAll(
-          ".constellation"
-        );
-
-
-      constellations.forEach(
-        function (element, index) {
-
-          const strength =
-            4 + index * 2;
-
-
-          element.style.marginLeft =
-            mouseX *
-            strength +
-            "px";
-
-
-          element.style.marginTop =
-            mouseY *
-            strength +
-            "px";
-
-        }
-      );
-
-    }
-  );
-
-
-  /* ==========================================================
-     START
-  ========================================================== */
-
+  /* =======================================================
+     STARTUP
+  ======================================================= */
+
+  loadCart();
+  updateCartCount();
+  updateQuantityUI();
   createStars();
 
-  createConstellations();
+  /*
+   * Petit délai volontaire pour que
+   * l'animation de chargement soit visible.
+   */
 
-  createLightnings();
+  setTimeout(() => {
 
-  updateCartCount();
+    pageLoader.classList.add("hide");
 
-  renderCart();
-
-  updateProductTotal();
-
-
-  console.log(
-    "NOVA SHOP : système chargé correctement."
-  );
+  }, 1200);
 
 });
 ```
