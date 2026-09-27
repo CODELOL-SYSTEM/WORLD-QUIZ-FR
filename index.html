@@ -2,890 +2,2071 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NOVASHOP • MEMBERS</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#08020f">
+<meta name="description" content="NovaShop MEMBERS - Packs MEMBERS Discord">
+<title>NOVASHOP • MEMBERS</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+<style>
+
+/* ============================================================
+   NOVASHOP MEMBERS
+   INDEX.HTML
+   STYLE COMPLET
+============================================================ */
+
+:root {
+    --bg: #05020a;
+    --bg2: #09030f;
+    --panel: rgba(13, 6, 23, 0.94);
+    --panel-light: rgba(24, 11, 39, 0.85);
+    --purple: #8d35ff;
+    --purple-light: #c993ff;
+    --purple-dark: #4f0db0;
+    --white: #ffffff;
+    --text: #f5efff;
+    --muted: #a79db5;
+    --border: rgba(181, 105, 255, 0.2);
+    --danger: #ff5e72;
+    --success: #70e0a1;
+    --paypal: #ffc439;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    min-height: 100%;
+    background: var(--bg);
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100vh;
+    background:
+        radial-gradient(
+            circle at 50% 10%,
+            rgba(126, 34, 255, 0.17),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 0% 100%,
+            rgba(83, 17, 170, 0.12),
+            transparent 30%
+        ),
+        var(--bg);
+    color: var(--text);
+    font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+    overflow-x: hidden;
+}
+
+body.drawer-open {
+    overflow: hidden;
+}
+
+button,
+input {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+button:focus-visible,
+input:focus-visible {
+    outline: 2px solid var(--purple-light);
+    outline-offset: 3px;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* ============================================================
+   BACKGROUND
+============================================================ */
+
+#spaceBackground {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.spaceGradient {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(
+            circle at 50% 50%,
+            transparent 0%,
+            rgba(0, 0, 0, 0.18) 60%,
+            rgba(0, 0, 0, 0.65) 100%
+        );
+}
+
+.star {
+    position: absolute;
+    border-radius: 50%;
+    background: white;
+    box-shadow:
+        0 0 5px rgba(255,255,255,.8),
+        0 0 12px rgba(183,116,255,.7);
+    animation:
+        starTwinkle
+        var(--star-speed, 2.8s)
+        ease-in-out
+        infinite alternate;
+}
+
+@keyframes starTwinkle {
+    0% {
+        opacity: .15;
+        transform: scale(.65);
     }
 
-    html,
-    body {
-      width: 100%;
-      min-height: 100%;
-      font-family: Inter, Arial, sans-serif;
-      background: #05020b;
-      color: #fff;
-      overflow-x: hidden;
+    45% {
+        opacity: .55;
     }
 
-    body {
-      min-height: 100vh;
-      background:
-        radial-gradient(circle at 50% 20%, rgba(132, 0, 255, .18), transparent 35%),
-        radial-gradient(circle at 10% 80%, rgba(85, 0, 255, .12), transparent 30%),
-        #05020b;
-    }
-
-    button,
-    input {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    /* =========================
-       BACKGROUND
-    ========================= */
-
-    #space {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      overflow: hidden;
-    }
-
-    .star {
-      position: absolute;
-      width: 2px;
-      height: 2px;
-      border-radius: 50%;
-      background: #fff;
-      box-shadow: 0 0 8px rgba(255,255,255,.9);
-      animation: starPulse 2s infinite alternate;
-    }
-
-    @keyframes starPulse {
-      from {
-        opacity: .2;
-        transform: scale(.7);
-      }
-
-      to {
+    100% {
         opacity: 1;
-        transform: scale(1.5);
-      }
+        transform: scale(1.45);
+    }
+}
+
+.constellationLine {
+    position: absolute;
+    height: 1px;
+    transform-origin: left center;
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(175, 102, 255, .3),
+            transparent
+        );
+    opacity: .3;
+    filter: drop-shadow(0 0 4px rgba(150,70,255,.6));
+}
+
+.backgroundOrb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(70px);
+    opacity: .12;
+    animation: orbFloat 9s ease-in-out infinite alternate;
+}
+
+.orbOne {
+    width: 380px;
+    height: 380px;
+    top: 5%;
+    left: -130px;
+    background: #812aff;
+}
+
+.orbTwo {
+    width: 430px;
+    height: 430px;
+    right: -170px;
+    bottom: 0;
+    background: #4b00a9;
+    animation-delay: 2s;
+}
+
+@keyframes orbFloat {
+    from {
+        transform: translate3d(0, 0, 0) scale(.9);
     }
 
-    .lightning {
-      position: absolute;
-      width: 2px;
-      height: 190px;
-      background: linear-gradient(
-        to bottom,
-        transparent,
-        #b66cff,
-        #fff,
-        #7d2cff,
-        transparent
-      );
-      filter: drop-shadow(0 0 12px #8c35ff);
-      opacity: .25;
-      transform: rotate(25deg);
-      animation: lightningMove 4s infinite;
+    to {
+        transform: translate3d(50px, -35px, 0) scale(1.1);
     }
+}
 
-    @keyframes lightningMove {
-      0%,
-      100% {
+/* ============================================================
+   ELECTRICITY
+============================================================ */
+
+.electricBolt {
+    position: absolute;
+    width: 2px;
+    height: 170px;
+    background:
+        linear-gradient(
+            to bottom,
+            transparent,
+            #9f4aff,
+            #ffffff,
+            #7a20ff,
+            transparent
+        );
+    filter:
+        drop-shadow(0 0 5px #a84cff)
+        drop-shadow(0 0 18px #7a22ff);
+    opacity: 0;
+    transform: rotate(var(--bolt-angle));
+    animation:
+        electricFlash
+        var(--bolt-duration)
+        infinite;
+    animation-delay: var(--bolt-delay);
+}
+
+@keyframes electricFlash {
+    0% {
         opacity: 0;
-      }
+    }
 
-      20% {
-        opacity: .25;
-      }
+    8% {
+        opacity: .8;
+    }
 
-      25% {
+    10% {
+        opacity: .05;
+    }
+
+    12% {
         opacity: 1;
-      }
-
-      30% {
-        opacity: .1;
-      }
-
-      60% {
-        opacity: .35;
-      }
     }
 
-    /* =========================
-       LOADER
-    ========================= */
-
-    #loader {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #020106;
-      transition: opacity .8s ease, visibility .8s ease;
+    15% {
+        opacity: 0;
     }
 
-    #loader.hidden {
-      opacity: 0;
-      visibility: hidden;
+    100% {
+        opacity: 0;
+    }
+}
+
+/* ============================================================
+   LOADER
+============================================================ */
+
+#loader {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(94, 21, 165, .17),
+            transparent 35%
+        ),
+        #020106;
+    transition:
+        opacity .65s ease,
+        visibility .65s ease;
+}
+
+#loader.loader-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.loaderCore {
+    position: relative;
+    width: 310px;
+    text-align: center;
+}
+
+.loaderRings {
+    position: absolute;
+    left: 50%;
+    top: -75px;
+    width: 150px;
+    height: 150px;
+    transform: translateX(-50%);
+}
+
+.loaderRing {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1px solid rgba(180,100,255,.15);
+    animation: loaderRotate 3s linear infinite;
+}
+
+.loaderRing:nth-child(2) {
+    inset: 13px;
+    border-color: rgba(190,120,255,.28);
+    animation-duration: 2.2s;
+    animation-direction: reverse;
+}
+
+.loaderRing:nth-child(3) {
+    inset: 28px;
+    border-color: rgba(255,255,255,.25);
+    animation-duration: 1.5s;
+}
+
+@keyframes loaderRotate {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loaderLightning {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: #e1c2ff;
+    font-size: 40px;
+    filter:
+        drop-shadow(0 0 8px #8e32ff)
+        drop-shadow(0 0 25px #7b22ff);
+    animation: loaderBoltPulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes loaderBoltPulse {
+    from {
+        transform:
+            translate(-50%, -50%)
+            scale(.82);
+        opacity: .6;
     }
 
-    .loaderBox {
-      text-align: center;
-    }
-
-    .loaderLogo {
-      font-size: 46px;
-      font-weight: 900;
-      letter-spacing: 7px;
-      color: #d4a5ff;
-      text-shadow:
-        0 0 15px #8e2dff,
-        0 0 50px rgba(142,45,255,.8);
-      animation: logoPulse 1.2s infinite alternate;
-    }
-
-    @keyframes logoPulse {
-      from {
-        transform: scale(.98);
-        opacity: .7;
-      }
-
-      to {
-        transform: scale(1.04);
+    to {
+        transform:
+            translate(-50%, -50%)
+            scale(1.12);
         opacity: 1;
-      }
+    }
+}
+
+.loaderTitle {
+    position: relative;
+    z-index: 2;
+    margin-top: 75px;
+    font-size: 44px;
+    font-weight: 950;
+    letter-spacing: 8px;
+    color: #fff;
+    text-shadow:
+        0 0 12px rgba(182,108,255,.8),
+        0 0 35px rgba(111,24,255,.65);
+}
+
+.loaderSubtitle {
+    margin-top: 13px;
+    color: #9d93a8;
+    font-size: 11px;
+    letter-spacing: 4px;
+}
+
+.loaderBar {
+    width: 100%;
+    height: 5px;
+    margin-top: 28px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(255,255,255,.06);
+}
+
+.loaderBarProgress {
+    width: 0%;
+    height: 100%;
+    border-radius: inherit;
+    background:
+        linear-gradient(
+            90deg,
+            #5712c8,
+            #9d42ff,
+            #d4a1ff
+        );
+    box-shadow:
+        0 0 12px #8c35ff,
+        0 0 28px rgba(134,47,255,.7);
+    transition: width .08s linear;
+}
+
+.loaderPercent {
+    margin-top: 12px;
+    color: #c9b0df;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* ============================================================
+   FIRE TRANSITION
+============================================================ */
+
+#fireTransition {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    visibility: hidden;
+    opacity: 0;
+    overflow: hidden;
+    pointer-events: none;
+    background: #030106;
+}
+
+#fireTransition.fire-active {
+    visibility: visible;
+    opacity: 1;
+}
+
+.fireBlack {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(
+            ellipse at 50% 110%,
+            rgba(255,70,0,.42),
+            transparent 55%
+        ),
+        #030106;
+}
+
+.fireGlow {
+    position: absolute;
+    left: 50%;
+    bottom: -300px;
+    width: 900px;
+    height: 650px;
+    transform: translateX(-50%);
+    border-radius: 50%;
+    background:
+        radial-gradient(
+            ellipse,
+            rgba(255,185,0,.72) 0%,
+            rgba(255,69,0,.45) 30%,
+            rgba(180,15,0,.22) 50%,
+            transparent 72%
+        );
+    filter: blur(28px);
+    animation: fireGlowPulse .5s infinite alternate;
+}
+
+@keyframes fireGlowPulse {
+    from {
+        transform:
+            translateX(-50%)
+            scale(.92);
     }
 
-    .loaderText {
-      margin-top: 15px;
-      color: #aaa;
-      font-size: 14px;
-      letter-spacing: 3px;
+    to {
+        transform:
+            translateX(-50%)
+            scale(1.08);
+    }
+}
+
+.flame {
+    position: absolute;
+    bottom: -170px;
+    width: var(--flame-width);
+    height: var(--flame-height);
+    left: var(--flame-left);
+    border-radius:
+        55% 45% 52% 48% /
+        65% 55% 45% 35%;
+    background:
+        radial-gradient(
+            ellipse at 50% 80%,
+            #fff6a0 0%,
+            #ffd500 16%,
+            #ff7a00 40%,
+            #ff2400 68%,
+            rgba(255,0,0,.1) 100%
+        );
+    filter: blur(var(--flame-blur));
+    transform-origin: bottom center;
+    animation:
+        flameMove
+        var(--flame-duration)
+        ease-in-out
+        infinite alternate;
+    opacity: .95;
+}
+
+@keyframes flameMove {
+    0% {
+        transform:
+            rotate(-7deg)
+            scaleY(.86)
+            translateX(-8px);
     }
 
-    .loaderBar {
-      width: 280px;
-      height: 4px;
-      margin: 28px auto 0;
-      border-radius: 99px;
-      background: #1c1227;
-      overflow: hidden;
+    35% {
+        transform:
+            rotate(5deg)
+            scaleY(1.05)
+            translateX(10px);
     }
 
-    .loaderProgress {
-      width: 0%;
-      height: 100%;
-      background: linear-gradient(90deg, #7124ff, #d09aff);
-      box-shadow: 0 0 15px #9b45ff;
+    70% {
+        transform:
+            rotate(-4deg)
+            scaleY(.94)
+            translateX(-12px);
     }
 
-    /* =========================
-       FIRE TRANSITION
-    ========================= */
+    100% {
+        transform:
+            rotate(8deg)
+            scaleY(1.12)
+            translateX(12px);
+    }
+}
 
-    #fireTransition {
-      position: fixed;
-      inset: 0;
-      z-index: 9998;
-      pointer-events: none;
-      opacity: 0;
-      visibility: hidden;
-      background: #020106;
-      overflow: hidden;
+.fireParticle {
+    position: absolute;
+    left: var(--particle-left);
+    bottom: var(--particle-bottom);
+    width: var(--particle-size);
+    height: var(--particle-size);
+    border-radius: 50%;
+    background: #ffd66b;
+    box-shadow:
+        0 0 6px #ff7a00,
+        0 0 15px #ff3500;
+    animation:
+        particleRise
+        var(--particle-duration)
+        ease-out
+        infinite;
+    animation-delay: var(--particle-delay);
+}
+
+@keyframes particleRise {
+    0% {
+        opacity: 0;
+        transform:
+            translate3d(0, 0, 0)
+            scale(.5);
     }
 
-    #fireTransition.active {
-      opacity: 1;
-      visibility: visible;
+    15% {
+        opacity: 1;
     }
 
-    .fireGlow {
-      position: absolute;
-      left: 50%;
-      bottom: -180px;
-      width: 600px;
-      height: 500px;
-      transform: translateX(-50%);
-      background: radial-gradient(
-        ellipse,
-        rgba(255,80,0,.8),
-        rgba(255,20,0,.35),
-        transparent 70%
-      );
-      filter: blur(30px);
-      animation: fireGlow 1s infinite alternate;
+    100% {
+        opacity: 0;
+        transform:
+            translate3d(
+                var(--particle-x),
+                var(--particle-y),
+                0
+            )
+            scale(.05);
+    }
+}
+
+.fireSmoke {
+    position: absolute;
+    left: var(--smoke-left);
+    bottom: var(--smoke-bottom);
+    width: var(--smoke-size);
+    height: var(--smoke-size);
+    border-radius: 50%;
+    background: rgba(110,110,110,.18);
+    filter: blur(30px);
+    animation:
+        smokeUp
+        var(--smoke-duration)
+        ease-out
+        infinite;
+    animation-delay: var(--smoke-delay);
+}
+
+@keyframes smokeUp {
+    0% {
+        opacity: 0;
+        transform:
+            translate3d(0,0,0)
+            scale(.5);
     }
 
-    @keyframes fireGlow {
-      from {
-        transform: translateX(-50%) scale(.9);
-      }
-
-      to {
-        transform: translateX(-50%) scale(1.1);
-      }
-    }
-
-    .flame {
-      position: absolute;
-      bottom: -120px;
-      width: 120px;
-      height: 330px;
-      border-radius: 60% 40% 55% 45%;
-      background: linear-gradient(
-        to top,
-        #ff1e00,
-        #ff6500 45%,
-        #ffc400 75%,
-        transparent
-      );
-      filter: blur(5px);
-      transform-origin: bottom;
-      animation: flameDance .65s infinite alternate;
-    }
-
-    .flame:nth-child(2) {
-      left: 10%;
-      animation-delay: .1s;
-      transform: rotate(-9deg);
-    }
-
-    .flame:nth-child(3) {
-      left: 28%;
-      height: 420px;
-      animation-delay: .25s;
-    }
-
-    .flame:nth-child(4) {
-      right: 25%;
-      height: 380px;
-      animation-delay: .15s;
-    }
-
-    .flame:nth-child(5) {
-      right: 7%;
-      height: 320px;
-      animation-delay: .4s;
-    }
-
-    @keyframes flameDance {
-      from {
-        transform: scaleY(.85) rotate(-5deg);
-      }
-
-      to {
-        transform: scaleY(1.12) rotate(7deg);
-      }
-    }
-
-    .smoke {
-      position: absolute;
-      bottom: 80px;
-      left: 50%;
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      background: rgba(80,80,80,.25);
-      filter: blur(20px);
-      animation: smokeRise 2s infinite ease-out;
-    }
-
-    @keyframes smokeRise {
-      from {
+    25% {
         opacity: .5;
-        transform: translate(-50%, 0) scale(.7);
-      }
+    }
 
-      to {
+    100% {
         opacity: 0;
-        transform: translate(-20%, -400px) scale(2.8);
-      }
+        transform:
+            translate3d(
+                var(--smoke-x),
+                -550px,
+                0
+            )
+            scale(2.5);
+    }
+}
+
+.fireAsh {
+    position: absolute;
+    left: var(--ash-left);
+    bottom: var(--ash-bottom);
+    width: var(--ash-size);
+    height: var(--ash-size);
+    border-radius: 50%;
+    background: #777;
+    animation:
+        ashFall
+        var(--ash-duration)
+        ease-in
+        infinite;
+    animation-delay: var(--ash-delay);
+}
+
+@keyframes ashFall {
+    0% {
+        opacity: 0;
+        transform:
+            translate3d(0,-150px,0)
+            scale(.3);
     }
 
-    /* =========================
-       SITE
-    ========================= */
-
-    #site {
-      position: relative;
-      z-index: 2;
-      min-height: 100vh;
-      opacity: 0;
-      transform: scale(1.03);
-      transition: opacity 1s ease, transform 1s ease;
+    25% {
+        opacity: .75;
     }
 
-    #site.visible {
-      opacity: 1;
-      transform: scale(1);
+    100% {
+        opacity: 0;
+        transform:
+            translate3d(
+                var(--ash-x),
+                100px,
+                0
+            )
+            rotate(720deg)
+            scale(.1);
+    }
+}
+
+#fireTransition.fire-fade {
+    transition:
+        opacity 1.7s ease,
+        visibility 1.7s ease;
+    opacity: 0;
+}
+
+/* ============================================================
+   SITE
+============================================================ */
+
+#site {
+    position: relative;
+    z-index: 10;
+    min-height: 100vh;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition:
+        opacity .9s ease,
+        transform .9s ease,
+        visibility .9s ease;
+}
+
+#site.site-visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* ============================================================
+   HEADER
+============================================================ */
+
+.siteHeader {
+    position: sticky;
+    top: 0;
+    z-index: 300;
+    height: 78px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 clamp(18px, 5vw, 80px);
+    border-bottom: 1px solid rgba(181,105,255,.12);
+    background: rgba(5,2,10,.72);
+    backdrop-filter: blur(22px);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logoMark {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+    background:
+        linear-gradient(
+            135deg,
+            #5915c5,
+            #a850ff
+        );
+    box-shadow:
+        0 0 20px rgba(136,45,255,.4);
+}
+
+.logoText {
+    font-size: 21px;
+    font-weight: 950;
+    letter-spacing: 2px;
+}
+
+.logoText span {
+    color: #b96fff;
+}
+
+.headerActions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.headerButton {
+    min-height: 44px;
+    border: 1px solid rgba(194,132,255,.22);
+    border-radius: 12px;
+    padding: 0 16px;
+    background: rgba(126,42,255,.08);
+    color: #fff;
+    transition:
+        background .2s ease,
+        transform .2s ease,
+        border-color .2s ease;
+}
+
+.headerButton:hover {
+    transform: translateY(-2px);
+    background: rgba(126,42,255,.18);
+    border-color: rgba(205,153,255,.5);
+}
+
+/* ============================================================
+   HERO
+============================================================ */
+
+.hero {
+    position: relative;
+    min-height:
+        calc(100vh - 78px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding:
+        80px 20px
+        120px;
+    overflow: hidden;
+}
+
+.heroGrid {
+    position: absolute;
+    inset: 0;
+    opacity: .12;
+    background-image:
+        linear-gradient(
+            rgba(165,87,255,.2) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(165,87,255,.2) 1px,
+            transparent 1px
+        );
+    background-size: 70px 70px;
+    mask-image:
+        radial-gradient(
+            ellipse at center,
+            black,
+            transparent 75%
+        );
+}
+
+.heroContent {
+    position: relative;
+    z-index: 2;
+    width: min(900px, 100%);
+    text-align: center;
+}
+
+.heroBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 15px;
+    border: 1px solid rgba(193,124,255,.3);
+    border-radius: 999px;
+    background: rgba(122,33,255,.09);
+    color: #d6b4f4;
+    font-size: 12px;
+    font-weight: 750;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+
+.heroTitle {
+    margin-top: 27px;
+    font-size:
+        clamp(58px, 11vw, 135px);
+    line-height: .82;
+    font-weight: 1000;
+    letter-spacing: -.07em;
+    color: white;
+    text-shadow:
+        0 0 20px rgba(193,126,255,.2),
+        0 0 70px rgba(113,24,255,.25);
+}
+
+.heroTitle span {
+    display: block;
+    background:
+        linear-gradient(
+            135deg,
+            #fff 0%,
+            #e2c3ff 40%,
+            #9841ff 100%
+        );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.heroDescription {
+    width: min(670px, 100%);
+    margin: 30px auto 0;
+    color: #aaa0b2;
+    font-size: 17px;
+    line-height: 1.75;
+}
+
+.heroPrice {
+    margin-top: 28px;
+    font-size: 31px;
+    font-weight: 950;
+    color: #dfbdff;
+    text-shadow:
+        0 0 22px rgba(151,67,255,.4);
+}
+
+.heroPrice small {
+    font-size: 13px;
+    color: #8d8395;
+    font-weight: 500;
+}
+
+.heroActions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+
+.primaryButton {
+    min-height: 54px;
+    padding: 0 27px;
+    border: 0;
+    border-radius: 14px;
+    color: white;
+    font-weight: 850;
+    background:
+        linear-gradient(
+            135deg,
+            #6419dc,
+            #a348ff
+        );
+    box-shadow:
+        0 12px 35px rgba(105,27,215,.22),
+        inset 0 1px rgba(255,255,255,.25);
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        filter .2s ease;
+}
+
+.primaryButton:hover {
+    transform:
+        translateY(-3px)
+        scale(1.015);
+    filter: brightness(1.08);
+    box-shadow:
+        0 18px 45px rgba(105,27,215,.35),
+        0 0 25px rgba(155,70,255,.22);
+}
+
+.secondaryButton {
+    min-height: 54px;
+    padding: 0 25px;
+    border: 1px solid rgba(197,139,255,.25);
+    border-radius: 14px;
+    color: #d9c9e8;
+    background: rgba(255,255,255,.035);
+    transition: .2s;
+}
+
+.secondaryButton:hover {
+    transform: translateY(-2px);
+    border-color: rgba(197,139,255,.5);
+    background: rgba(255,255,255,.06);
+}
+
+/* ============================================================
+   INFO CARDS
+============================================================ */
+
+.infoSection {
+    position: relative;
+    z-index: 2;
+    width: min(1050px, 92%);
+    margin: 0 auto 100px;
+}
+
+.infoGrid {
+    display: grid;
+    grid-template-columns:
+        repeat(3, minmax(0,1fr));
+    gap: 14px;
+}
+
+.infoCard {
+    padding: 23px;
+    border: 1px solid rgba(181,105,255,.13);
+    border-radius: 20px;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.045),
+            rgba(255,255,255,.015)
+        );
+    box-shadow:
+        inset 0 1px rgba(255,255,255,.04);
+}
+
+.infoIcon {
+    font-size: 24px;
+}
+
+.infoTitle {
+    margin-top: 15px;
+    font-size: 16px;
+    font-weight: 850;
+}
+
+.infoText {
+    margin-top: 8px;
+    color: #93899d;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* ============================================================
+   DRAWER OVERLAY
+============================================================ */
+
+#drawerOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 700;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    background: rgba(0,0,0,.68);
+    backdrop-filter: blur(6px);
+    transition:
+        opacity .35s ease,
+        visibility .35s ease;
+}
+
+#drawerOverlay.overlay-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+/* ============================================================
+   DRAWERS
+============================================================ */
+
+.drawer {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    z-index: 701;
+    width: min(530px, 100vw);
+    padding: 28px;
+    overflow-y: auto;
+    background:
+        radial-gradient(
+            circle at 50% 0%,
+            rgba(127,38,255,.15),
+            transparent 30%
+        ),
+        #09040f;
+    box-shadow:
+        0 0 80px rgba(0,0,0,.7);
+    transition:
+        transform .5s
+        cubic-bezier(.2,.8,.2,1);
+}
+
+.drawer::-webkit-scrollbar {
+    width: 6px;
+}
+
+.drawer::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: rgba(170,95,255,.25);
+}
+
+.quantityDrawer {
+    left: 0;
+    transform: translateX(-105%);
+    border-right: 1px solid rgba(181,105,255,.18);
+}
+
+.quantityDrawer.drawer-visible {
+    transform: translateX(0);
+}
+
+.cartDrawer {
+    right: 0;
+    transform: translateX(105%);
+    border-left: 1px solid rgba(181,105,255,.18);
+}
+
+.cartDrawer.drawer-visible {
+    transform: translateX(0);
+}
+
+.drawerHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid rgba(181,105,255,.1);
+}
+
+.drawerTitle {
+    font-size: 24px;
+    font-weight: 900;
+}
+
+.closeButton {
+    flex: 0 0 auto;
+    width: 43px;
+    height: 43px;
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 13px;
+    background: rgba(255,255,255,.04);
+    color: white;
+    font-size: 25px;
+    line-height: 1;
+    transition: .2s;
+}
+
+.closeButton:hover {
+    transform: rotate(4deg);
+    background: rgba(255,76,100,.13);
+    border-color: rgba(255,100,120,.3);
+}
+
+/* ============================================================
+   DISCORD FORM
+============================================================ */
+
+.formIntro {
+    margin-top: 25px;
+    padding: 17px;
+    border: 1px solid rgba(181,105,255,.15);
+    border-radius: 17px;
+    background: rgba(124,40,255,.055);
+}
+
+.formIntroTitle {
+    color: #d9b8fa;
+    font-weight: 850;
+    font-size: 14px;
+}
+
+.formIntroText {
+    margin-top: 6px;
+    color: #8f8498;
+    font-size: 12px;
+    line-height: 1.55;
+}
+
+.formGroup {
+    margin-top: 21px;
+}
+
+.formLabel {
+    display: block;
+    margin-bottom: 8px;
+    color: #bbb1c2;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.formInput {
+    width: 100%;
+    min-height: 50px;
+    padding: 0 15px;
+    border: 1px solid rgba(181,105,255,.16);
+    border-radius: 13px;
+    background: rgba(255,255,255,.035);
+    color: white;
+    transition: .2s;
+}
+
+.formInput::placeholder {
+    color: #625a69;
+}
+
+.formInput:focus {
+    border-color: rgba(171,87,255,.7);
+    background: rgba(130,40,255,.055);
+    box-shadow:
+        0 0 0 4px rgba(137,48,255,.08),
+        0 0 22px rgba(121,34,255,.08);
+}
+
+.inputError {
+    border-color: rgba(255,85,105,.75) !important;
+    box-shadow:
+        0 0 0 4px rgba(255,85,105,.07) !important;
+}
+
+.fieldError {
+    min-height: 18px;
+    margin-top: 6px;
+    color: #ff7e91;
+    font-size: 11px;
+}
+
+/* ============================================================
+   QUANTITY
+============================================================ */
+
+.quantitySection {
+    margin-top: 28px;
+}
+
+.quantityLabel {
+    color: #bbb1c2;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.quantityControls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    margin-top: 15px;
+}
+
+.quantityButton {
+    width: 51px;
+    height: 51px;
+    border: 1px solid rgba(181,105,255,.22);
+    border-radius: 15px;
+    background: rgba(123,37,255,.08);
+    color: white;
+    font-size: 27px;
+    transition: .2s;
+}
+
+.quantityButton:hover {
+    background: rgba(123,37,255,.2);
+    border-color: rgba(199,144,255,.55);
+    transform: translateY(-2px);
+}
+
+.quantityNumber {
+    min-width: 115px;
+    text-align: center;
+    font-size: 32px;
+    font-weight: 950;
+    color: white;
+}
+
+.quantityMembers {
+    margin-top: 12px;
+    text-align: center;
+    color: #a993b7;
+    font-size: 13px;
+}
+
+.pricePreview {
+    margin-top: 7px;
+    text-align: center;
+    color: #d9b2fb;
+    font-size: 28px;
+    font-weight: 950;
+}
+
+.pricePreview small {
+    color: #746b7d;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+/* ============================================================
+   CART
+============================================================ */
+
+.cartItems {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 23px;
+    padding-bottom: 190px;
+}
+
+.emptyCart {
+    padding: 65px 20px;
+    text-align: center;
+    color: #746c7c;
+}
+
+.emptyCartIcon {
+    font-size: 45px;
+    opacity: .7;
+}
+
+.emptyCartText {
+    margin-top: 13px;
+    font-size: 14px;
+}
+
+.cartItem {
+    padding: 17px;
+    border: 1px solid rgba(181,105,255,.13);
+    border-radius: 17px;
+    background: rgba(255,255,255,.035);
+}
+
+.cartItemTop {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.cartItemName {
+    font-size: 15px;
+    font-weight: 850;
+}
+
+.cartItemPrice {
+    color: #d9b2fb;
+    font-weight: 850;
+}
+
+.cartItemDetails {
+    margin-top: 11px;
+    color: #8c8293;
+    font-size: 12px;
+    line-height: 1.65;
+}
+
+.cartItemDetails strong {
+    color: #bcb0c5;
+}
+
+.removeItemButton {
+    margin-top: 12px;
+    border: 0;
+    background: transparent;
+    color: #ff7184;
+    font-size: 12px;
+}
+
+.removeItemButton:hover {
+    text-decoration: underline;
+}
+
+.cartBottom {
+    position: absolute;
+    left: 28px;
+    right: 28px;
+    bottom: 24px;
+    padding-top: 15px;
+    background:
+        linear-gradient(
+            to bottom,
+            transparent,
+            #09040f 18%
+        );
+}
+
+.cartTotalRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    font-size: 18px;
+}
+
+.cartTotalValue {
+    color: #dfbfff;
+    font-size: 24px;
+    font-weight: 950;
+}
+
+.paypalButton {
+    width: 100%;
+    min-height: 52px;
+    border: 0;
+    border-radius: 13px;
+    background: var(--paypal);
+    color: #111;
+    font-weight: 950;
+    transition: .2s;
+}
+
+.paypalButton:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.04);
+    box-shadow:
+        0 10px 30px rgba(255,196,57,.15);
+}
+
+.paypalNote {
+    margin-top: 8px;
+    color: #665d6d;
+    text-align: center;
+    font-size: 10px;
+    line-height: 1.4;
+}
+
+/* ============================================================
+   TOAST
+============================================================ */
+
+#toastContainer {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.toast {
+    width: min(370px, calc(100vw - 40px));
+    padding: 15px 17px;
+    border: 1px solid rgba(181,105,255,.2);
+    border-radius: 14px;
+    background: rgba(15,7,24,.94);
+    box-shadow:
+        0 15px 40px rgba(0,0,0,.35);
+    backdrop-filter: blur(18px);
+    color: #eee;
+    font-size: 13px;
+    animation:
+        toastIn .35s ease forwards;
+}
+
+.toast.toast-out {
+    animation:
+        toastOut .35s ease forwards;
+}
+
+.toast.success {
+    border-color: rgba(112,224,161,.25);
+}
+
+.toast.error {
+    border-color: rgba(255,94,114,.3);
+}
+
+@keyframes toastIn {
+    from {
+        opacity: 0;
+        transform:
+            translateY(15px)
+            translateX(15px);
     }
 
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      height: 76px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 6%;
-      background: rgba(5,2,11,.7);
-      border-bottom: 1px solid rgba(180,100,255,.15);
-      backdrop-filter: blur(18px);
+    to {
+        opacity: 1;
+        transform:
+            translateY(0)
+            translateX(0);
+    }
+}
+
+@keyframes toastOut {
+    to {
+        opacity: 0;
+        transform:
+            translateY(10px)
+            translateX(20px);
+    }
+}
+
+/* ============================================================
+   FOOTER
+============================================================ */
+
+.footer {
+    position: relative;
+    z-index: 2;
+    width: min(1050px, 92%);
+    margin: 0 auto;
+    padding: 35px 0 45px;
+    border-top: 1px solid rgba(181,105,255,.1);
+    text-align: center;
+}
+
+.footerLogo {
+    font-weight: 900;
+    letter-spacing: 2px;
+}
+
+.footerText {
+    margin-top: 8px;
+    color: #625969;
+    font-size: 11px;
+}
+
+/* ============================================================
+   MOBILE
+============================================================ */
+
+@media (max-width: 760px) {
+
+    .siteHeader {
+        height: 68px;
     }
 
-    .brand {
-      font-size: 24px;
-      font-weight: 900;
-      letter-spacing: 3px;
-      color: #d7adff;
-      text-shadow: 0 0 20px rgba(150,60,255,.7);
+    .logoText {
+        font-size: 17px;
     }
 
-    .cartButton {
-      border: 1px solid rgba(196,135,255,.3);
-      background: rgba(120,30,255,.12);
-      color: #fff;
-      padding: 11px 18px;
-      border-radius: 12px;
-      transition: .2s;
+    .logoMark {
+        width: 32px;
+        height: 32px;
     }
 
-    .cartButton:hover {
-      background: rgba(140,50,255,.25);
-      border-color: rgba(210,160,255,.7);
-      transform: translateY(-2px);
-    }
-
-    /* =========================
-       HERO
-    ========================= */
-
-    main {
-      position: relative;
-      z-index: 2;
-      width: min(1100px, 92%);
-      margin: auto;
+    .headerButton {
+        min-height: 40px;
+        padding: 0 12px;
+        font-size: 12px;
     }
 
     .hero {
-      min-height: calc(100vh - 76px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
+        min-height:
+            calc(100vh - 68px);
+        padding:
+            70px 18px
+            90px;
     }
 
-    .heroContent {
-      width: 100%;
-      max-width: 850px;
+    .heroTitle {
+        font-size:
+            clamp(55px, 19vw, 100px);
     }
 
-    .badge {
-      display: inline-flex;
-      padding: 8px 15px;
-      border-radius: 999px;
-      border: 1px solid rgba(188,110,255,.35);
-      background: rgba(132,0,255,.1);
-      color: #d7adff;
-      font-size: 13px;
-      margin-bottom: 25px;
+    .heroDescription {
+        font-size: 14px;
+        line-height: 1.7;
     }
 
-    h1 {
-      font-size: clamp(55px, 9vw, 105px);
-      line-height: .9;
-      font-weight: 1000;
-      letter-spacing: -5px;
-      color: #fff;
-      text-shadow:
-        0 0 20px rgba(180,100,255,.35),
-        0 0 70px rgba(120,20,255,.3);
+    .heroPrice {
+        font-size: 26px;
     }
 
-    .subtitle {
-      max-width: 650px;
-      margin: 30px auto;
-      color: #aaa;
-      font-size: 18px;
-      line-height: 1.7;
-    }
-
-    .price {
-      font-size: 32px;
-      font-weight: 900;
-      color: #d9b2ff;
-      margin-bottom: 25px;
-    }
-
-    .primaryButton {
-      border: 0;
-      padding: 16px 30px;
-      border-radius: 14px;
-      color: #fff;
-      font-weight: 800;
-      background: linear-gradient(135deg, #651cff, #a54cff);
-      box-shadow:
-        0 0 25px rgba(126,42,255,.35),
-        inset 0 1px rgba(255,255,255,.25);
-      transition: .25s;
-    }
-
-    .primaryButton:hover {
-      transform: translateY(-3px) scale(1.02);
-      box-shadow:
-        0 0 40px rgba(126,42,255,.55),
-        inset 0 1px rgba(255,255,255,.3);
-    }
-
-    /* =========================
-       DRAWERS
-    ========================= */
-
-    .drawerOverlay {
-      position: fixed;
-      inset: 0;
-      z-index: 500;
-      background: rgba(0,0,0,.65);
-      opacity: 0;
-      visibility: hidden;
-      transition: .3s;
-      backdrop-filter: blur(5px);
-    }
-
-    .drawerOverlay.open {
-      opacity: 1;
-      visibility: visible;
+    .infoGrid {
+        grid-template-columns: 1fr;
     }
 
     .drawer {
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      z-index: 501;
-      width: min(500px, 100%);
-      padding: 30px;
-      background:
-        radial-gradient(circle at top, rgba(120,40,255,.18), transparent 35%),
-        #09050f;
-      border-color: rgba(190,120,255,.2);
-      box-shadow: 0 0 70px rgba(0,0,0,.6);
-      transition: transform .45s cubic-bezier(.2,.8,.2,1);
-    }
-
-    #quantityDrawer {
-      left: 0;
-      transform: translateX(-105%);
-      border-right: 1px solid rgba(190,120,255,.2);
-    }
-
-    #cartDrawer {
-      right: 0;
-      transform: translateX(105%);
-      border-left: 1px solid rgba(190,120,255,.2);
-    }
-
-    #quantityDrawer.open,
-    #cartDrawer.open {
-      transform: translateX(0);
-    }
-
-    .drawerHeader {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 35px;
-    }
-
-    .drawerHeader h2 {
-      font-size: 25px;
-    }
-
-    .closeButton {
-      width: 42px;
-      height: 42px;
-      border: 1px solid rgba(255,255,255,.1);
-      border-radius: 12px;
-      background: rgba(255,255,255,.05);
-      color: #fff;
-      font-size: 21px;
-    }
-
-    .closeButton:hover {
-      background: rgba(255,70,70,.15);
-    }
-
-    .discordInfo {
-      margin-bottom: 30px;
-      padding: 17px;
-      border: 1px solid rgba(190,120,255,.15);
-      border-radius: 16px;
-      background: rgba(130,40,255,.06);
-    }
-
-    .discordInfo strong {
-      color: #d9b3ff;
-    }
-
-    .field {
-      margin-bottom: 20px;
-    }
-
-    .field label {
-      display: block;
-      margin-bottom: 8px;
-      color: #bbb;
-      font-size: 14px;
-    }
-
-    .field input {
-      width: 100%;
-      padding: 14px 15px;
-      border-radius: 12px;
-      border: 1px solid rgba(190,120,255,.2);
-      outline: none;
-      color: #fff;
-      background: rgba(255,255,255,.045);
-    }
-
-    .field input:focus {
-      border-color: #9b50ff;
-      box-shadow: 0 0 0 3px rgba(155,80,255,.1);
-    }
-
-    .quantityBox {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 25px;
-      margin: 30px 0;
-    }
-
-    .quantityButton {
-      width: 50px;
-      height: 50px;
-      border: 1px solid rgba(190,120,255,.3);
-      border-radius: 14px;
-      background: rgba(140,40,255,.12);
-      color: #fff;
-      font-size: 25px;
-    }
-
-    .quantityButton:hover {
-      background: rgba(140,40,255,.25);
-    }
-
-    #quantityValue {
-      min-width: 100px;
-      text-align: center;
-      font-size: 32px;
-      font-weight: 900;
-    }
-
-    .membersPreview {
-      text-align: center;
-      color: #aaa;
-      margin-bottom: 12px;
-    }
-
-    .totalPreview {
-      text-align: center;
-      font-size: 27px;
-      font-weight: 900;
-      color: #d6a7ff;
-      margin-bottom: 25px;
-    }
-
-    .fullButton {
-      width: 100%;
-    }
-
-    /* =========================
-       CART
-    ========================= */
-
-    #cartItems {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      max-height: 55vh;
-      overflow-y: auto;
-    }
-
-    .cartItem {
-      padding: 17px;
-      border-radius: 15px;
-      border: 1px solid rgba(190,120,255,.14);
-      background: rgba(255,255,255,.035);
-    }
-
-    .cartItemTop {
-      display: flex;
-      justify-content: space-between;
-      gap: 15px;
-      margin-bottom: 8px;
-    }
-
-    .cartItemName {
-      font-weight: 800;
-    }
-
-    .cartItemPrice {
-      color: #d7adff;
-      font-weight: 800;
-    }
-
-    .cartItemMeta {
-      color: #999;
-      font-size: 13px;
-      line-height: 1.6;
-    }
-
-    .removeButton {
-      margin-top: 12px;
-      border: 0;
-      background: transparent;
-      color: #ff7777;
-      font-size: 13px;
-    }
-
-    .emptyCart {
-      color: #888;
-      text-align: center;
-      padding: 60px 10px;
+        width: 100vw;
+        padding: 22px;
     }
 
     .cartBottom {
-      position: absolute;
-      left: 30px;
-      right: 30px;
-      bottom: 30px;
-    }
-
-    .cartTotal {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 18px;
-      font-size: 20px;
-    }
-
-    .paypalButton {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      padding: 15px;
-      border: 0;
-      border-radius: 13px;
-      background: #ffc439;
-      color: #111;
-      font-weight: 900;
-    }
-
-    .paypalButton:hover {
-      filter: brightness(1.05);
-      transform: translateY(-2px);
-    }
-
-    @media (max-width: 600px) {
-      header {
-        padding: 0 20px;
-      }
-
-      h1 {
-        letter-spacing: -3px;
-      }
-
-      .drawer {
-        padding: 22px;
-      }
-
-      .cartBottom {
         left: 22px;
         right: 22px;
-        bottom: 22px;
-      }
     }
-  </style>
+
+    .loaderCore {
+        width: min(280px, 85vw);
+    }
+
+    .loaderTitle {
+        font-size: 37px;
+    }
+}
+
+@media (max-width: 420px) {
+
+    .headerActions {
+        gap: 5px;
+    }
+
+    .headerButton {
+        padding: 0 9px;
+    }
+
+    .heroActions {
+        flex-direction: column;
+    }
+
+    .primaryButton,
+    .secondaryButton {
+        width: 100%;
+    }
+}
+
+</style>
 </head>
 
 <body>
 
-  <div id="space"></div>
+<!-- ============================================================
+     BACKGROUND
+============================================================ -->
 
-  <!-- LOADER -->
-  <div id="loader">
-    <div class="loaderBox">
-      <div class="loaderLogo">NOVA</div>
-      <div class="loaderText">INITIALISATION...</div>
-      <div class="loaderBar">
-        <div id="loaderProgress" class="loaderProgress"></div>
-      </div>
+<div id="spaceBackground" aria-hidden="true">
+
+    <div class="spaceGradient"></div>
+
+    <div class="backgroundOrb orbOne"></div>
+    <div class="backgroundOrb orbTwo"></div>
+
+</div>
+
+
+<!-- ============================================================
+     LOADER
+============================================================ -->
+
+<div id="loader" aria-hidden="true">
+
+    <div class="loaderCore">
+
+        <div class="loaderRings">
+            <div class="loaderRing"></div>
+            <div class="loaderRing"></div>
+            <div class="loaderRing"></div>
+
+            <div class="loaderLightning">
+                ⚡
+            </div>
+        </div>
+
+        <div class="loaderTitle">
+            NOVA
+        </div>
+
+        <div class="loaderSubtitle">
+            INITIALISATION...
+        </div>
+
+        <div class="loaderBar">
+            <div
+                id="loaderProgress"
+                class="loaderBarProgress"
+            ></div>
+        </div>
+
+        <div
+            id="loaderPercent"
+            class="loaderPercent"
+        >
+            0%
+        </div>
+
     </div>
-  </div>
 
-  <!-- FIRE -->
-  <div id="fireTransition">
+</div>
+
+
+<!-- ============================================================
+     FIRE TRANSITION
+============================================================ -->
+
+<div
+    id="fireTransition"
+    aria-hidden="true"
+>
+
+    <div class="fireBlack"></div>
     <div class="fireGlow"></div>
-    <div class="flame"></div>
-    <div class="flame"></div>
-    <div class="flame"></div>
-    <div class="flame"></div>
-    <div class="smoke"></div>
-  </div>
 
-  <!-- SITE -->
-  <div id="site">
+</div>
 
-    <header>
-      <div class="brand">NOVASHOP</div>
 
-      <button id="cartButton" class="cartButton">
-        🛒 Panier <span id="cartCount">0</span>
-      </button>
-    </header>
+<!-- ============================================================
+     SITE
+============================================================ -->
 
-    <main>
-      <section class="hero">
-        <div class="heroContent">
+<div id="site">
 
-          <div class="badge">⚡ PREMIUM DISCORD MEMBERS</div>
+    <header class="siteHeader">
 
-          <h1>MEMBERS</h1>
+        <a
+            href="#"
+            class="logo"
+            aria-label="NovaShop"
+        >
 
-          <p class="subtitle">
-            Développe ton serveur avec des packs MEMBERS.
-            Choisis la quantité dont tu as besoin et renseigne
-            ton Discord avant de continuer.
-          </p>
+            <span class="logoMark">
+                ⚡
+            </span>
 
-          <div class="price">1K MEMBERS • 5,49 €</div>
+            <span class="logoText">
+                NOVA<span>SHOP</span>
+            </span>
 
-          <button id="chooseButton" class="primaryButton">
-            ⚡ Choisir mon pack
-          </button>
+        </a>
+
+
+        <div class="headerActions">
+
+            <button
+                id="cartButton"
+                class="headerButton"
+                type="button"
+            >
+                🛒 Panier
+                <span id="cartCount">
+                    0
+                </span>
+            </button>
 
         </div>
-      </section>
+
+    </header>
+
+
+    <main>
+
+        <section class="hero">
+
+            <div class="heroGrid"></div>
+
+            <div class="heroContent">
+
+                <div class="heroBadge">
+                    ⚡ PACKS DISCORD PREMIUM
+                </div>
+
+
+                <h1 class="heroTitle">
+                    <span>MEMBERS</span>
+                </h1>
+
+
+                <p class="heroDescription">
+                    Développe ton serveur avec nos packs
+                    MEMBERS. Renseigne ton pseudo Discord
+                    et ton serveur avant de choisir ta quantité.
+                </p>
+
+
+                <div class="heroPrice">
+                    5,49 €
+                    <small>
+                        / 1K MEMBERS
+                    </small>
+                </div>
+
+
+                <div class="heroActions">
+
+                    <button
+                        id="chooseButton"
+                        class="primaryButton"
+                        type="button"
+                    >
+                        ⚡ Choisir mon pack
+                    </button>
+
+                    <button
+                        id="heroCartButton"
+                        class="secondaryButton"
+                        type="button"
+                    >
+                        🛒 Voir le panier
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="infoSection">
+
+            <div class="infoGrid">
+
+                <article class="infoCard">
+
+                    <div class="infoIcon">
+                        🔐
+                    </div>
+
+                    <div class="infoTitle">
+                        Informations Discord
+                    </div>
+
+                    <div class="infoText">
+                        Ton pseudo et ton serveur sont
+                        associés à ta commande.
+                    </div>
+
+                </article>
+
+
+                <article class="infoCard">
+
+                    <div class="infoIcon">
+                        ⚡
+                    </div>
+
+                    <div class="infoTitle">
+                        Quantité personnalisée
+                    </div>
+
+                    <div class="infoText">
+                        Choisis la quantité de packs MEMBERS
+                        directement depuis le panneau.
+                    </div>
+
+                </article>
+
+
+                <article class="infoCard">
+
+                    <div class="infoIcon">
+                        💳
+                    </div>
+
+                    <div class="infoTitle">
+                        Paiement PayPal
+                    </div>
+
+                    <div class="infoText">
+                        Le paiement est redirigé vers
+                        la page PayPal configurée.
+                    </div>
+
+                </article>
+
+            </div>
+
+        </section>
+
     </main>
 
-  </div>
 
-  <!-- OVERLAY -->
-  <div id="drawerOverlay" class="drawerOverlay"></div>
+    <footer class="footer">
 
-  <!-- QUANTITY DRAWER -->
-  <aside id="quantityDrawer" class="drawer">
+        <div class="footerLogo">
+            NOVASHOP
+        </div>
+
+        <div class="footerText">
+            MEMBERS • Technologie • Gaming
+        </div>
+
+    </footer>
+
+</div>
+
+
+<!-- ============================================================
+     OVERLAY
+============================================================ -->
+
+<div
+    id="drawerOverlay"
+    aria-hidden="true"
+></div>
+
+
+<!-- ============================================================
+     QUANTITY DRAWER
+============================================================ -->
+
+<aside
+    id="quantityDrawer"
+    class="drawer quantityDrawer"
+    aria-hidden="true"
+>
 
     <div class="drawerHeader">
-      <h2>Choisir ton pack</h2>
 
-      <button id="closeQuantity" class="closeButton">
-        ×
-      </button>
-    </div>
+        <h2 class="drawerTitle">
+            Choisir ton pack
+        </h2>
 
-    <div class="discordInfo">
-      <strong>Discord requis</strong><br>
-      Indique ton pseudo et ton serveur Discord.
-      Aucun mot de passe ne sera demandé.
-    </div>
-
-    <div class="field">
-      <label for="discordUsername">
-        Pseudo Discord
-      </label>
-
-      <input
-        id="discordUsername"
-        type="text"
-        maxlength="100"
-        autocomplete="off"
-        placeholder="Ex : Nova_123"
-      >
-    </div>
-
-    <div class="field">
-      <label for="discordServer">
-        Serveur Discord
-      </label>
-
-      <input
-        id="discordServer"
-        type="text"
-        maxlength="100"
-        autocomplete="off"
-        placeholder="Ex : NovaShop"
-      >
-    </div>
-
-    <div class="quantityBox">
-
-      <button id="minusButton" class="quantityButton">
-        −
-      </button>
-
-      <div id="quantityValue">
-        1
-      </div>
-
-      <button id="plusButton" class="quantityButton">
-        +
-      </button>
+        <button
+            id="closeQuantity"
+            class="closeButton"
+            type="button"
+            aria-label="Fermer"
+        >
+            ×
+        </button>
 
     </div>
 
-    <div id="membersPreview" class="membersPreview">
-      1K MEMBERS
+
+    <div class="formIntro">
+
+        <div class="formIntroTitle">
+            👤 Informations Discord
+        </div>
+
+        <div class="formIntroText">
+            Indique ton pseudo Discord et le nom de
+            ton serveur. Aucun mot de passe Discord
+            ne sera demandé.
+        </div>
+
     </div>
 
-    <div id="totalPreview" class="totalPreview">
-      5,49 €
+
+    <div class="formGroup">
+
+        <label
+            class="formLabel"
+            for="discordUsername"
+        >
+            Pseudo Discord
+        </label>
+
+        <input
+            id="discordUsername"
+            class="formInput"
+            type="text"
+            maxlength="100"
+            autocomplete="off"
+            placeholder="Ex : Nova_123"
+        >
+
+        <div
+            id="usernameError"
+            class="fieldError"
+        ></div>
+
     </div>
 
-    <button id="addCartButton" class="primaryButton fullButton">
-      🛒 Ajouter au panier
+
+    <div class="formGroup">
+
+        <label
+            class="formLabel"
+            for="discordServer"
+        >
+            Serveur Discord
+        </label>
+
+        <input
+            id="discordServer"
+            class="formInput"
+            type="text"
+            maxlength="100"
+            autocomplete="off"
+            placeholder="Ex : NovaShop"
+        >
+
+        <div
+            id="serverError"
+            class="fieldError"
+        ></div>
+
+    </div>
+
+
+    <div class="quantitySection">
+
+        <div class="quantityLabel">
+            Quantité de packs de 1K
+        </div>
+
+
+        <div class="quantityControls">
+
+            <button
+                id="minusButton"
+                class="quantityButton"
+                type="button"
+                aria-label="Diminuer"
+            >
+                −
+            </button>
+
+
+            <div
+                id="quantityValue"
+                class="quantityNumber"
+            >
+                1
+            </div>
+
+
+            <button
+                id="plusButton"
+                class="quantityButton"
+                type="button"
+                aria-label="Augmenter"
+            >
+                +
+            </button>
+
+        </div>
+
+
+        <div
+            id="membersPreview"
+            class="quantityMembers"
+        >
+            1 000 MEMBERS
+        </div>
+
+
+        <div
+            id="totalPreview"
+            class="pricePreview"
+        >
+            5,49 €
+        </div>
+
+    </div>
+
+
+    <button
+        id="addCartButton"
+        class="primaryButton"
+        type="button"
+        style="
+            width:100%;
+            margin-top:25px;
+        "
+    >
+        🛒 Ajouter au panier
     </button>
 
-  </aside>
+</aside>
 
-  <!-- CART DRAWER -->
-  <aside id="cartDrawer" class="drawer">
+
+<!-- ============================================================
+     CART DRAWER
+============================================================ -->
+
+<aside
+    id="cartDrawer"
+    class="drawer cartDrawer"
+    aria-hidden="true"
+>
 
     <div class="drawerHeader">
-      <h2>Ton panier</h2>
 
-      <button id="closeCart" class="closeButton">
-        ×
-      </button>
+        <h2 class="drawerTitle">
+            Ton panier
+        </h2>
+
+        <button
+            id="closeCart"
+            class="closeButton"
+            type="button"
+            aria-label="Fermer"
+        >
+            ×
+        </button>
+
     </div>
 
-    <div id="cartItems"></div>
+
+    <div
+        id="cartItems"
+        class="cartItems"
+    ></div>
+
 
     <div class="cartBottom">
 
-      <div class="cartTotal">
-        <span>Total</span>
-        <strong id="cartTotal">0,00 €</strong>
-      </div>
+        <div class="cartTotalRow">
 
-      <button id="paypalButton" class="paypalButton">
-        Payer avec PayPal
-      </button>
+            <span>
+                Total
+            </span>
+
+            <strong
+                id="cartTotal"
+                class="cartTotalValue"
+            >
+                0,00 €
+            </strong>
+
+        </div>
+
+
+        <button
+            id="paypalButton"
+            class="paypalButton"
+            type="button"
+        >
+            Payer avec PayPal
+        </button>
+
+
+        <div class="paypalNote">
+            Le paiement ouvre la page PayPal de
+            NovaShop.
+        </div>
 
     </div>
 
-  </aside>
+</aside>
 
-  <!-- IMPORTANT :
-       Toute la logique est dans APP.JS -->
-  <script src="./APP.JS"></script>
+
+<!-- ============================================================
+     TOAST
+============================================================ -->
+
+<div
+    id="toastContainer"
+    aria-live="polite"
+    aria-atomic="true"
+></div>
+
+
+<!-- ============================================================
+     APP.JS
+============================================================ -->
+
+<script src="./APP.JS"></script>
 
 </body>
 </html>
