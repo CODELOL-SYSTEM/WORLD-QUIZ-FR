@@ -2,524 +2,1035 @@
 "use strict";
 
 /*
-================================================================
- NOVASHOP MEMBERS
+============================================================
+ NOVA MEMBERS
  APP.JS
- VERSION COMPLÈTE
-================================================================
-
- Fonctionnalités :
-
- - Loader de 3 secondes
- - Transition feu
- - Particules
- - Étoiles
- - Constellations
- - Éclairs
- - Formulaire Discord
- - Quantité
- - Panier
- - LocalStorage
- - Tiroir gauche
- - Tiroir droit
- - Overlay
- - Fermeture X
- - Fermeture Échap
- - Toasts
- - PayPal
- - Validation
- - Responsive
- - Protection contre erreurs JS
-================================================================
+ Version robuste
+============================================================
 */
-
 
 (function () {
 
-    /* ============================================================
-       CONFIGURATION
-    ============================================================ */
+    /*
+    ========================================================
+    CONFIGURATION
+    ========================================================
+    */
 
-    const CONFIG = {
-
-        product: {
-            id: "members-1k",
-            name: "MEMBERS",
-            members: 1000,
-            price: 5.49
-        },
-
-        paypal: {
-            baseUrl: "https://paypal.me/SH0PNOVA"
-        },
-
-        storage: {
-            cart: "novashop_members_cart_v3"
-        },
-
-        quantity: {
-            min: 1,
-            max: 9999
-        },
-
-        loader: {
-            duration: 3000
-        },
-
-        fire: {
-            delayAfterLoader: 250,
-            visibleDuration: 2800,
-            fadeDuration: 1700,
-            siteRevealDelay: 1800
-        },
-
-        background: {
-            stars: 150,
-            bolts: 12,
-            constellationLines: 20
-        }
-
+    const PRODUCT = {
+        id: "members-1k",
+        name: "MEMBERS",
+        members: 1000,
+        price: 5.49
     };
 
+    const PAYPAL_BASE =
+        "https://paypal.me/SH0PNOVA";
 
-    /* ============================================================
-       ÉTAT
-    ============================================================ */
+    const STORAGE_KEY =
+        "novashop_members_cart";
 
     let quantity = 1;
 
     let cart = [];
 
-    let currentDrawer = null;
+    /*
+    ========================================================
+    DOM
+    ========================================================
+    */
 
-    let isInitialized = false;
+    const $ = function (selector) {
+        return document.querySelector(selector);
+    };
 
+    const loader = $("#loader");
 
-    /* ============================================================
-       DOM HELPER
-    ============================================================ */
+    const site = $("#site");
 
-    function $(selector) {
+    const quantityDrawer =
+        $("#quantityDrawer");
 
-        try {
+    const cartDrawer =
+        $("#cartDrawer");
 
-            return document.querySelector(selector);
+    const drawerOverlay =
+        $("#drawerOverlay");
 
-        } catch (error) {
+    const quantityValue =
+        $("#quantityValue");
 
-            console.error(
-                "Erreur DOM :",
-                selector,
-                error
-            );
+    const summaryQuantity =
+        $("#summaryQuantity");
 
-            return null;
+    const summaryMembers =
+        $("#summaryMembers");
 
-        }
+    const summaryPrice =
+        $("#summaryPrice");
 
-    }
+    const cartContent =
+        $("#cartContent");
 
+    const cartCount =
+        $("#cartCount");
 
-    function $all(selector) {
+    const toastElement =
+        $("#toast");
 
-        try {
+    /*
+    ========================================================
+    SAFE ELEMENT CHECK
+    ========================================================
+    */
 
-            return Array.from(
-                document.querySelectorAll(selector)
-            );
+    function exists(element) {
 
-        } catch (error) {
-
-            console.error(
-                "Erreur DOM multiple :",
-                selector,
-                error
-            );
-
-            return [];
-
-        }
-
-    }
-
-
-    /* ============================================================
-       DOM
-    ============================================================ */
-
-    const DOM = {};
-
-
-    function cacheDOM() {
-
-        DOM.body =
-            document.body;
-
-        DOM.loader =
-            $("#loader");
-
-        DOM.loaderProgress =
-            $("#loaderProgress");
-
-        DOM.loaderPercent =
-            $("#loaderPercent");
-
-        DOM.fire =
-            $("#fireTransition");
-
-        DOM.site =
-            $("#site");
-
-        DOM.space =
-            $("#spaceBackground");
-
-        DOM.overlay =
-            $("#drawerOverlay");
-
-        DOM.quantityDrawer =
-            $("#quantityDrawer");
-
-        DOM.cartDrawer =
-            $("#cartDrawer");
-
-        DOM.chooseButton =
-            $("#chooseButton");
-
-        DOM.heroCartButton =
-            $("#heroCartButton");
-
-        DOM.cartButton =
-            $("#cartButton");
-
-        DOM.closeQuantity =
-            $("#closeQuantity");
-
-        DOM.closeCart =
-            $("#closeCart");
-
-        DOM.minusButton =
-            $("#minusButton");
-
-        DOM.plusButton =
-            $("#plusButton");
-
-        DOM.addCartButton =
-            $("#addCartButton");
-
-        DOM.quantityValue =
-            $("#quantityValue");
-
-        DOM.membersPreview =
-            $("#membersPreview");
-
-        DOM.totalPreview =
-            $("#totalPreview");
-
-        DOM.discordUsername =
-            $("#discordUsername");
-
-        DOM.discordServer =
-            $("#discordServer");
-
-        DOM.usernameError =
-            $("#usernameError");
-
-        DOM.serverError =
-            $("#serverError");
-
-        DOM.cartItems =
-            $("#cartItems");
-
-        DOM.cartTotal =
-            $("#cartTotal");
-
-        DOM.cartCount =
-            $("#cartCount");
-
-        DOM.paypalButton =
-            $("#paypalButton");
-
-        DOM.toastContainer =
-            $("#toastContainer");
+        return element !== null &&
+               element !== undefined;
 
     }
 
-
-    /* ============================================================
-       PRIX
-    ============================================================ */
+    /*
+    ========================================================
+    FORMAT PRICE
+    ========================================================
+    */
 
     function formatPrice(value) {
 
-        const number =
-            Number(value);
-
-        if (
-            !Number.isFinite(number)
-        ) {
-
-            return "0,00 €";
-
-        }
-
-        return number.toLocaleString(
-            "fr-FR",
-            {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            }
-        ) + " €";
+        return Number(value)
+            .toFixed(2)
+            .replace(".", ",") + " €";
 
     }
 
-
-    /* ============================================================
-       NOMBRE
-    ============================================================ */
+    /*
+    ========================================================
+    FORMAT NUMBER
+    ========================================================
+    */
 
     function formatNumber(value) {
 
-        const number =
-            Number(value);
+        return Number(value)
+            .toLocaleString("fr-FR");
 
-        if (
-            !Number.isFinite(number)
-        ) {
+    }
 
-            return "0";
+    /*
+    ========================================================
+    TOAST
+    ========================================================
+    */
 
+    let toastTimer = null;
+
+    function toast(message) {
+
+        if (!exists(toastElement)) {
+            return;
         }
 
-        return number.toLocaleString(
-            "fr-FR"
-        );
+        toastElement.textContent =
+            String(message);
+
+        toastElement.classList.add("show");
+
+        if (toastTimer) {
+            clearTimeout(toastTimer);
+        }
+
+        toastTimer = setTimeout(function () {
+
+            toastElement.classList.remove("show");
+
+        }, 2600);
 
     }
 
-
-    /* ============================================================
-       HTML SAFE
-    ============================================================ */
-
-    function escapeHTML(value) {
-
-        return String(value)
-            .replaceAll(
-                "&",
-                "&amp;"
-            )
-            .replaceAll(
-                "<",
-                "&lt;"
-            )
-            .replaceAll(
-                ">",
-                "&gt;"
-            )
-            .replaceAll(
-                '"',
-                "&quot;"
-            )
-            .replaceAll(
-                "'",
-                "&#039;"
-            );
-
-    }
-
-
-    /* ============================================================
-       RANDOM
-    ============================================================ */
-
-    function random(min, max) {
-
-        return (
-            Math.random() *
-            (max - min)
-        ) + min;
-
-    }
-
-
-    /* ============================================================
-       RANDOM INTEGER
-    ============================================================ */
-
-    function randomInt(min, max) {
-
-        return Math.floor(
-            random(min, max + 1)
-        );
-
-    }
-
-
-    /* ============================================================
-       LOCAL STORAGE
-    ============================================================ */
+    /*
+    ========================================================
+    LOCAL STORAGE
+    ========================================================
+    */
 
     function loadCart() {
 
         try {
 
-            const raw =
+            const saved =
                 localStorage.getItem(
-                    CONFIG.storage.cart
+                    STORAGE_KEY
                 );
 
-            if (!raw) {
+            if (!saved) {
 
-                return [];
+                cart = [];
 
+                return;
             }
 
             const parsed =
-                JSON.parse(raw);
+                JSON.parse(saved);
 
-            if (
-                !Array.isArray(parsed)
-            ) {
+            if (!Array.isArray(parsed)) {
 
-                return [];
+                cart = [];
 
+                return;
             }
 
-            return parsed.filter(
-                isValidCartItem
-            );
+            cart = parsed.filter(function (item) {
+
+                return item &&
+                       typeof item === "object";
+
+            });
 
         } catch (error) {
 
-            console.error(
-                "Erreur chargement panier :",
+            console.warn(
+                "Impossible de charger le panier.",
                 error
             );
 
-            return [];
+            cart = [];
 
         }
 
     }
-
-
-    function isValidCartItem(item) {
-
-        if (
-            !item ||
-            typeof item !== "object"
-        ) {
-
-            return false;
-
-        }
-
-        if (
-            typeof item.quantity !==
-            "number"
-        ) {
-
-            return false;
-
-        }
-
-        if (
-            item.quantity < 1
-        ) {
-
-            return false;
-
-        }
-
-        if (
-            typeof item.price !==
-            "number"
-        ) {
-
-            return false;
-
-        }
-
-        return true;
-
-    }
-
 
     function saveCart() {
 
         try {
 
             localStorage.setItem(
-                CONFIG.storage.cart,
+                STORAGE_KEY,
                 JSON.stringify(cart)
             );
 
         } catch (error) {
 
-            console.error(
-                "Erreur sauvegarde panier :",
-                error
-            );
-
-            showToast(
+            console.warn(
                 "Impossible de sauvegarder le panier.",
-                "error"
+                error
             );
 
         }
 
     }
 
+    /*
+    ========================================================
+    DRAWERS
+    ========================================================
+    */
 
-    /* ============================================================
-       BACKGROUND STARS
-    ============================================================ */
+    function closeAllDrawers() {
 
-    function createStars() {
+        if (exists(quantityDrawer)) {
 
-        if (!DOM.space) {
+            quantityDrawer.classList.remove(
+                "open"
+            );
+
+            quantityDrawer.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+
+        }
+
+        if (exists(cartDrawer)) {
+
+            cartDrawer.classList.remove(
+                "open"
+            );
+
+            cartDrawer.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+
+        }
+
+        if (exists(drawerOverlay)) {
+
+            drawerOverlay.classList.remove(
+                "active"
+            );
+
+            drawerOverlay.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+
+        }
+
+        document.body.style.overflow = "";
+
+    }
+
+    function openQuantityDrawer() {
+
+        closeAllDrawers();
+
+        if (!exists(quantityDrawer)) {
+            return;
+        }
+
+        quantityDrawer.classList.add(
+            "open"
+        );
+
+        quantityDrawer.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+        if (exists(drawerOverlay)) {
+
+            drawerOverlay.classList.add(
+                "active"
+            );
+
+            drawerOverlay.setAttribute(
+                "aria-hidden",
+                "false"
+            );
+
+        }
+
+        document.body.style.overflow =
+            "hidden";
+
+        updateQuantityUI();
+
+    }
+
+    function openCartDrawer() {
+
+        closeAllDrawers();
+
+        if (!exists(cartDrawer)) {
+            return;
+        }
+
+        cartDrawer.classList.add(
+            "open"
+        );
+
+        cartDrawer.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+        if (exists(drawerOverlay)) {
+
+            drawerOverlay.classList.add(
+                "active"
+            );
+
+            drawerOverlay.setAttribute(
+                "aria-hidden",
+                "false"
+            );
+
+        }
+
+        document.body.style.overflow =
+            "hidden";
+
+        renderCart();
+
+    }
+
+    /*
+    ========================================================
+    QUANTITY
+    ========================================================
+    */
+
+    function clampQuantity(value) {
+
+        let number =
+            parseInt(value, 10);
+
+        if (!Number.isFinite(number)) {
+            number = 1;
+        }
+
+        number =
+            Math.max(1, number);
+
+        number =
+            Math.min(999, number);
+
+        return number;
+
+    }
+
+    function updateQuantityUI() {
+
+        quantity =
+            clampQuantity(quantity);
+
+        if (exists(quantityValue)) {
+
+            quantityValue.textContent =
+                String(quantity);
+
+        }
+
+        if (exists(summaryQuantity)) {
+
+            summaryQuantity.textContent =
+                String(quantity);
+
+        }
+
+        if (exists(summaryMembers)) {
+
+            summaryMembers.textContent =
+                formatNumber(
+                    PRODUCT.members *
+                    quantity
+                );
+
+        }
+
+        if (exists(summaryPrice)) {
+
+            summaryPrice.textContent =
+                formatPrice(
+                    PRODUCT.price *
+                    quantity
+                );
+
+        }
+
+    }
+
+    function increaseQuantity() {
+
+        quantity =
+            clampQuantity(quantity + 1);
+
+        updateQuantityUI();
+
+    }
+
+    function decreaseQuantity() {
+
+        quantity =
+            clampQuantity(quantity - 1);
+
+        updateQuantityUI();
+
+    }
+
+    /*
+    ========================================================
+    ADD TO CART
+    ========================================================
+    */
+
+    function addToCart() {
+
+        quantity =
+            clampQuantity(quantity);
+
+        const existing =
+            cart.find(function (item) {
+
+                return item.id === PRODUCT.id;
+
+            });
+
+        if (existing) {
+
+            existing.quantity =
+                clampQuantity(
+                    Number(existing.quantity) +
+                    quantity
+                );
+
+        } else {
+
+            cart.push({
+
+                id: PRODUCT.id,
+
+                name: PRODUCT.name,
+
+                quantity: quantity,
+
+                members:
+                    PRODUCT.members,
+
+                price:
+                    PRODUCT.price
+
+            });
+
+        }
+
+        saveCart();
+
+        updateCartCount();
+
+        toast(
+            quantity +
+            " pack" +
+            (quantity > 1 ? "s" : "") +
+            " ajouté" +
+            (quantity > 1 ? "s" : "") +
+            " au panier."
+        );
+
+        setTimeout(function () {
+
+            openCartDrawer();
+
+        }, 250);
+
+    }
+
+    /*
+    ========================================================
+    REMOVE CART ITEM
+    ========================================================
+    */
+
+    function removeCartItem(id) {
+
+        cart =
+            cart.filter(function (item) {
+
+                return item.id !== id;
+
+            });
+
+        saveCart();
+
+        updateCartCount();
+
+        renderCart();
+
+        toast(
+            "Produit retiré du panier."
+        );
+
+    }
+
+    /*
+    ========================================================
+    CART COUNT
+    ========================================================
+    */
+
+    function getCartCount() {
+
+        return cart.reduce(
+            function (total, item) {
+
+                return total +
+                    Number(item.quantity || 0);
+
+            },
+            0
+        );
+
+    }
+
+    function updateCartCount() {
+
+        if (!exists(cartCount)) {
+            return;
+        }
+
+        cartCount.textContent =
+            String(getCartCount());
+
+    }
+
+    /*
+    ========================================================
+    CART TOTAL
+    ========================================================
+    */
+
+    function getCartTotal() {
+
+        return cart.reduce(
+            function (total, item) {
+
+                const itemQuantity =
+                    Number(item.quantity || 0);
+
+                const itemPrice =
+                    Number(item.price || 0);
+
+                return total +
+                    itemQuantity *
+                    itemPrice;
+
+            },
+            0
+        );
+
+    }
+
+    /*
+    ========================================================
+    RENDER CART
+    ========================================================
+    */
+
+    function renderCart() {
+
+        if (!exists(cartContent)) {
+            return;
+        }
+
+        if (!cart.length) {
+
+            cartContent.innerHTML = `
+                <div class="empty-cart">
+
+                    <div class="empty-cart-icon">
+                        🛒
+                    </div>
+
+                    <p>
+                        Ton panier est vide.
+                    </p>
+
+                    <button
+                        class="btn btn-purple"
+                        id="emptyChooseButton"
+                        type="button"
+                        style="margin-top:20px;">
+                        Choisir un pack
+                    </button>
+
+                </div>
+            `;
+
+            const emptyButton =
+                $("#emptyChooseButton");
+
+            if (exists(emptyButton)) {
+
+                emptyButton.addEventListener(
+                    "click",
+                    function () {
+
+                        openQuantityDrawer();
+
+                    }
+                );
+
+            }
+
+            return;
+        }
+
+        let html = "";
+
+        cart.forEach(function (item) {
+
+            const itemQuantity =
+                Number(item.quantity || 0);
+
+            const itemMembers =
+                Number(
+                    item.members ||
+                    PRODUCT.members
+                );
+
+            const itemPrice =
+                Number(
+                    item.price ||
+                    PRODUCT.price
+                );
+
+            const total =
+                itemQuantity *
+                itemPrice;
+
+            html += `
+                <div class="cart-item">
+
+                    <div class="cart-item-top">
+
+                        <div>
+                            <div class="cart-item-name">
+                                ${escapeHTML(
+                                    item.name || "MEMBERS"
+                                )}
+                            </div>
+
+                            <div class="cart-item-members">
+                                ${formatNumber(
+                                    itemMembers *
+                                    itemQuantity
+                                )} MEMBERS
+                                •
+                                Quantité :
+                                ${itemQuantity}
+                            </div>
+                        </div>
+
+                        <div class="cart-item-price">
+                            ${formatPrice(total)}
+                        </div>
+
+                    </div>
+
+                    <button
+                        class="cart-item-remove"
+                        type="button"
+                        data-remove-id="${escapeHTML(
+                            item.id
+                        )}">
+                        Supprimer
+                    </button>
+
+                </div>
+            `;
+
+        });
+
+        const total =
+            getCartTotal();
+
+        html += `
+            <div class="cart-total">
+
+                <div class="cart-total-row">
+
+                    <span>
+                        Total
+                    </span>
+
+                    <strong class="cart-total-price">
+                        ${formatPrice(total)}
+                    </strong>
+
+                </div>
+
+                <button
+                    class="paypal-button"
+                    id="paypalButton"
+                    type="button">
+                    Continuer avec PayPal
+                </button>
+
+            </div>
+        `;
+
+        cartContent.innerHTML =
+            html;
+
+        bindCartButtons();
+
+    }
+
+    /*
+    ========================================================
+    ESCAPE HTML
+    ========================================================
+    */
+
+    function escapeHTML(value) {
+
+        return String(value)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+
+    }
+
+    /*
+    ========================================================
+    CART BUTTONS
+    ========================================================
+    */
+
+    function bindCartButtons() {
+
+        const removeButtons =
+            document.querySelectorAll(
+                "[data-remove-id]"
+            );
+
+        removeButtons.forEach(
+            function (button) {
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        const id =
+                            button.getAttribute(
+                                "data-remove-id"
+                            );
+
+                        removeCartItem(id);
+
+                    }
+                );
+
+            }
+        );
+
+        const paypalButton =
+            $("#paypalButton");
+
+        if (exists(paypalButton)) {
+
+            paypalButton.addEventListener(
+                "click",
+                checkoutPayPal
+            );
+
+        }
+
+    }
+
+    /*
+    ========================================================
+    PAYPAL
+    ========================================================
+    */
+
+    function checkoutPayPal() {
+
+        const total =
+            getCartTotal();
+
+        if (!cart.length) {
+
+            toast(
+                "Ton panier est vide."
+            );
 
             return;
 
+        }
+
+        if (!(total > 0)) {
+
+            toast(
+                "Le montant du panier est invalide."
+            );
+
+            return;
+
+        }
+
+        /*
+        PayPal.me utilise le montant directement
+        dans l'URL.
+        Exemple :
+        https://paypal.me/SH0PNOVA/5.49
+        */
+
+        const amount =
+            total.toFixed(2);
+
+        const url =
+            PAYPAL_BASE +
+            "/" +
+            amount;
+
+        window.location.href =
+            url;
+
+    }
+
+    /*
+    ========================================================
+    BUTTON EVENTS
+    ========================================================
+    */
+
+    function bindButton(
+        selector,
+        callback
+    ) {
+
+        const element =
+            $(selector);
+
+        if (!exists(element)) {
+            return;
+        }
+
+        element.addEventListener(
+            "click",
+            function (event) {
+
+                event.preventDefault();
+
+                callback();
+
+            }
+        );
+
+    }
+
+    /*
+    ========================================================
+    INITIALISATION
+    ========================================================
+    */
+
+    function init() {
+
+        loadCart();
+
+        updateQuantityUI();
+
+        updateCartCount();
+
+        renderCart();
+
+        bindButton(
+            "#chooseButton",
+            openQuantityDrawer
+        );
+
+        bindButton(
+            "#heroChooseButton",
+            openQuantityDrawer
+        );
+
+        bindButton(
+            "#cardChooseButton",
+            openQuantityDrawer
+        );
+
+        bindButton(
+            "#heroCartButton",
+            openCartDrawer
+        );
+
+        bindButton(
+            "#heroCartButton2",
+            openCartDrawer
+        );
+
+        bindButton(
+            "#closeQuantity",
+            closeAllDrawers
+        );
+
+        bindButton(
+            "#closeCart",
+            closeAllDrawers
+        );
+
+        bindButton(
+            "#minusButton",
+            decreaseQuantity
+        );
+
+        bindButton(
+            "#plusButton",
+            increaseQuantity
+        );
+
+        bindButton(
+            "#addCartButton",
+            addToCart
+        );
+
+        if (exists(drawerOverlay)) {
+
+            drawerOverlay.addEventListener(
+                "click",
+                closeAllDrawers
+            );
+
+        }
+
+        document.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (event.key === "Escape") {
+
+                    closeAllDrawers();
+
+                }
+
+            }
+        );
+
+        createStars();
+
+        createLoaderParticles();
+
+        createEmbers();
+
+        console.log(
+            "NOVA MEMBERS : APP.JS chargé correctement."
+        );
+
+    }
+
+    /*
+    ========================================================
+    STARS
+    ========================================================
+    */
+
+    function createStars() {
+
+        const space =
+            $("#space");
+
+        if (!exists(space)) {
+            return;
         }
 
         const fragment =
             document.createDocumentFragment();
 
         for (
-            let i = 0;
-            i < CONFIG.background.stars;
-            i++
+            let index = 0;
+            index < 130;
+            index++
         ) {
 
             const star =
-                document.createElement("span");
+                document.createElement("div");
 
             star.className =
                 "star";
 
-            const size =
-                random(.7, 2.4);
-
-            star.style.width =
-                `${size}px`;
-
-            star.style.height =
-                `${size}px`;
-
             star.style.left =
-                `${random(0,100)}%`;
+                Math.random() * 100 + "%";
 
             star.style.top =
-                `${random(0,100)}%`;
+                Math.random() * 100 + "%";
 
-            star.style.setProperty(
-                "--star-speed",
-                `${random(1.8,5)}s`
-            );
+            const size =
+                Math.random() * 2 + 1;
+
+            star.style.width =
+                size + "px";
+
+            star.style.height =
+                size + "px";
 
             star.style.animationDelay =
-                `${random(0,5)}s`;
+                Math.random() * 3 + "s";
 
             fragment.appendChild(
                 star
@@ -527,2529 +1038,211 @@
 
         }
 
-        DOM.space.appendChild(
+        space.appendChild(
             fragment
         );
 
-    }
-
-
-    /* ============================================================
-       ELECTRIC BOLTS
-    ============================================================ */
-
-    function createElectricBolts() {
-
-        if (!DOM.space) {
-
-            return;
-
-        }
-
-        for (
-            let i = 0;
-            i < CONFIG.background.bolts;
-            i++
-        ) {
-
-            const bolt =
-                document.createElement("div");
-
-            bolt.className =
-                "electricBolt";
-
-            bolt.style.left =
-                `${random(-5,100)}%`;
-
-            bolt.style.top =
-                `${random(-10,100)}%`;
-
-            bolt.style.height =
-                `${random(90,260)}px`;
-
-            bolt.style.setProperty(
-                "--bolt-angle",
-                `${random(-70,70)}deg`
-            );
-
-            bolt.style.setProperty(
-                "--bolt-duration",
-                `${random(2.5,6)}s`
-            );
-
-            bolt.style.setProperty(
-                "--bolt-delay",
-                `${random(0,6)}s`
-            );
-
-            DOM.space.appendChild(
-                bolt
-            );
-
-        }
+        createConstellations();
 
     }
 
-
-    /* ============================================================
-       CONSTELLATIONS
-    ============================================================ */
+    /*
+    ========================================================
+    CONSTELLATIONS
+    ========================================================
+    */
 
     function createConstellations() {
 
-        if (!DOM.space) {
+        const space =
+            $("#space");
 
+        if (!exists(space)) {
             return;
-
         }
 
-        for (
-            let i = 0;
-            i < CONFIG.background.constellationLines;
-            i++
-        ) {
-
-            const line =
-                document.createElement("div");
-
-            line.className =
-                "constellationLine";
-
-            line.style.left =
-                `${random(0,95)}%`;
-
-            line.style.top =
-                `${random(0,95)}%`;
-
-            line.style.width =
-                `${random(40,180)}px`;
-
-            line.style.transform =
-                `rotate(${random(-55,55)}deg)`;
-
-            line.style.opacity =
-                random(.08,.3);
-
-            DOM.space.appendChild(
-                line
-            );
-
-        }
-
-    }
-
-
-    /* ============================================================
-       FIRE FLAMES
-    ============================================================ */
-
-    function createFireFlames() {
-
-        if (!DOM.fire) {
-
-            return;
-
-        }
-
-        const fragment =
-            document.createDocumentFragment();
-
-        const positions = [
-            [2, 300, 145],
-            [12, 430, 170],
-            [24, 350, 130],
-            [37, 510, 190],
-            [50, 450, 160],
-            [61, 560, 210],
-            [75, 400, 150],
-            [87, 330, 140]
+        const points = [
+            [18,18],
+            [22,14],
+            [27,19],
+            [31,12],
+            [77,18],
+            [82,24],
+            [88,16],
+            [84,32],
+            [11,67],
+            [17,61],
+            [24,70],
+            [29,64]
         ];
 
-        positions.forEach(
-            (
-                [left, height, width],
-                index
-            ) => {
+        points.forEach(
+            function (point) {
 
-                const flame =
-                    document.createElement("div");
+                const element =
+                    document.createElement(
+                        "div"
+                    );
 
-                flame.className =
-                    "flame";
+                element.className =
+                    "constellation";
 
-                flame.style.setProperty(
-                    "--flame-left",
-                    `${left}%`
-                );
+                element.style.left =
+                    point[0] + "%";
 
-                flame.style.setProperty(
-                    "--flame-height",
-                    `${height}px`
-                );
+                element.style.top =
+                    point[1] + "%";
 
-                flame.style.setProperty(
-                    "--flame-width",
-                    `${width}px`
-                );
-
-                flame.style.setProperty(
-                    "--flame-blur",
-                    `${random(2,7)}px`
-                );
-
-                flame.style.setProperty(
-                    "--flame-duration",
-                    `${random(.35,.8)}s`
-                );
-
-                flame.style.animationDelay =
-                    `${index * -.07}s`;
-
-                fragment.appendChild(
-                    flame
+                space.appendChild(
+                    element
                 );
 
             }
         );
 
-        DOM.fire.appendChild(
-            fragment
-        );
-
     }
 
+    /*
+    ========================================================
+    LOADER PARTICLES
+    ========================================================
+    */
 
-    /* ============================================================
-       FIRE PARTICLES
-    ============================================================ */
+    function createLoaderParticles() {
 
-    function createFireParticles() {
+        const container =
+            $("#loaderParticles");
 
-        if (!DOM.fire) {
-
+        if (!exists(container)) {
             return;
-
         }
 
-        const fragment =
-            document.createDocumentFragment();
-
         for (
-            let i = 0;
-            i < 110;
-            i++
+            let index = 0;
+            index < 40;
+            index++
         ) {
 
             const particle =
-                document.createElement("span");
+                document.createElement("div");
 
             particle.className =
-                "fireParticle";
+                "loader-particle";
 
-            particle.style.setProperty(
-                "--particle-left",
-                `${random(0,100)}%`
-            );
+            particle.style.left =
+                Math.random() * 100 + "%";
 
-            particle.style.setProperty(
-                "--particle-bottom",
-                `${random(-5,80)}px`
-            );
+            particle.style.animationDelay =
+                Math.random() * 4 + "s";
 
-            particle.style.setProperty(
-                "--particle-size",
-                `${random(1,5)}px`
-            );
+            particle.style.animationDuration =
+                3 +
+                Math.random() * 4 +
+                "s";
 
-            particle.style.setProperty(
-                "--particle-duration",
-                `${random(1.2,3.5)}s`
-            );
-
-            particle.style.setProperty(
-                "--particle-delay",
-                `${random(0,3)}s`
-            );
-
-            particle.style.setProperty(
-                "--particle-x",
-                `${random(-100,100)}px`
-            );
-
-            particle.style.setProperty(
-                "--particle-y",
-                `${random(-250,-80)}px`
-            );
-
-            fragment.appendChild(
+            container.appendChild(
                 particle
             );
 
         }
 
-        DOM.fire.appendChild(
-            fragment
-        );
-
     }
 
+    /*
+    ========================================================
+    FIRE EMBERS
+    ========================================================
+    */
 
-    /* ============================================================
-       FIRE SMOKE
-    ============================================================ */
+    function createEmbers() {
 
-    function createFireSmoke() {
+        const container =
+            $("#embers");
 
-        if (!DOM.fire) {
-
+        if (!exists(container)) {
             return;
-
         }
-
-        const fragment =
-            document.createDocumentFragment();
 
         for (
-            let i = 0;
-            i < 25;
-            i++
+            let index = 0;
+            index < 75;
+            index++
         ) {
 
-            const smoke =
-                document.createElement("span");
+            const ember =
+                document.createElement("div");
 
-            smoke.className =
-                "fireSmoke";
+            ember.className =
+                "ember";
 
-            smoke.style.setProperty(
-                "--smoke-left",
-                `${random(5,95)}%`
-            );
+            ember.style.left =
+                Math.random() * 100 + "%";
 
-            smoke.style.setProperty(
-                "--smoke-bottom",
-                `${random(20,300)}px`
-            );
+            ember.style.animationDelay =
+                Math.random() * 1.7 + "s";
 
-            smoke.style.setProperty(
-                "--smoke-size",
-                `${random(50,150)}px`
-            );
+            ember.style.animationDuration =
+                1.2 +
+                Math.random() * 1.7 +
+                "s";
 
-            smoke.style.setProperty(
-                "--smoke-duration",
-                `${random(2,5)}s`
-            );
+            const size =
+                2 +
+                Math.random() * 5;
 
-            smoke.style.setProperty(
-                "--smoke-delay",
-                `${random(0,4)}s`
-            );
+            ember.style.width =
+                size + "px";
 
-            smoke.style.setProperty(
-                "--smoke-x",
-                `${random(-160,160)}px`
-            );
+            ember.style.height =
+                size * 2 + "px";
 
-            fragment.appendChild(
-                smoke
-            );
-
-        }
-
-        DOM.fire.appendChild(
-            fragment
-        );
-
-    }
-
-
-    /* ============================================================
-       FIRE ASH
-    ============================================================ */
-
-    function createFireAsh() {
-
-        if (!DOM.fire) {
-
-            return;
-
-        }
-
-        const fragment =
-            document.createDocumentFragment();
-
-        for (
-            let i = 0;
-            i < 65;
-            i++
-        ) {
-
-            const ash =
-                document.createElement("span");
-
-            ash.className =
-                "fireAsh";
-
-            ash.style.setProperty(
-                "--ash-left",
-                `${random(0,100)}%`
-            );
-
-            ash.style.setProperty(
-                "--ash-bottom",
-                `${random(0,500)}px`
-            );
-
-            ash.style.setProperty(
-                "--ash-size",
-                `${random(2,7)}px`
-            );
-
-            ash.style.setProperty(
-                "--ash-duration",
-                `${random(2,5)}s`
-            );
-
-            ash.style.setProperty(
-                "--ash-delay",
-                `${random(0,4)}s`
-            );
-
-            ash.style.setProperty(
-                "--ash-x",
-                `${random(-180,180)}px`
-            );
-
-            fragment.appendChild(
-                ash
-            );
-
-        }
-
-        DOM.fire.appendChild(
-            fragment
-        );
-
-    }
-
-
-    /* ============================================================
-       FIRE INITIALISATION
-    ============================================================ */
-
-    function prepareFire() {
-
-        createFireFlames();
-
-        createFireParticles();
-
-        createFireSmoke();
-
-        createFireAsh();
-
-    }
-
-
-    /* ============================================================
-       LOADER PROGRESS
-    ============================================================ */
-
-    function updateLoaderProgress(
-        progress
-    ) {
-
-        const safeProgress =
-            Math.max(
-                0,
-                Math.min(
-                    1,
-                    progress
-                )
-            );
-
-        const percent =
-            Math.floor(
-                safeProgress * 100
-            );
-
-        if (DOM.loaderProgress) {
-
-            DOM.loaderProgress.style.width =
-                `${percent}%`;
-
-        }
-
-        if (DOM.loaderPercent) {
-
-            DOM.loaderPercent.textContent =
-                `${percent}%`;
-
-        }
-
-    }
-
-
-    /* ============================================================
-       LOADER
-    ============================================================ */
-
-    function startLoader() {
-
-        if (!DOM.loader) {
-
-            revealSite();
-
-            return;
-
-        }
-
-        const start =
-            performance.now();
-
-        let finished =
-            false;
-
-
-        function frame(now) {
-
-            if (finished) {
-
-                return;
-
-            }
-
-            const elapsed =
-                now - start;
-
-            const progress =
-                Math.min(
-                    elapsed /
-                    CONFIG.loader.duration,
-                    1
-                );
-
-            updateLoaderProgress(
-                progress
-            );
-
-
-            if (
-                progress < 1
-            ) {
-
-                requestAnimationFrame(
-                    frame
-                );
-
-                return;
-
-            }
-
-
-            finished = true;
-
-            finishLoader();
-
-        }
-
-
-        requestAnimationFrame(
-            frame
-        );
-
-    }
-
-
-    /* ============================================================
-       FINISH LOADER
-    ============================================================ */
-
-    function finishLoader() {
-
-        updateLoaderProgress(
-            1
-        );
-
-
-        setTimeout(
-            () => {
-
-                if (DOM.loader) {
-
-                    DOM.loader.classList.add(
-                        "loader-hidden"
-                    );
-
-                }
-
-            },
-            50
-        );
-
-
-        setTimeout(
-            startFireTransition,
-            CONFIG.fire.delayAfterLoader + 50
-        );
-
-    }
-
-
-    /* ============================================================
-       FIRE TRANSITION
-    ============================================================ */
-
-    function startFireTransition() {
-
-        if (!DOM.fire) {
-
-            revealSite();
-
-            return;
-
-        }
-
-        DOM.fire.classList.add(
-            "fire-active"
-        );
-
-
-        setTimeout(
-            () => {
-
-                DOM.fire.classList.add(
-                    "fire-fade"
-                );
-
-            },
-            CONFIG.fire.visibleDuration
-        );
-
-
-        setTimeout(
-            () => {
-
-                DOM.fire.classList.remove(
-                    "fire-active"
-                );
-
-                DOM.fire.classList.remove(
-                    "fire-fade"
-                );
-
-                revealSite();
-
-            },
-            CONFIG.fire.visibleDuration +
-            CONFIG.fire.fadeDuration +
-            CONFIG.fire.siteRevealDelay
-        );
-
-    }
-
-
-    /* ============================================================
-       REVEAL SITE
-    ============================================================ */
-
-    function revealSite() {
-
-        if (!DOM.site) {
-
-            return;
-
-        }
-
-        DOM.site.classList.add(
-            "site-visible"
-        );
-
-    }
-
-
-    /* ============================================================
-       TOAST
-    ============================================================ */
-
-    function showToast(
-        message,
-        type = "normal"
-    ) {
-
-        if (!DOM.toastContainer) {
-
-            return;
-
-        }
-
-        const toast =
-            document.createElement("div");
-
-        toast.className =
-            `toast ${type}`;
-
-        toast.textContent =
-            message;
-
-        DOM.toastContainer.appendChild(
-            toast
-        );
-
-
-        setTimeout(
-            () => {
-
-                toast.classList.add(
-                    "toast-out"
-                );
-
-                setTimeout(
-                    () => {
-
-                        if (
-                            toast.parentNode
-                        ) {
-
-                            toast.remove();
-
-                        }
-
-                    },
-                    400
-                );
-
-            },
-            3500
-        );
-
-    }
-
-
-    /* ============================================================
-       DRAWER HELPERS
-    ============================================================ */
-
-    function setDrawerVisibility(
-        drawer,
-        visible
-    ) {
-
-        if (!drawer) {
-
-            return;
-
-        }
-
-        drawer.classList.toggle(
-            "drawer-visible",
-            visible
-        );
-
-        drawer.setAttribute(
-            "aria-hidden",
-            visible
-                ? "false"
-                : "true"
-        );
-
-    }
-
-
-    /* ============================================================
-       OPEN DRAWER
-    ============================================================ */
-
-    function openDrawer(
-        drawer
-    ) {
-
-        if (!drawer) {
-
-            return;
-
-        }
-
-
-        if (
-            currentDrawer === drawer
-        ) {
-
-            return;
-
-        }
-
-
-        closeDrawers(
-            false
-        );
-
-
-        currentDrawer =
-            drawer;
-
-
-        setDrawerVisibility(
-            drawer,
-            true
-        );
-
-
-        if (DOM.overlay) {
-
-            DOM.overlay.classList.add(
-                "overlay-visible"
-            );
-
-            DOM.overlay.setAttribute(
-                "aria-hidden",
-                "false"
-            );
-
-        }
-
-
-        if (DOM.body) {
-
-            DOM.body.classList.add(
-                "drawer-open"
+            container.appendChild(
+                ember
             );
 
         }
 
     }
 
+    /*
+    ========================================================
+    PUBLIC API
+    ========================================================
+    */
 
-    /* ============================================================
-       CLOSE DRAWERS
-    ============================================================ */
+    window.NOVA_MEMBERS = {
 
-    function closeDrawers(
-        animate = true
-    ) {
+        product: PRODUCT,
 
-        setDrawerVisibility(
-            DOM.quantityDrawer,
-            false
-        );
+        getCart: function () {
 
-        setDrawerVisibility(
-            DOM.cartDrawer,
-            false
-        );
+            return cart.slice();
 
+        },
 
-        if (DOM.overlay) {
+        getQuantity: function () {
 
-            DOM.overlay.classList.remove(
-                "overlay-visible"
-            );
+            return quantity;
 
-            DOM.overlay.setAttribute(
-                "aria-hidden",
-                "true"
-            );
+        },
 
-        }
+        openQuantity: openQuantityDrawer,
 
+        openCart: openCartDrawer,
 
-        if (DOM.body) {
+        closeDrawers: closeAllDrawers,
 
-            DOM.body.classList.remove(
-                "drawer-open"
-            );
+        addToCart: addToCart,
 
-        }
+        checkout: checkoutPayPal
 
+    };
 
-        currentDrawer =
-            null;
-
-    }
-
-
-    /* ============================================================
-       OPEN QUANTITY
-    ============================================================ */
-
-    function openQuantityDrawer() {
-
-        updateQuantityUI();
-
-        clearFormErrors();
-
-        openDrawer(
-            DOM.quantityDrawer
-        );
-
-
-        setTimeout(
-            () => {
-
-                if (
-                    DOM.discordUsername
-                ) {
-
-                    DOM.discordUsername.focus();
-
-                }
-
-            },
-            400
-        );
-
-    }
-
-
-    /* ============================================================
-       OPEN CART
-    ============================================================ */
-
-    function openCartDrawer() {
-
-        renderCart();
-
-        openDrawer(
-            DOM.cartDrawer
-        );
-
-    }
-
-
-    /* ============================================================
-       QUANTITY
-    ============================================================ */
-
-    function setQuantity(
-        value
-    ) {
-
-        let next =
-            Number(value);
-
-        if (
-            !Number.isFinite(next)
-        ) {
-
-            next =
-                CONFIG.quantity.min;
-
-        }
-
-        next =
-            Math.floor(next);
-
-        next =
-            Math.max(
-                CONFIG.quantity.min,
-                Math.min(
-                    CONFIG.quantity.max,
-                    next
-                )
-            );
-
-        quantity =
-            next;
-
-        updateQuantityUI();
-
-    }
-
-
-    function increaseQuantity() {
-
-        setQuantity(
-            quantity + 1
-        );
-
-    }
-
-
-    function decreaseQuantity() {
-
-        setQuantity(
-            quantity - 1
-        );
-
-    }
-
-
-    /* ============================================================
-       QUANTITY UI
-    ============================================================ */
-
-    function updateQuantityUI() {
-
-        const members =
-            quantity *
-            CONFIG.product.members;
-
-        const total =
-            quantity *
-            CONFIG.product.price;
-
-
-        if (DOM.quantityValue) {
-
-            DOM.quantityValue.textContent =
-                formatNumber(quantity);
-
-        }
-
-
-        if (DOM.membersPreview) {
-
-            DOM.membersPreview.textContent =
-                `${formatNumber(members)} MEMBERS`;
-
-        }
-
-
-        if (DOM.totalPreview) {
-
-            DOM.totalPreview.textContent =
-                formatPrice(total);
-
-        }
-
-    }
-
-
-    /* ============================================================
-       FORM ERROR
-    ============================================================ */
-
-    function clearFormErrors() {
-
-        if (DOM.discordUsername) {
-
-            DOM.discordUsername.classList.remove(
-                "inputError"
-            );
-
-        }
-
-
-        if (DOM.discordServer) {
-
-            DOM.discordServer.classList.remove(
-                "inputError"
-            );
-
-        }
-
-
-        if (DOM.usernameError) {
-
-            DOM.usernameError.textContent =
-                "";
-
-        }
-
-
-        if (DOM.serverError) {
-
-            DOM.serverError.textContent =
-                "";
-
-        }
-
-    }
-
-
-    /* ============================================================
-       VALIDATE USERNAME
-    ============================================================ */
-
-    function validateUsername() {
-
-        if (!DOM.discordUsername) {
-
-            return false;
-
-        }
-
-        const value =
-            DOM.discordUsername.value.trim();
-
-
-        if (!value) {
-
-            DOM.discordUsername.classList.add(
-                "inputError"
-            );
-
-            if (DOM.usernameError) {
-
-                DOM.usernameError.textContent =
-                    "Entre ton pseudo Discord.";
-
-            }
-
-            return false;
-
-        }
-
-
-        if (value.length < 2) {
-
-            DOM.discordUsername.classList.add(
-                "inputError"
-            );
-
-            if (DOM.usernameError) {
-
-                DOM.usernameError.textContent =
-                    "Le pseudo est trop court.";
-
-            }
-
-            return false;
-
-        }
-
-
-        DOM.discordUsername.classList.remove(
-            "inputError"
-        );
-
-
-        if (DOM.usernameError) {
-
-            DOM.usernameError.textContent =
-                "";
-
-        }
-
-
-        return true;
-
-    }
-
-
-    /* ============================================================
-       VALIDATE SERVER
-    ============================================================ */
-
-    function validateServer() {
-
-        if (!DOM.discordServer) {
-
-            return false;
-
-        }
-
-        const value =
-            DOM.discordServer.value.trim();
-
-
-        if (!value) {
-
-            DOM.discordServer.classList.add(
-                "inputError"
-            );
-
-            if (DOM.serverError) {
-
-                DOM.serverError.textContent =
-                    "Entre le nom de ton serveur.";
-
-            }
-
-            return false;
-
-        }
-
-
-        if (value.length < 2) {
-
-            DOM.discordServer.classList.add(
-                "inputError"
-            );
-
-            if (DOM.serverError) {
-
-                DOM.serverError.textContent =
-                    "Le nom du serveur est trop court.";
-
-            }
-
-            return false;
-
-        }
-
-
-        DOM.discordServer.classList.remove(
-            "inputError"
-        );
-
-
-        if (DOM.serverError) {
-
-            DOM.serverError.textContent =
-                "";
-
-        }
-
-
-        return true;
-
-    }
-
-
-    /* ============================================================
-       VALIDATE FORM
-    ============================================================ */
-
-    function validateDiscordForm() {
-
-        clearFormErrors();
-
-        const usernameOK =
-            validateUsername();
-
-        const serverOK =
-            validateServer();
-
-
-        if (!usernameOK) {
-
-            if (
-                DOM.discordUsername
-            ) {
-
-                DOM.discordUsername.focus();
-
-            }
-
-            return null;
-
-        }
-
-
-        if (!serverOK) {
-
-            if (
-                DOM.discordServer
-            ) {
-
-                DOM.discordServer.focus();
-
-            }
-
-            return null;
-
-        }
-
-
-        return {
-
-            username:
-                DOM.discordUsername.value.trim(),
-
-            server:
-                DOM.discordServer.value.trim()
-
-        };
-
-    }
-
-
-    /* ============================================================
-       CREATE CART ITEM
-    ============================================================ */
-
-    function createCartItem(
-        discord
-    ) {
-
-        return {
-
-            id:
-                CONFIG.product.id,
-
-            name:
-                CONFIG.product.name,
-
-            quantity:
-                quantity,
-
-            members:
-                CONFIG.product.members,
-
-            price:
-                CONFIG.product.price,
-
-            discordUsername:
-                discord.username,
-
-            discordServer:
-                discord.server,
-
-            createdAt:
-                new Date().toISOString()
-
-        };
-
-    }
-
-
-    /* ============================================================
-       ADD TO CART
-    ============================================================ */
-
-    function addToCart() {
-
-        const discord =
-            validateDiscordForm();
-
-
-        if (!discord) {
-
-            showToast(
-                "Complète les informations Discord.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        const item =
-            createCartItem(
-                discord
-            );
-
-
-        cart.push(
-            item
-        );
-
-
-        saveCart();
-
-        renderCart();
-
-        updateCartCount();
-
-        closeDrawers();
-
-
-        showToast(
-            "Pack ajouté au panier.",
-            "success"
-        );
-
-
-        setTimeout(
-            () => {
-
-                openCartDrawer();
-
-            },
-            380
-        );
-
-    }
-
-
-    /* ============================================================
-       CART TOTAL
-    ============================================================ */
-
-    function getCartTotal() {
-
-        return cart.reduce(
-            (
-                total,
-                item
-            ) => {
-
-                const quantityValue =
-                    Number(
-                        item.quantity
-                    );
-
-                const price =
-                    Number(
-                        item.price
-                    );
-
-                if (
-                    !Number.isFinite(
-                        quantityValue
-                    ) ||
-                    !Number.isFinite(
-                        price
-                    )
-                ) {
-
-                    return total;
-
-                }
-
-                return total +
-                    quantityValue *
-                    price;
-
-            },
-            0
-        );
-
-    }
-
-
-    /* ============================================================
-       CART COUNT
-    ============================================================ */
-
-    function getCartCount() {
-
-        return cart.reduce(
-            (
-                total,
-                item
-            ) => {
-
-                const value =
-                    Number(
-                        item.quantity
-                    );
-
-                if (
-                    !Number.isFinite(value)
-                ) {
-
-                    return total;
-
-                }
-
-                return total + value;
-
-            },
-            0
-        );
-
-    }
-
-
-    function updateCartCount() {
-
-        if (!DOM.cartCount) {
-
-            return;
-
-        }
-
-        DOM.cartCount.textContent =
-            formatNumber(
-                getCartCount()
-            );
-
-    }
-
-
-    /* ============================================================
-       RENDER CART
-    ============================================================ */
-
-    function renderCart() {
-
-        if (!DOM.cartItems) {
-
-            return;
-
-        }
-
-
-        if (
-            cart.length === 0
-        ) {
-
-            DOM.cartItems.innerHTML = `
-                <div class="emptyCart">
-                    <div class="emptyCartIcon">
-                        🛒
-                    </div>
-
-                    <div class="emptyCartText">
-                        Ton panier est vide.
-                    </div>
-                </div>
-            `;
-
-
-            updateCartTotal();
-
-            updateCartCount();
-
-            return;
-
-        }
-
-
-        DOM.cartItems.innerHTML =
-            cart.map(
-                (
-                    item,
-                    index
-                ) => {
-
-                    const itemQuantity =
-                        Number(
-                            item.quantity
-                        );
-
-                    const itemMembers =
-                        itemQuantity *
-                        Number(
-                            item.members
-                        );
-
-                    const itemPrice =
-                        itemQuantity *
-                        Number(
-                            item.price
-                        );
-
-
-                    return `
-                        <article
-                            class="cartItem"
-                            data-cart-index="${index}"
-                        >
-
-                            <div
-                                class="cartItemTop"
-                            >
-
-                                <div
-                                    class="cartItemName"
-                                >
-                                    ${escapeHTML(
-                                        item.name
-                                    )}
-                                </div>
-
-                                <div
-                                    class="cartItemPrice"
-                                >
-                                    ${formatPrice(
-                                        itemPrice
-                                    )}
-                                </div>
-
-                            </div>
-
-
-                            <div
-                                class="cartItemDetails"
-                            >
-
-                                <div>
-                                    <strong>
-                                        Membres :
-                                    </strong>
-                                    ${formatNumber(
-                                        itemMembers
-                                    )}
-                                </div>
-
-                                <div>
-                                    <strong>
-                                        Quantité :
-                                    </strong>
-                                    ${formatNumber(
-                                        itemQuantity
-                                    )}
-                                </div>
-
-                                <div>
-                                    <strong>
-                                        Discord :
-                                    </strong>
-                                    ${escapeHTML(
-                                        item.discordUsername ||
-                                        ""
-                                    )}
-                                </div>
-
-                                <div>
-                                    <strong>
-                                        Serveur :
-                                    </strong>
-                                    ${escapeHTML(
-                                        item.discordServer ||
-                                        ""
-                                    )}
-                                </div>
-
-                            </div>
-
-
-                            <button
-                                type="button"
-                                class="removeItemButton"
-                                data-remove-index="${index}"
-                            >
-                                Supprimer
-                            </button>
-
-                        </article>
-                    `;
-
-                }
-            ).join("");
-
-
-        updateCartTotal();
-
-        updateCartCount();
-
-    }
-
-
-    /* ============================================================
-       UPDATE TOTAL
-    ============================================================ */
-
-    function updateCartTotal() {
-
-        if (!DOM.cartTotal) {
-
-            return;
-
-        }
-
-        DOM.cartTotal.textContent =
-            formatPrice(
-                getCartTotal()
-            );
-
-    }
-
-
-    /* ============================================================
-       REMOVE ITEM
-    ============================================================ */
-
-    function removeCartItem(
-        index
-    ) {
-
-        const safeIndex =
-            Number(index);
-
-
-        if (
-            !Number.isInteger(
-                safeIndex
-            )
-        ) {
-
-            return;
-
-        }
-
-
-        if (
-            safeIndex < 0 ||
-            safeIndex >= cart.length
-        ) {
-
-            return;
-
-        }
-
-
-        cart.splice(
-            safeIndex,
-            1
-        );
-
-
-        saveCart();
-
-        renderCart();
-
-
-        showToast(
-            "Article supprimé du panier.",
-            "normal"
-        );
-
-    }
-
-
-    /* ============================================================
-       CLEAR CART
-    ============================================================ */
-
-    function clearCart() {
-
-        cart = [];
-
-        saveCart();
-
-        renderCart();
-
-    }
-
-
-    /* ============================================================
-       PAYPAL URL
-    ============================================================ */
-
-    function createPayPalURL() {
-
-        const total =
-            getCartTotal();
-
-
-        if (
-            !Number.isFinite(total) ||
-            total <= 0
-        ) {
-
-            return null;
-
-        }
-
-
-        const amount =
-            total.toFixed(2);
-
-
-        return (
-            `${CONFIG.paypal.baseUrl}/` +
-            `${amount}`
-        );
-
-    }
-
-
-    /* ============================================================
-       PAYPAL CHECKOUT
-    ============================================================ */
-
-    function checkoutPayPal() {
-
-        if (
-            cart.length === 0
-        ) {
-
-            showToast(
-                "Ton panier est vide.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        const url =
-            createPayPalURL();
-
-
-        if (!url) {
-
-            showToast(
-                "Le montant du panier est invalide.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        /*
-         * Redirection vers PayPal.
-         *
-         * Le montant est calculé uniquement
-         * à partir du panier local.
-         */
-
-        window.location.assign(
-            url
-        );
-
-    }
-
-
-    /* ============================================================
-       INPUT EVENTS
-    ============================================================ */
-
-    function setupInputEvents() {
-
-        if (
-            DOM.discordUsername
-        ) {
-
-            DOM.discordUsername.addEventListener(
-                "input",
-                () => {
-
-                    DOM.discordUsername.classList.remove(
-                        "inputError"
-                    );
-
-                    if (
-                        DOM.usernameError
-                    ) {
-
-                        DOM.usernameError.textContent =
-                            "";
-
-                    }
-
-                }
-            );
-
-        }
-
-
-        if (
-            DOM.discordServer
-        ) {
-
-            DOM.discordServer.addEventListener(
-                "input",
-                () => {
-
-                    DOM.discordServer.classList.remove(
-                        "inputError"
-                    );
-
-                    if (
-                        DOM.serverError
-                    ) {
-
-                        DOM.serverError.textContent =
-                            "";
-
-                    }
-
-                }
-            );
-
-        }
-
-    }
-
-
-    /* ============================================================
-       BUTTON EVENTS
-    ============================================================ */
-
-    function setupButtonEvents() {
-
-        if (
-            DOM.chooseButton
-        ) {
-
-            DOM.chooseButton.addEventListener(
-                "click",
-                function (event) {
-
-                    event.preventDefault();
-
-                    openQuantityDrawer();
-
-                }
-            );
-
-        }
-
-
-        if (
-            DOM.heroCartButton
-        ) {
-
-            DOM.heroCartButton.addEventListener(
-                "click",
-                function (event) {
-
-                    event.preventDefault();
-
-                    openCartDrawer();
-
-                }
-            );
-
-        }
-
-
-        if (
-            DOM.cartButton
-        ) {
-
-            DOM.cartButton.addEventListener(
-                "click",
-                function (event) {
-
-                    event.preventDefault();
-
-                    openCartDrawer();
-
-                }
-            );
-
-        }
-
-
-        if (
-            DOM.closeQuantity
-        ) {
-
-            DOM.closeQuantity.addEventListener(
-                "click",
-                function (event) {
-
-                    event.preventDefault();
-
-                    closeDrawers();
-
-                }
-            );
-
-        }
-
-
-        if (
-            DOM.closeCart
-        ) {
-
-            DOM.closeCart.addEventListener(
-                "click",
-                function (event) {
-
-                    event.preventDefault();
-
-                    closeDrawers();
-
-                }
-            );
-
-        }
-
-
-        if (
-            DOM.overlay
-        ) {
-
-            DOM.overlay.addEventListener(
-                "click",
-                function () {
-
-                    closeDrawers();
-
-                }
-            );
-
-        }
-
-
-        if (
-            DOM.minusButton
-        ) {
-
-            DOM.minusButton.addEventListener(
-                "click",
-                function (event) {
-
-                    event.preventDefault();
-
-                    decreaseQuantity();
-
-                }
-            );
-
-        }
-
-
-        if (
-            DOM.plusButton
-        ) {
-
-            DOM.plusButton.addEventListener(
-                "click",
-                function (event) {
-
-                    event.preventDefault();
-
-                    increaseQuantity();
-
-                }
-            );
-
-        }
-
-
-        if (
-            DOM.addCartButton
-        ) {
-
-            DOM.addCartButton.addEventListener(
-                "click",
-                function (event) {
-
-                    event.preventDefault();
-
-                    addToCart();
-
-                }
-            );
-
-        }
-
-
-        if (
-            DOM.paypalButton
-        ) {
-
-            DOM.paypalButton.addEventListener(
-                "click",
-                function (event) {
-
-                    event.preventDefault();
-
-                    checkoutPayPal();
-
-                }
-            );
-
-        }
-
-
-        if (
-            DOM.cartItems
-        ) {
-
-            DOM.cartItems.addEventListener(
-                "click",
-                function (event) {
-
-                    const button =
-                        event.target.closest(
-                            "[data-remove-index]"
-                        );
-
-
-                    if (!button) {
-
-                        return;
-
-                    }
-
-
-                    const index =
-                        Number(
-                            button.dataset.removeIndex
-                        );
-
-
-                    removeCartItem(
-                        index
-                    );
-
-                }
-            );
-
-        }
-
-    }
-
-
-    /* ============================================================
-       KEYBOARD
-    ============================================================ */
-
-    function setupKeyboardEvents() {
-
-        document.addEventListener(
-            "keydown",
-            function (event) {
-
-                if (
-                    event.key ===
-                    "Escape"
-                ) {
-
-                    closeDrawers();
-
-                }
-
-
-                if (
-                    event.key ===
-                    "+" ||
-                    event.key ===
-                    "="
-                ) {
-
-                    if (
-                        currentDrawer ===
-                        DOM.quantityDrawer
-                    ) {
-
-                        increaseQuantity();
-
-                    }
-
-                }
-
-
-                if (
-                    event.key ===
-                    "-"
-                ) {
-
-                    if (
-                        currentDrawer ===
-                        DOM.quantityDrawer
-                    ) {
-
-                        decreaseQuantity();
-
-                    }
-
-                }
-
-            }
-        );
-
-
-        if (
-            DOM.discordUsername
-        ) {
-
-            DOM.discordUsername.addEventListener(
-                "keydown",
-                function (event) {
-
-                    if (
-                        event.key ===
-                        "Enter"
-                    ) {
-
-                        event.preventDefault();
-
-                        if (
-                            DOM.discordServer
-                        ) {
-
-                            DOM.discordServer.focus();
-
-                        }
-
-                    }
-
-                }
-            );
-
-        }
-
-
-        if (
-            DOM.discordServer
-        ) {
-
-            DOM.discordServer.addEventListener(
-                "keydown",
-                function (event) {
-
-                    if (
-                        event.key ===
-                        "Enter"
-                    ) {
-
-                        event.preventDefault();
-
-                        addToCart();
-
-                    }
-
-                }
-            );
-
-        }
-
-    }
-
-
-    /* ============================================================
-       FORM RESTORE
-    ============================================================ */
-
-    function restoreDiscordFields() {
-
-        if (!cart.length) {
-
-            return;
-
-        }
-
-        const last =
-            cart[
-                cart.length - 1
-            ];
-
-
-        if (
-            !last ||
-            typeof last !==
-            "object"
-        ) {
-
-            return;
-
-        }
-
-
-        if (
-            DOM.discordUsername &&
-            last.discordUsername
-        ) {
-
-            DOM.discordUsername.value =
-                last.discordUsername;
-
-        }
-
-
-        if (
-            DOM.discordServer &&
-            last.discordServer
-        ) {
-
-            DOM.discordServer.value =
-                last.discordServer;
-
-        }
-
-    }
-
-
-    /* ============================================================
-       CLEAN CART
-    ============================================================ */
-
-    function cleanCart() {
-
-        cart =
-            cart.filter(
-                (item) => {
-
-                    if (
-                        !isValidCartItem(
-                            item
-                        )
-                    ) {
-
-                        return false;
-
-                    }
-
-
-                    item.quantity =
-                        Math.max(
-                            1,
-                            Math.floor(
-                                Number(
-                                    item.quantity
-                                )
-                            )
-                        );
-
-
-                    item.price =
-                        Number(
-                            item.price
-                        );
-
-
-                    item.members =
-                        Number(
-                            item.members
-                        ) ||
-                        CONFIG.product.members;
-
-
-                    item.name =
-                        item.name ||
-                        CONFIG.product.name;
-
-
-                    item.discordUsername =
-                        String(
-                            item.discordUsername ||
-                            ""
-                        ).slice(
-                            0,
-                            100
-                        );
-
-
-                    item.discordServer =
-                        String(
-                            item.discordServer ||
-                            ""
-                        ).slice(
-                            0,
-                            100
-                        );
-
-
-                    return true;
-
-                }
-            );
-
-        saveCart();
-
-    }
-
-
-    /* ============================================================
-       WINDOW VISIBILITY
-    ============================================================ */
-
-    function setupVisibilityEvents() {
-
-        document.addEventListener(
-            "visibilitychange",
-            function () {
-
-                if (
-                    document.hidden
-                ) {
-
-                    return;
-
-                }
-
-                renderCart();
-
-            }
-        );
-
-    }
-
-
-    /* ============================================================
-       BEFORE UNLOAD
-    ============================================================ */
-
-    function setupBeforeUnload() {
-
-        window.addEventListener(
-            "beforeunload",
-            function () {
-
-                saveCart();
-
-            }
-        );
-
-    }
-
-
-    /* ============================================================
-       LOG
-    ============================================================ */
-
-    function logStartup() {
-
-        console.log(
-            "=========================================="
-        );
-
-        console.log(
-            "NOVASHOP MEMBERS"
-        );
-
-        console.log(
-            "APP.JS chargé correctement."
-        );
-
-        console.log(
-            `Prix : ${formatPrice(
-                CONFIG.product.price
-            )} / 1K MEMBERS`
-        );
-
-        console.log(
-            `Panier : ${cart.length} ligne(s)`
-        );
-
-        console.log(
-            "=========================================="
-        );
-
-    }
-
-
-    /* ============================================================
-       SAFETY CHECK
-    ============================================================ */
-
-    function checkRequiredDOM() {
-
-        const required = [
-
-            DOM.loader,
-            DOM.fire,
-            DOM.site,
-            DOM.chooseButton,
-            DOM.cartButton,
-            DOM.quantityDrawer,
-            DOM.cartDrawer,
-            DOM.addCartButton,
-            DOM.cartItems,
-            DOM.paypalButton
-
-        ];
-
-
-        const missing =
-            required.filter(
-                (element) =>
-                    !element
-            );
-
-
-        if (
-            missing.length > 0
-        ) {
-
-            console.warn(
-                "Certains éléments DOM sont absents :",
-                missing
-            );
-
-        }
-
-
-        return true;
-
-    }
-
-
-    /* ============================================================
-       GLOBAL ERROR HANDLER
-    ============================================================ */
-
-    function setupErrorHandler() {
-
-        window.addEventListener(
-            "error",
-            function (event) {
-
-                console.error(
-                    "Erreur JavaScript :",
-                    event.error ||
-                    event.message
-                );
-
-            }
-        );
-
-
-        window.addEventListener(
-            "unhandledrejection",
-            function (event) {
-
-                console.error(
-                    "Promise rejetée :",
-                    event.reason
-                );
-
-            }
-        );
-
-    }
-
-
-    /* ============================================================
-       INITIALISATION
-    ============================================================ */
-
-    function init() {
-
-        if (
-            isInitialized
-        ) {
-
-            return;
-
-        }
-
-
-        isInitialized =
-            true;
-
-
-        cacheDOM();
-
-
-        checkRequiredDOM();
-
-
-        setupErrorHandler();
-
-
-        cart =
-            loadCart();
-
-
-        cleanCart();
-
-
-        createStars();
-
-        createElectricBolts();
-
-        createConstellations();
-
-        prepareFire();
-
-
-        updateQuantityUI();
-
-        renderCart();
-
-        updateCartCount();
-
-
-        restoreDiscordFields();
-
-
-        setupInputEvents();
-
-        setupButtonEvents();
-
-        setupKeyboardEvents();
-
-        setupVisibilityEvents();
-
-        setupBeforeUnload();
-
-
-        logStartup();
-
-
-        startLoader();
-
-    }
-
-
-    /* ============================================================
-       DOM READY
-    ============================================================ */
+    /*
+    ========================================================
+    START
+    ========================================================
+    */
 
     if (
         document.readyState ===
@@ -3071,11 +1264,4 @@
     }
 
 })();
-
-
-/*
-================================================================
- FIN APP.JS
-================================================================
-*/
 ```
