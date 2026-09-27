@@ -1,286 +1,390 @@
 ```javascript
 "use strict";
 
-/* ============================================================
-   NOVASHOP
-   MEMBERS STORE
-   ============================================================ */
+/*
+==============================================================
+ NOVA SHOP
+ MEMBERS STORE
+==============================================================
+*/
+
+document.addEventListener("DOMContentLoaded", function () {
+
+  /* ==========================================================
+     CONFIG
+  ========================================================== */
+
+  const PAYPAL_USERNAME = "SH0PNOVA";
+
+  const MEMBER_PRICE = 5.49;
+  const MEMBER_AMOUNT = 1000;
+
+  const CART_KEY = "novashop_members_cart";
 
 
-/* ============================================================
-   CONFIG
-   ============================================================ */
+  /* ==========================================================
+     DOM
+  ========================================================== */
 
-const PAYPAL_USERNAME = "SH0PNOVA";
+  const chooseMembers =
+    document.getElementById("chooseMembers");
 
-const MEMBER_PRICE = 5.49;
-const MEMBER_AMOUNT = 1000;
+  const openCartButton =
+    document.getElementById("openCart");
 
-const CART_KEY = "novashop_members_cart";
+  const closeProduct =
+    document.getElementById("closeProduct");
 
+  const closeCart =
+    document.getElementById("closeCart");
 
-/* ============================================================
-   DOM
-   ============================================================ */
+  const quantityMinus =
+    document.getElementById("quantityMinus");
 
-const productModal = document.getElementById("productModal");
-const cartModal = document.getElementById("cartModal");
+  const quantityPlus =
+    document.getElementById("quantityPlus");
 
-const quantityInput = document.getElementById("quantity");
-const productTotal = document.getElementById("productTotal");
+  const quantityInput =
+    document.getElementById("quantity");
 
-const cartItems = document.getElementById("cartItems");
-const cartTotal = document.getElementById("cartTotal");
-const cartCount = document.getElementById("cartCount");
+  const addToCart =
+    document.getElementById("addToCart");
 
-const toast = document.getElementById("toast");
+  const directPayPal =
+    document.getElementById("directPayPal");
 
+  const checkoutPayPal =
+    document.getElementById("checkoutPayPal");
 
-/* ============================================================
-   CART
-   ============================================================ */
+  const productModal =
+    document.getElementById("productModal");
 
-let cart = loadCart();
+  const cartModal =
+    document.getElementById("cartModal");
 
+  const productTotal =
+    document.getElementById("productTotal");
 
-/* ============================================================
-   FORMAT PRICE
-   ============================================================ */
+  const cartItems =
+    document.getElementById("cartItems");
 
-function formatPrice(value) {
+  const cartTotal =
+    document.getElementById("cartTotal");
 
-  return new Intl.NumberFormat("fr-FR", {
-    style: "currency",
-    currency: "EUR"
-  }).format(value);
+  const cartCount =
+    document.getElementById("cartCount");
 
-}
-
-
-/* ============================================================
-   QUANTITY
-   ============================================================ */
-
-function normalizeQuantity(value) {
-
-  let number = Number(value);
-
-  if (!Number.isFinite(number)) {
-    number = 1;
-  }
-
-  number = Math.floor(number);
-
-  if (number < 1) {
-    number = 1;
-  }
-
-  if (number > 1000) {
-    number = 1000;
-  }
-
-  return number;
-
-}
+  const toast =
+    document.getElementById("toast");
 
 
-function getPrice(quantity) {
+  /* ==========================================================
+     VERIFICATION DOM
+  ========================================================== */
 
-  return quantity * MEMBER_PRICE;
+  const requiredElements = [
+    chooseMembers,
+    openCartButton,
+    closeProduct,
+    closeCart,
+    quantityMinus,
+    quantityPlus,
+    quantityInput,
+    addToCart,
+    directPayPal,
+    checkoutPayPal,
+    productModal,
+    cartModal,
+    productTotal,
+    cartItems,
+    cartTotal,
+    cartCount,
+    toast
+  ];
 
-}
+  const missingElements =
+    requiredElements.filter(
+      element => !element
+    );
 
-
-function getMemberCount(quantity) {
-
-  return quantity * MEMBER_AMOUNT;
-
-}
-
-
-/* ============================================================
-   TOAST
-   ============================================================ */
-
-let toastTimer = null;
-
-function showToast(message) {
-
-  if (!toast) {
-    return;
-  }
-
-  toast.textContent = message;
-
-  toast.classList.add("show");
-
-  clearTimeout(toastTimer);
-
-  toastTimer = setTimeout(() => {
-
-    toast.classList.remove("show");
-
-  }, 2400);
-
-}
-
-
-/* ============================================================
-   STORAGE
-   ============================================================ */
-
-function loadCart() {
-
-  try {
-
-    const saved =
-      localStorage.getItem(CART_KEY);
-
-    if (!saved) {
-      return [];
-    }
-
-    const data =
-      JSON.parse(saved);
-
-    if (!Array.isArray(data)) {
-      return [];
-    }
-
-    return data;
-
-  } catch (error) {
+  if (missingElements.length > 0) {
 
     console.error(
-      "Erreur chargement panier :",
-      error
+      "NovaShop : éléments HTML manquants.",
+      missingElements
     );
 
-    return [];
-
-  }
-
-}
-
-
-function saveCart() {
-
-  try {
-
-    localStorage.setItem(
-      CART_KEY,
-      JSON.stringify(cart)
-    );
-
-  } catch (error) {
-
-    console.error(
-      "Erreur sauvegarde panier :",
-      error
-    );
-
-  }
-
-}
-
-
-/* ============================================================
-   MODALS
-   ============================================================ */
-
-function openModal(modal) {
-
-  if (!modal) {
     return;
   }
 
-  modal.classList.add("active");
 
-  modal.setAttribute(
-    "aria-hidden",
-    "false"
-  );
+  /* ==========================================================
+     CART
+  ========================================================== */
 
-  document.body.style.overflow = "hidden";
-
-}
+  let cart = loadCart();
 
 
-function closeModal(modal) {
+  /* ==========================================================
+     PRICE
+  ========================================================== */
 
-  if (!modal) {
-    return;
+  function formatPrice(value) {
+
+    return new Intl.NumberFormat(
+      "fr-FR",
+      {
+        style: "currency",
+        currency: "EUR"
+      }
+    ).format(value);
+
   }
 
-  modal.classList.remove("active");
 
-  modal.setAttribute(
-    "aria-hidden",
-    "true"
-  );
+  function normalizeQuantity(value) {
 
-  const anotherOpen =
-    productModal.classList.contains("active") ||
-    cartModal.classList.contains("active");
+    let number =
+      Number(value);
 
-  if (!anotherOpen) {
-    document.body.style.overflow = "";
+    if (!Number.isFinite(number)) {
+      number = 1;
+    }
+
+    number =
+      Math.floor(number);
+
+    if (number < 1) {
+      number = 1;
+    }
+
+    if (number > 1000) {
+      number = 1000;
+    }
+
+    return number;
+
   }
 
-}
 
+  function getPrice(quantity) {
 
-function openProduct() {
-
-  quantityInput.value = 1;
-
-  updateProductPrice();
-
-  openModal(productModal);
-
-}
-
-
-function openCart() {
-
-  renderCart();
-
-  openModal(cartModal);
-
-}
-
-
-/* ============================================================
-   PRODUCT PRICE
-   ============================================================ */
-
-function updateProductPrice() {
-
-  const quantity =
-    normalizeQuantity(
-      quantityInput.value
+    return (
+      normalizeQuantity(quantity) *
+      MEMBER_PRICE
     );
 
-  quantityInput.value = quantity;
-
-  const total =
-    getPrice(quantity);
-
-  productTotal.textContent =
-    formatPrice(total);
-
-}
+  }
 
 
-/* ============================================================
-   QUANTITY BUTTONS
-   ============================================================ */
+  function getMembers(quantity) {
 
-document
-  .getElementById("quantityMinus")
-  .addEventListener(
+    return (
+      normalizeQuantity(quantity) *
+      MEMBER_AMOUNT
+    );
+
+  }
+
+
+  /* ==========================================================
+     STORAGE
+  ========================================================== */
+
+  function loadCart() {
+
+    try {
+
+      const saved =
+        localStorage.getItem(
+          CART_KEY
+        );
+
+      if (!saved) {
+        return [];
+      }
+
+      const data =
+        JSON.parse(saved);
+
+      if (!Array.isArray(data)) {
+        return [];
+      }
+
+      return data;
+
+    } catch (error) {
+
+      console.error(
+        "Impossible de charger le panier :",
+        error
+      );
+
+      return [];
+
+    }
+
+  }
+
+
+  function saveCart() {
+
+    try {
+
+      localStorage.setItem(
+        CART_KEY,
+        JSON.stringify(cart)
+      );
+
+    } catch (error) {
+
+      console.error(
+        "Impossible de sauvegarder le panier :",
+        error
+      );
+
+    }
+
+  }
+
+
+  /* ==========================================================
+     TOAST
+  ========================================================== */
+
+  let toastTimeout;
+
+  function showToast(message) {
+
+    toast.textContent =
+      message;
+
+    toast.classList.add(
+      "show"
+    );
+
+    clearTimeout(
+      toastTimeout
+    );
+
+    toastTimeout =
+      setTimeout(
+        function () {
+
+          toast.classList.remove(
+            "show"
+          );
+
+        },
+        2300
+      );
+
+  }
+
+
+  /* ==========================================================
+     MODAL
+  ========================================================== */
+
+  function openModal(modal) {
+
+    if (!modal) {
+      return;
+    }
+
+    modal.classList.add(
+      "active"
+    );
+
+    document.body.style.overflow =
+      "hidden";
+
+  }
+
+
+  function closeModal(modal) {
+
+    if (!modal) {
+      return;
+    }
+
+    modal.classList.remove(
+      "active"
+    );
+
+    if (
+      !productModal.classList.contains(
+        "active"
+      ) &&
+      !cartModal.classList.contains(
+        "active"
+      )
+    ) {
+
+      document.body.style.overflow =
+        "";
+
+    }
+
+  }
+
+
+  /* ==========================================================
+     PRODUCT MODAL
+  ========================================================== */
+
+  function openProductModal() {
+
+    quantityInput.value = 1;
+
+    updateProductTotal();
+
+    openModal(
+      productModal
+    );
+
+  }
+
+
+  function updateProductTotal() {
+
+    const quantity =
+      normalizeQuantity(
+        quantityInput.value
+      );
+
+    quantityInput.value =
+      quantity;
+
+    productTotal.textContent =
+      formatPrice(
+        getPrice(quantity)
+      );
+
+  }
+
+
+  /* ==========================================================
+     CHOOSE BUTTON
+  ========================================================== */
+
+  chooseMembers.addEventListener(
     "click",
-    () => {
+    function () {
+
+      openProductModal();
+
+    }
+  );
+
+
+  /* ==========================================================
+     QUANTITY MINUS
+  ========================================================== */
+
+  quantityMinus.addEventListener(
+    "click",
+    function () {
 
       const current =
         normalizeQuantity(
@@ -293,17 +397,19 @@ document
           current - 1
         );
 
-      updateProductPrice();
+      updateProductTotal();
 
     }
   );
 
 
-document
-  .getElementById("quantityPlus")
-  .addEventListener(
+  /* ==========================================================
+     QUANTITY PLUS
+  ========================================================== */
+
+  quantityPlus.addEventListener(
     "click",
-    () => {
+    function () {
 
       const current =
         normalizeQuantity(
@@ -316,350 +422,457 @@ document
           current + 1
         );
 
-      updateProductPrice();
+      updateProductTotal();
 
     }
   );
 
 
-quantityInput.addEventListener(
-  "input",
-  updateProductPrice
-);
+  /* ==========================================================
+     QUANTITY INPUT
+  ========================================================== */
 
+  quantityInput.addEventListener(
+    "input",
+    function () {
 
-/* ============================================================
-   ADD MEMBERS TO CART
-   ============================================================ */
+      updateProductTotal();
 
-function addMembers(quantity) {
-
-  quantity =
-    normalizeQuantity(quantity);
-
-
-  const existing =
-    cart.find(
-      item => item.id === "members"
-    );
-
-
-  if (existing) {
-
-    existing.quantity =
-      Math.min(
-        1000,
-        existing.quantity + quantity
-      );
-
-  } else {
-
-    cart.push({
-
-      id: "members",
-
-      name: "MEMBERS",
-
-      quantity: quantity,
-
-      unitPrice: MEMBER_PRICE
-
-    });
-
-  }
-
-
-  saveCart();
-
-  updateCartCount();
-
-  showToast(
-    `${getMemberCount(quantity).toLocaleString("fr-FR")} MEMBERS ajoutés au panier`
+    }
   );
 
-}
 
+  /* ==========================================================
+     ADD TO CART
+  ========================================================== */
 
-/* ============================================================
-   ADD TO CART BUTTON
-   ============================================================ */
-
-document
-  .getElementById("addToCart")
-  .addEventListener(
+  addToCart.addEventListener(
     "click",
-    () => {
+    function () {
 
       const quantity =
         normalizeQuantity(
           quantityInput.value
         );
 
-      addMembers(quantity);
 
-      closeModal(productModal);
+      const existing =
+        cart.find(
+          function (item) {
 
-    }
-  );
-
-
-/* ============================================================
-   RENDER CART
-   ============================================================ */
-
-function renderCart() {
-
-  if (!cartItems) {
-    return;
-  }
-
-
-  if (cart.length === 0) {
-
-    cartItems.innerHTML = `
-      <div class="empty-cart">
-        <div style="font-size:32px;margin-bottom:10px;">
-          🛒
-        </div>
-
-        Ton panier est vide.
-        <br>
-        Ajoute ton premier pack MEMBERS.
-      </div>
-    `;
-
-    cartTotal.textContent =
-      formatPrice(0);
-
-    return;
-
-  }
-
-
-  cartItems.innerHTML = "";
-
-  let total = 0;
-
-
-  cart.forEach(
-    (item, index) => {
-
-      const quantity =
-        normalizeQuantity(
-          item.quantity
-        );
-
-      const itemTotal =
-        quantity * item.unitPrice;
-
-      const members =
-        getMemberCount(quantity);
-
-      total += itemTotal;
-
-
-      const element =
-        document.createElement("div");
-
-      element.className =
-        "cart-item";
-
-
-      element.innerHTML = `
-
-        <div class="cart-item-icon">
-          ✦
-        </div>
-
-        <div class="cart-item-info">
-
-          <strong>
-            MEMBERS
-          </strong>
-
-          <span>
-            ${members.toLocaleString("fr-FR")}
-            MEMBERS
-            ·
-            ${formatPrice(itemTotal)}
-          </span>
-
-        </div>
-
-        <button
-          class="remove-button"
-          type="button"
-          data-index="${index}"
-        >
-          Supprimer
-        </button>
-
-      `;
-
-
-      cartItems.appendChild(element);
-
-    }
-  );
-
-
-  cartTotal.textContent =
-    formatPrice(total);
-
-
-  const removeButtons =
-    cartItems.querySelectorAll(
-      ".remove-button"
-    );
-
-
-  removeButtons.forEach(
-    button => {
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          const index =
-            Number(
-              button.dataset.index
+            return (
+              item.id === "members"
             );
 
-          removeCartItem(index);
+          }
+        );
 
-        }
+
+      if (existing) {
+
+        existing.quantity =
+          Math.min(
+            1000,
+            normalizeQuantity(
+              existing.quantity
+            ) + quantity
+          );
+
+      } else {
+
+        cart.push({
+
+          id: "members",
+
+          name: "MEMBERS",
+
+          quantity: quantity,
+
+          unitPrice: MEMBER_PRICE
+
+        });
+
+      }
+
+
+      saveCart();
+
+      updateCartCount();
+
+      closeModal(
+        productModal
+      );
+
+      showToast(
+        getMembers(quantity)
+          .toLocaleString("fr-FR") +
+        " MEMBERS ajoutés au panier"
       );
 
     }
   );
 
-}
 
+  /* ==========================================================
+     OPEN CART
+  ========================================================== */
 
-/* ============================================================
-   REMOVE CART ITEM
-   ============================================================ */
+  openCartButton.addEventListener(
+    "click",
+    function () {
 
-function removeCartItem(index) {
+      renderCart();
 
-  if (
-    !Number.isInteger(index) ||
-    index < 0 ||
-    index >= cart.length
-  ) {
-    return;
-  }
-
-
-  cart.splice(index, 1);
-
-  saveCart();
-
-  updateCartCount();
-
-  renderCart();
-
-  showToast(
-    "Produit retiré du panier"
-  );
-
-}
-
-
-/* ============================================================
-   CART COUNT
-   ============================================================ */
-
-function updateCartCount() {
-
-  let count = 0;
-
-
-  cart.forEach(
-    item => {
-
-      count +=
-        normalizeQuantity(
-          item.quantity
-        );
+      openModal(
+        cartModal
+      );
 
     }
   );
 
 
-  cartCount.textContent =
-    count;
+  /* ==========================================================
+     RENDER CART
+  ========================================================== */
 
-}
+  function renderCart() {
 
-
-/* ============================================================
-   PAYPAL URL
-   ============================================================ */
-
-function createPayPalUrl(amount) {
-
-  const cleanAmount =
-    Number(amount)
-      .toFixed(2);
+    cartItems.innerHTML =
+      "";
 
 
-  return (
-    "https://paypal.me/" +
-    PAYPAL_USERNAME +
-    "/" +
-    cleanAmount
-  );
+    if (cart.length === 0) {
 
-}
+      cartItems.innerHTML = `
+        <div class="empty-cart">
+          <div style="font-size:34px;margin-bottom:12px;">
+            🛒
+          </div>
+
+          Ton panier est vide.
+          <br>
+          Ajoute ton premier pack MEMBERS.
+        </div>
+      `;
+
+      cartTotal.textContent =
+        formatPrice(0);
+
+      return;
+
+    }
 
 
-/* ============================================================
-   OPEN PAYPAL
-   ============================================================ */
-
-function openPayPal(amount) {
-
-  amount =
-    Number(amount);
+    let total = 0;
 
 
-  if (
-    !Number.isFinite(amount) ||
-    amount <= 0
-  ) {
+    cart.forEach(
+      function (item, index) {
 
-    showToast(
-      "Montant invalide"
+        const quantity =
+          normalizeQuantity(
+            item.quantity
+          );
+
+        const unitPrice =
+          Number(
+            item.unitPrice
+          ) || MEMBER_PRICE;
+
+        const itemTotal =
+          quantity * unitPrice;
+
+        const members =
+          getMembers(quantity);
+
+        total +=
+          itemTotal;
+
+
+        const itemElement =
+          document.createElement(
+            "div"
+          );
+
+        itemElement.className =
+          "cart-item";
+
+
+        itemElement.innerHTML = `
+
+          <div class="cart-item-icon">
+            ✦
+          </div>
+
+          <div class="cart-item-info">
+
+            <strong>
+              MEMBERS
+            </strong>
+
+            <span>
+              ${members.toLocaleString("fr-FR")}
+              MEMBERS
+              ·
+              ${formatPrice(itemTotal)}
+            </span>
+
+          </div>
+
+          <button
+            type="button"
+            class="remove-button"
+            data-index="${index}"
+          >
+            Supprimer
+          </button>
+
+        `;
+
+
+        cartItems.appendChild(
+          itemElement
+        );
+
+      }
     );
 
-    return;
+
+    cartTotal.textContent =
+      formatPrice(total);
+
+
+    const removeButtons =
+      cartItems.querySelectorAll(
+        ".remove-button"
+      );
+
+
+    removeButtons.forEach(
+      function (button) {
+
+        button.addEventListener(
+          "click",
+          function () {
+
+            const index =
+              Number(
+                button.dataset.index
+              );
+
+            if (
+              Number.isInteger(index) &&
+              index >= 0 &&
+              index < cart.length
+            ) {
+
+              cart.splice(
+                index,
+                1
+              );
+
+              saveCart();
+
+              updateCartCount();
+
+              renderCart();
+
+              showToast(
+                "Produit retiré du panier"
+              );
+
+            }
+
+          }
+        );
+
+      }
+    );
 
   }
 
 
-  const url =
-    createPayPalUrl(amount);
+  /* ==========================================================
+     CART COUNT
+  ========================================================== */
+
+  function updateCartCount() {
+
+    let count = 0;
 
 
-  window.open(
-    url,
-    "_blank",
-    "noopener,noreferrer"
+    cart.forEach(
+      function (item) {
+
+        count +=
+          normalizeQuantity(
+            item.quantity
+          );
+
+      }
+    );
+
+
+    cartCount.textContent =
+      count;
+
+  }
+
+
+  /* ==========================================================
+     CLOSE PRODUCT
+  ========================================================== */
+
+  closeProduct.addEventListener(
+    "click",
+    function () {
+
+      closeModal(
+        productModal
+      );
+
+    }
   );
 
-}
 
+  /* ==========================================================
+     CLOSE CART
+  ========================================================== */
 
-/* ============================================================
-   DIRECT PAYPAL
-   ============================================================ */
-
-document
-  .getElementById("directPayPal")
-  .addEventListener(
+  closeCart.addEventListener(
     "click",
-    () => {
+    function () {
+
+      closeModal(
+        cartModal
+      );
+
+    }
+  );
+
+
+  /* ==========================================================
+     CLICK OUTSIDE
+  ========================================================== */
+
+  productModal.addEventListener(
+    "click",
+    function (event) {
+
+      if (
+        event.target ===
+        productModal
+      ) {
+
+        closeModal(
+          productModal
+        );
+
+      }
+
+    }
+  );
+
+
+  cartModal.addEventListener(
+    "click",
+    function (event) {
+
+      if (
+        event.target ===
+        cartModal
+      ) {
+
+        closeModal(
+          cartModal
+        );
+
+      }
+
+    }
+  );
+
+
+  /* ==========================================================
+     ESCAPE
+  ========================================================== */
+
+  document.addEventListener(
+    "keydown",
+    function (event) {
+
+      if (
+        event.key ===
+        "Escape"
+      ) {
+
+        closeModal(
+          productModal
+        );
+
+        closeModal(
+          cartModal
+        );
+
+      }
+
+    }
+  );
+
+
+  /* ==========================================================
+     PAYPAL
+  ========================================================== */
+
+  function openPayPal(amount) {
+
+    const cleanAmount =
+      Number(amount);
+
+
+    if (
+      !Number.isFinite(
+        cleanAmount
+      ) ||
+      cleanAmount <= 0
+    ) {
+
+      showToast(
+        "Montant invalide"
+      );
+
+      return;
+
+    }
+
+
+    const amountString =
+      cleanAmount.toFixed(2);
+
+
+    const paypalUrl =
+      "https://paypal.me/" +
+      PAYPAL_USERNAME +
+      "/" +
+      amountString;
+
+
+    window.open(
+      paypalUrl,
+      "_blank",
+      "noopener,noreferrer"
+    );
+
+  }
+
+
+  /* ==========================================================
+     DIRECT PAYPAL
+  ========================================================== */
+
+  directPayPal.addEventListener(
+    "click",
+    function () {
 
       const quantity =
         normalizeQuantity(
@@ -669,23 +882,25 @@ document
       const total =
         getPrice(quantity);
 
-      openPayPal(total);
+      openPayPal(
+        total
+      );
 
     }
   );
 
 
-/* ============================================================
-   CART PAYPAL
-   ============================================================ */
+  /* ==========================================================
+     CART PAYPAL
+  ========================================================== */
 
-document
-  .getElementById("checkoutPayPal")
-  .addEventListener(
+  checkoutPayPal.addEventListener(
     "click",
-    () => {
+    function () {
 
-      if (cart.length === 0) {
+      if (
+        cart.length === 0
+      ) {
 
         showToast(
           "Ton panier est vide"
@@ -700,531 +915,445 @@ document
 
 
       cart.forEach(
-        item => {
+        function (item) {
 
-          total +=
+          const quantity =
             normalizeQuantity(
               item.quantity
-            ) *
+            );
+
+          const unitPrice =
             Number(
               item.unitPrice
-            );
+            ) || MEMBER_PRICE;
+
+          total +=
+            quantity * unitPrice;
 
         }
       );
 
 
-      openPayPal(total);
+      openPayPal(
+        total
+      );
 
     }
   );
 
 
-/* ============================================================
-   OPEN / CLOSE
-   ============================================================ */
+  /* ==========================================================
+     STARS
+  ========================================================== */
 
-document
-  .getElementById("chooseMembers")
-  .addEventListener(
-    "click",
-    openProduct
-  );
+  function createStars() {
 
-
-document
-  .getElementById("openCart")
-  .addEventListener(
-    "click",
-    openCart
-  );
+    const container =
+      document.getElementById(
+        "stars"
+      );
 
 
-document
-  .getElementById("closeProduct")
-  .addEventListener(
-    "click",
-    () => {
-      closeModal(productModal);
-    }
-  );
-
-
-document
-  .getElementById("closeCart")
-  .addEventListener(
-    "click",
-    () => {
-      closeModal(cartModal);
-    }
-  );
-
-
-/* ============================================================
-   CLICK OUTSIDE
-   ============================================================ */
-
-productModal.addEventListener(
-  "click",
-  event => {
-
-    if (
-      event.target === productModal
-    ) {
-
-      closeModal(productModal);
-
-    }
-
-  }
-);
-
-
-cartModal.addEventListener(
-  "click",
-  event => {
-
-    if (
-      event.target === cartModal
-    ) {
-
-      closeModal(cartModal);
-
-    }
-
-  }
-);
-
-
-/* ============================================================
-   ESCAPE
-   ============================================================ */
-
-document.addEventListener(
-  "keydown",
-  event => {
-
-    if (
-      event.key !== "Escape"
-    ) {
+    if (!container) {
       return;
     }
 
-    closeModal(productModal);
-    closeModal(cartModal);
 
-  }
-);
-
-
-/* ============================================================
-   STARS
-   ============================================================ */
-
-function createStars() {
-
-  const container =
-    document.getElementById(
-      "stars"
-    );
-
-  if (!container) {
-    return;
-  }
+    const amount =
+      window.innerWidth < 700
+        ? 80
+        : 170;
 
 
-  const amount =
-    window.innerWidth < 700
-      ? 90
-      : 180;
+    for (
+      let i = 0;
+      i < amount;
+      i++
+    ) {
+
+      const star =
+        document.createElement(
+          "div"
+        );
+
+      star.className =
+        "star";
 
 
-  for (
-    let i = 0;
-    i < amount;
-    i++
-  ) {
-
-    const star =
-      document.createElement("div");
-
-    star.className =
-      "star";
+      const size =
+        Math.random() > .92
+          ? 3
+          : Math.random() > .7
+            ? 2
+            : 1;
 
 
-    const size =
-      Math.random() > .92
-        ? 3
-        : Math.random() > .7
-          ? 2
-          : 1;
+      star.style.width =
+        size + "px";
+
+      star.style.height =
+        size + "px";
 
 
-    star.style.width =
-      `${size}px`;
+      star.style.left =
+        Math.random() * 100 + "%";
 
-    star.style.height =
-      `${size}px`;
-
-
-    star.style.left =
-      `${Math.random() * 100}%`;
-
-    star.style.top =
-      `${Math.random() * 100}%`;
+      star.style.top =
+        Math.random() * 100 + "%";
 
 
-    star.style.setProperty(
-      "--duration",
-      `${5 + Math.random() * 9}s`
-    );
+      star.style.setProperty(
+        "--duration",
+        5 + Math.random() * 9 + "s"
+      );
 
-    star.style.setProperty(
-      "--blink",
-      `${1.5 + Math.random() * 4}s`
-    );
+      star.style.setProperty(
+        "--blink",
+        1.5 + Math.random() * 4 + "s"
+      );
 
-    star.style.setProperty(
-      "--move-x",
-      `${-20 + Math.random() * 40}px`
-    );
+      star.style.setProperty(
+        "--move-x",
+        -20 + Math.random() * 40 + "px"
+      );
 
-    star.style.setProperty(
-      "--move-y",
-      `${-20 + Math.random() * 40}px`
-    );
-
-
-    star.style.animationDelay =
-      `${Math.random() * 7}s`;
-
-
-    container.appendChild(star);
-
-  }
-
-}
-
-
-/* ============================================================
-   CONSTELLATIONS
-   ============================================================ */
-
-function createConstellations() {
-
-  const container =
-    document.getElementById(
-      "constellations"
-    );
-
-  if (!container) {
-    return;
-  }
-
-
-  const patterns = [
-
-    {
-      left: "8%",
-      top: "17%",
-      points: [
-        [15, 25],
-        [75, 10],
-        [125, 55],
-        [165, 35],
-        [105, 105]
-      ],
-      lines: [
-        [0, 1],
-        [1, 2],
-        [2, 3],
-        [2, 4]
-      ]
-    },
-
-    {
-      left: "72%",
-      top: "21%",
-      points: [
-        [25, 80],
-        [70, 30],
-        [120, 70],
-        [165, 20],
-        [145, 115]
-      ],
-      lines: [
-        [0, 1],
-        [1, 2],
-        [2, 3],
-        [2, 4]
-      ]
-    },
-
-    {
-      left: "17%",
-      top: "67%",
-      points: [
-        [10, 45],
-        [55, 10],
-        [105, 45],
-        [145, 90],
-        [70, 120]
-      ],
-      lines: [
-        [0, 1],
-        [1, 2],
-        [2, 3],
-        [2, 4]
-      ]
-    }
-
-  ];
-
-
-  patterns.forEach(
-    (pattern, patternIndex) => {
-
-      const constellation =
-        document.createElement("div");
-
-      constellation.className =
-        "constellation";
-
-      constellation.style.left =
-        pattern.left;
-
-      constellation.style.top =
-        pattern.top;
-
-      constellation.style.animationDelay =
-        `${patternIndex * 1.7}s`;
-
-
-      pattern.points.forEach(
-        point => {
-
-          const element =
-            document.createElement("span");
-
-          element.className =
-            "point";
-
-          element.style.left =
-            `${point[0]}px`;
-
-          element.style.top =
-            `${point[1]}px`;
-
-          constellation.appendChild(
-            element
-          );
-
-        }
+      star.style.setProperty(
+        "--move-y",
+        -20 + Math.random() * 40 + "px"
       );
 
 
-      pattern.lines.forEach(
-        connection => {
-
-          const start =
-            pattern.points[
-              connection[0]
-            ];
-
-          const end =
-            pattern.points[
-              connection[1]
-            ];
-
-
-          const dx =
-            end[0] - start[0];
-
-          const dy =
-            end[1] - start[1];
-
-
-          const length =
-            Math.sqrt(
-              dx * dx +
-              dy * dy
-            );
-
-
-          const angle =
-            Math.atan2(
-              dy,
-              dx
-            ) *
-            180 /
-            Math.PI;
-
-
-          const line =
-            document.createElement("span");
-
-          line.className =
-            "line";
-
-          line.style.left =
-            `${start[0]}px`;
-
-          line.style.top =
-            `${start[1]}px`;
-
-          line.style.width =
-            `${length}px`;
-
-          line.style.transform =
-            `rotate(${angle}deg)`;
-
-
-          constellation.appendChild(
-            line
-          );
-
-        }
-      );
+      star.style.animationDelay =
+        Math.random() * 7 + "s";
 
 
       container.appendChild(
-        constellation
+        star
       );
 
     }
-  );
-
-}
-
-
-/* ============================================================
-   LIGHTNING
-   ============================================================ */
-
-function createLightnings() {
-
-  const container =
-    document.getElementById(
-      "lightnings"
-    );
-
-  if (!container) {
-    return;
-  }
-
-
-  const amount =
-    window.innerWidth < 700
-      ? 5
-      : 9;
-
-
-  for (
-    let i = 0;
-    i < amount;
-    i++
-  ) {
-
-    const lightning =
-      document.createElement("div");
-
-    lightning.className =
-      "lightning";
-
-
-    lightning.style.left =
-      `${Math.random() * 100}%`;
-
-    lightning.style.top =
-      `${Math.random() * 100}%`;
-
-
-    lightning.style.setProperty(
-      "--rotation",
-      `${-35 + Math.random() * 70}deg`
-    );
-
-
-    lightning.style.animationDelay =
-      `${Math.random() * 7}s`;
-
-
-    container.appendChild(
-      lightning
-    );
 
   }
 
-}
 
+  /* ==========================================================
+     CONSTELLATIONS
+  ========================================================== */
 
-/* ============================================================
-   PARALLAX BACKGROUND
-   ============================================================ */
+  function createConstellations() {
 
-let mouseX = 0;
-let mouseY = 0;
-
-window.addEventListener(
-  "mousemove",
-  event => {
-
-    mouseX =
-      (event.clientX /
-        window.innerWidth -
-        .5) *
-      2;
-
-    mouseY =
-      (event.clientY /
-        window.innerHeight -
-        .5) *
-      2;
-
-
-    const constellations =
-      document.querySelectorAll(
-        ".constellation"
+    const container =
+      document.getElementById(
+        "constellations"
       );
 
 
-    constellations.forEach(
-      (element, index) => {
+    if (!container) {
+      return;
+    }
 
-        const strength =
-          4 + (index * 2);
 
-        element.style.marginLeft =
-          `${mouseX * strength}px`;
+    const patterns = [
 
-        element.style.marginTop =
-          `${mouseY * strength}px`;
+      {
+        left: "7%",
+        top: "16%",
+        points: [
+          [15, 25],
+          [75, 10],
+          [125, 55],
+          [165, 35],
+          [105, 105]
+        ],
+        lines: [
+          [0, 1],
+          [1, 2],
+          [2, 3],
+          [2, 4]
+        ]
+      },
+
+      {
+        left: "72%",
+        top: "21%",
+        points: [
+          [25, 80],
+          [70, 30],
+          [120, 70],
+          [165, 20],
+          [145, 115]
+        ],
+        lines: [
+          [0, 1],
+          [1, 2],
+          [2, 3],
+          [2, 4]
+        ]
+      }
+
+    ];
+
+
+    patterns.forEach(
+      function (pattern) {
+
+        const constellation =
+          document.createElement(
+            "div"
+          );
+
+        constellation.className =
+          "constellation";
+
+        constellation.style.left =
+          pattern.left;
+
+        constellation.style.top =
+          pattern.top;
+
+
+        pattern.points.forEach(
+          function (point) {
+
+            const element =
+              document.createElement(
+                "span"
+              );
+
+            element.className =
+              "point";
+
+            element.style.left =
+              point[0] + "px";
+
+            element.style.top =
+              point[1] + "px";
+
+            constellation.appendChild(
+              element
+            );
+
+          }
+        );
+
+
+        pattern.lines.forEach(
+          function (connection) {
+
+            const start =
+              pattern.points[
+                connection[0]
+              ];
+
+            const end =
+              pattern.points[
+                connection[1]
+              ];
+
+
+            const dx =
+              end[0] - start[0];
+
+            const dy =
+              end[1] - start[1];
+
+
+            const length =
+              Math.sqrt(
+                dx * dx +
+                dy * dy
+              );
+
+
+            const angle =
+              Math.atan2(
+                dy,
+                dx
+              ) *
+              180 /
+              Math.PI;
+
+
+            const line =
+              document.createElement(
+                "span"
+              );
+
+            line.className =
+              "line";
+
+            line.style.left =
+              start[0] + "px";
+
+            line.style.top =
+              start[1] + "px";
+
+            line.style.width =
+              length + "px";
+
+            line.style.transform =
+              "rotate(" +
+              angle +
+              "deg)";
+
+
+            constellation.appendChild(
+              line
+            );
+
+          }
+        );
+
+
+        container.appendChild(
+          constellation
+        );
 
       }
     );
 
   }
-);
 
 
-/* ============================================================
-   INITIALISATION
-   ============================================================ */
+  /* ==========================================================
+     LIGHTNINGS
+  ========================================================== */
 
-createStars();
+  function createLightnings() {
 
-createConstellations();
-
-createLightnings();
-
-updateCartCount();
-
-renderCart();
-
-updateProductPrice();
+    const container =
+      document.getElementById(
+        "lightnings"
+      );
 
 
-console.log(
-  "✦ NovaShop Members Store ready."
-);
+    if (!container) {
+      return;
+    }
+
+
+    const amount =
+      window.innerWidth < 700
+        ? 4
+        : 8;
+
+
+    for (
+      let i = 0;
+      i < amount;
+      i++
+    ) {
+
+      const lightning =
+        document.createElement(
+          "div"
+        );
+
+      lightning.className =
+        "lightning";
+
+
+      lightning.style.left =
+        Math.random() * 100 + "%";
+
+      lightning.style.top =
+        Math.random() * 100 + "%";
+
+
+      lightning.style.transform =
+        "rotate(" +
+        (-35 + Math.random() * 70) +
+        "deg)";
+
+
+      lightning.style.animationDelay =
+        Math.random() * 7 + "s";
+
+
+      container.appendChild(
+        lightning
+      );
+
+    }
+
+  }
+
+
+  /* ==========================================================
+     MOUSE PARALLAX
+  ========================================================== */
+
+  window.addEventListener(
+    "mousemove",
+    function (event) {
+
+      const mouseX =
+        (
+          event.clientX /
+          window.innerWidth -
+          .5
+        ) * 2;
+
+
+      const mouseY =
+        (
+          event.clientY /
+          window.innerHeight -
+          .5
+        ) * 2;
+
+
+      const constellations =
+        document.querySelectorAll(
+          ".constellation"
+        );
+
+
+      constellations.forEach(
+        function (element, index) {
+
+          const strength =
+            4 + index * 2;
+
+
+          element.style.marginLeft =
+            mouseX *
+            strength +
+            "px";
+
+
+          element.style.marginTop =
+            mouseY *
+            strength +
+            "px";
+
+        }
+      );
+
+    }
+  );
+
+
+  /* ==========================================================
+     START
+  ========================================================== */
+
+  createStars();
+
+  createConstellations();
+
+  createLightnings();
+
+  updateCartCount();
+
+  renderCart();
+
+  updateProductTotal();
+
+
+  console.log(
+    "NOVA SHOP : système chargé correctement."
+  );
+
+});
 ```
