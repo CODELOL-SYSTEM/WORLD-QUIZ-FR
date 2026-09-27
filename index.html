@@ -1,2329 +1,891 @@
+```html
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NOVASHOP | MEMBERS</title>
-
-<style>
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
-
-html,body{
-  width:100%;
-  min-height:100%;
-}
-
-body{
-  overflow-x:hidden;
-  background:#05020a;
-  color:#fff;
-  font-family:Inter,Arial,Helvetica,sans-serif;
-}
-
-/* =========================================================
-   FOND
-========================================================= */
-
-#stars{
-  position:fixed;
-  inset:0;
-  z-index:0;
-  pointer-events:none;
-  background-image:
-    radial-gradient(circle,rgba(255,255,255,.9) 1px,transparent 1.5px),
-    radial-gradient(circle,rgba(185,95,255,.8) 1px,transparent 1.5px),
-    radial-gradient(circle,rgba(255,255,255,.45) 1px,transparent 1.5px);
-  background-size:
-    95px 95px,
-    145px 145px,
-    220px 220px;
-  background-position:
-    10px 20px,
-    60px 80px,
-    120px 40px;
-  opacity:.65;
-  animation:starsMove 22s linear infinite;
-}
-
-@keyframes starsMove{
-  from{transform:translateY(0)}
-  to{transform:translateY(100px)}
-}
-
-/* =========================================================
-   LOADER
-========================================================= */
-
-#loader{
-  position:fixed;
-  inset:0;
-  z-index:10000;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:
-    radial-gradient(circle at center,rgba(119,36,255,.15),transparent 35%),
-    #020106;
-}
-
-.loaderBox{
-  width:min(460px,88vw);
-  text-align:center;
-}
-
-.loaderLogo{
-  position:relative;
-  width:150px;
-  height:150px;
-  margin:0 auto 28px;
-  display:grid;
-  place-items:center;
-}
-
-.loaderRing{
-  position:absolute;
-  inset:0;
-  border-radius:50%;
-  border:2px solid rgba(155,70,255,.15);
-  border-top-color:#a849ff;
-  border-right-color:#7021ff;
-  box-shadow:
-    0 0 25px rgba(125,35,255,.45),
-    inset 0 0 25px rgba(125,35,255,.12);
-  animation:spin 1s linear infinite;
-}
-
-.loaderRing2{
-  position:absolute;
-  inset:15px;
-  border-radius:50%;
-  border:2px solid transparent;
-  border-left-color:#d08cff;
-  border-bottom-color:#7b2bff;
-  animation:spin 1.5s linear infinite reverse;
-}
-
-.loaderBolt{
-  font-size:60px;
-  color:#d29aff;
-  text-shadow:
-    0 0 8px #bc58ff,
-    0 0 25px #922dff,
-    0 0 60px #6e1dff;
-  animation:boltPulse .55s ease-in-out infinite alternate;
-}
-
-@keyframes spin{
-  to{transform:rotate(360deg)}
-}
-
-@keyframes boltPulse{
-  from{transform:scale(.9);opacity:.75}
-  to{transform:scale(1.1);opacity:1}
-}
-
-.loaderTitle{
-  font-size:38px;
-  font-weight:950;
-  letter-spacing:7px;
-  margin-bottom:10px;
-}
-
-.loaderText{
-  color:#9f94aa;
-  font-size:13px;
-  letter-spacing:2px;
-  margin-bottom:24px;
-}
-
-.loaderProgress{
-  height:8px;
-  width:100%;
-  overflow:hidden;
-  border-radius:99px;
-  background:#17121d;
-  border:1px solid rgba(255,255,255,.05);
-}
-
-.loaderBar{
-  width:0%;
-  height:100%;
-  border-radius:99px;
-  background:linear-gradient(
-    90deg,
-    #6c20ff,
-    #a936ff,
-    #d06dff,
-    #fff
-  );
-  box-shadow:0 0 20px #963aff;
-}
-
-.loaderPercent{
-  margin-top:10px;
-  color:#c58cff;
-  font-size:13px;
-  font-weight:900;
-}
-
-/* =========================================================
-   FEU
-========================================================= */
-
-#fire{
-  position:fixed;
-  inset:0;
-  z-index:11000;
-  display:none;
-  overflow:hidden;
-  background:#050006;
-}
-
-#fire.active{
-  display:block;
-}
-
-.fireDark{
-  position:absolute;
-  inset:0;
-  background:
-    radial-gradient(
-      ellipse at 50% 110%,
-      rgba(255,245,180,.95) 0%,
-      rgba(255,174,40,.92) 9%,
-      rgba(255,75,20,.85) 23%,
-      rgba(163,34,67,.75) 42%,
-      rgba(70,15,105,.7) 62%,
-      #030106 100%
-    );
-}
-
-/* grande lumière */
-
-.fireLight{
-  position:absolute;
-  left:50%;
-  bottom:-25%;
-  width:75vw;
-  height:75vw;
-  max-width:1100px;
-  max-height:1100px;
-  transform:translateX(-50%);
-  border-radius:50%;
-  background:
-    radial-gradient(
-      circle,
-      rgba(255,243,170,.9) 0%,
-      rgba(255,142,24,.45) 20%,
-      rgba(255,50,35,.2) 42%,
-      transparent 70%
-    );
-  filter:blur(25px);
-  animation:fireLight 1s ease-in-out infinite alternate;
-}
-
-@keyframes fireLight{
-  from{
-    transform:translateX(-50%) scale(.92);
-    opacity:.75;
-  }
-  to{
-    transform:translateX(-50%) scale(1.08);
-    opacity:1;
-  }
-}
-
-/* flammes */
-
-.realFlame{
-  position:absolute;
-  bottom:-150px;
-  width:210px;
-  height:600px;
-  border-radius:
-    55% 45% 40% 40% /
-    65% 70% 30% 35%;
-  background:
-    radial-gradient(
-      ellipse at 50% 85%,
-      #fffbd4 0%,
-      #fff06a 12%,
-      #ffad22 25%,
-      #ff5a18 42%,
-      #ff174f 61%,
-      #a72cff 76%,
-      transparent 78%
-    );
-  filter:blur(4px);
-  transform-origin:bottom center;
-  mix-blend-mode:screen;
-}
-
-.flameA{
-  left:-5%;
-  height:510px;
-  animation:flameA .52s ease-in-out infinite alternate;
-}
-
-.flameB{
-  left:12%;
-  width:260px;
-  height:690px;
-  animation:flameB .43s ease-in-out infinite alternate;
-}
-
-.flameC{
-  left:34%;
-  width:330px;
-  height:820px;
-  animation:flameC .48s ease-in-out infinite alternate;
-}
-
-.flameD{
-  right:12%;
-  width:260px;
-  height:690px;
-  animation:flameB .39s ease-in-out infinite alternate-reverse;
-}
-
-.flameE{
-  right:-5%;
-  height:510px;
-  animation:flameA .58s ease-in-out infinite alternate-reverse;
-}
-
-@keyframes flameA{
-  from{
-    transform:scaleY(.84) rotate(-7deg) translateX(-15px);
-  }
-  to{
-    transform:scaleY(1.08) rotate(7deg) translateX(18px);
-  }
-}
-
-@keyframes flameB{
-  from{
-    transform:scaleY(.8) rotate(8deg) translateX(15px);
-  }
-  to{
-    transform:scaleY(1.12) rotate(-8deg) translateX(-18px);
-  }
-}
-
-@keyframes flameC{
-  from{
-    transform:scaleY(.82) rotate(-5deg) scaleX(.92);
-  }
-  to{
-    transform:scaleY(1.14) rotate(5deg) scaleX(1.08);
-  }
-}
-
-/* petite flamme interne */
-
-.innerFire{
-  position:absolute;
-  left:50%;
-  bottom:-80px;
-  width:150px;
-  height:430px;
-  transform:translateX(-50%);
-  border-radius:50% 50% 30% 30%;
-  background:
-    radial-gradient(
-      ellipse at center bottom,
-      #fff 0%,
-      #fff4a8 16%,
-      #ffb326 35%,
-      #ff4c15 62%,
-      transparent 72%
-    );
-  filter:blur(5px);
-  animation:innerFire .38s ease-in-out infinite alternate;
-}
-
-@keyframes innerFire{
-  from{
-    transform:translateX(-50%) scaleX(.8) scaleY(.88);
-  }
-  to{
-    transform:translateX(-50%) scaleX(1.12) scaleY(1.08);
-  }
-}
-
-/* fumée */
-
-.smoke{
-  position:absolute;
-  bottom:-100px;
-  width:220px;
-  height:220px;
-  border-radius:50%;
-  background:rgba(80,72,88,.18);
-  filter:blur(28px);
-  animation:smoke 2.3s ease-out infinite;
-}
-
-.smoke1{left:20%;animation-delay:.2s}
-.smoke2{left:42%;animation-delay:.8s}
-.smoke3{left:64%;animation-delay:1.3s}
-
-@keyframes smoke{
-  0%{
-    transform:translateY(0) scale(.4);
-    opacity:0;
-  }
-  25%{
-    opacity:.45;
-  }
-  100%{
-    transform:translateY(-75vh) translateX(70px) scale(1.7);
-    opacity:0;
-  }
-}
-
-/* braises */
-
-.embers{
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-}
-
-.ember{
-  position:absolute;
-  bottom:0;
-  width:5px;
-  height:5px;
-  border-radius:50%;
-  background:#ffd96b;
-  box-shadow:
-    0 0 6px #ffb000,
-    0 0 18px #ff4500;
-  animation:emberFly 1.15s linear infinite;
-}
-
-.ember:nth-child(1){left:7%;animation-delay:.1s}
-.ember:nth-child(2){left:15%;animation-delay:.5s}
-.ember:nth-child(3){left:26%;animation-delay:.2s}
-.ember:nth-child(4){left:37%;animation-delay:.8s}
-.ember:nth-child(5){left:49%;animation-delay:.3s}
-.ember:nth-child(6){left:60%;animation-delay:.7s}
-.ember:nth-child(7){left:71%;animation-delay:.4s}
-.ember:nth-child(8){left:82%;animation-delay:.9s}
-.ember:nth-child(9){left:94%;animation-delay:.15s}
-
-@keyframes emberFly{
-  0%{
-    transform:translate(0,0) scale(1);
-    opacity:1;
-  }
-  100%{
-    transform:translate(
-      60px,
-      -90vh
-    ) scale(.15);
-    opacity:0;
-  }
-}
-
-/* texte */
-
-.fireLogo{
-  position:absolute;
-  inset:0;
-  z-index:20;
-  display:grid;
-  place-items:center;
-  font-size:clamp(35px,6vw,75px);
-  font-weight:950;
-  letter-spacing:8px;
-  color:white;
-  text-shadow:
-    0 0 10px #fff,
-    0 0 25px #ff8b00,
-    0 0 55px #ff3c00;
-  animation:fireLogo 1s ease-in-out infinite alternate;
-}
-
-@keyframes fireLogo{
-  from{
-    opacity:.75;
-    transform:scale(.97);
-  }
-  to{
-    opacity:1;
-    transform:scale(1.03);
-  }
-}
-
-/* cendres */
-
-#ashLayer{
-  position:absolute;
-  inset:0;
-  z-index:50;
-  opacity:0;
-  background:
-    radial-gradient(circle at 10% 20%,rgba(200,200,200,.8) 0 2px,transparent 3px),
-    radial-gradient(circle at 25% 65%,rgba(150,150,150,.8) 0 2px,transparent 4px),
-    radial-gradient(circle at 45% 35%,rgba(190,190,190,.7) 0 1px,transparent 3px),
-    radial-gradient(circle at 65% 75%,rgba(130,130,130,.8) 0 2px,transparent 4px),
-    radial-gradient(circle at 80% 25%,rgba(180,180,180,.7) 0 2px,transparent 4px);
-  background-size:
-    90px 90px,
-    130px 130px,
-    160px 160px,
-    110px 110px,
-    180px 180px;
-  animation:ashAppear 1.5s ease forwards;
-  animation-play-state:paused;
-}
-
-#ashLayer.start{
-  animation-play-state:running;
-}
-
-@keyframes ashAppear{
-  0%{
-    opacity:0;
-    transform:translateY(-20px);
-  }
-  35%{
-    opacity:.8;
-  }
-  100%{
-    opacity:0;
-    transform:translateY(60px);
-  }
-}
-
-/* =========================================================
-   SITE
-========================================================= */
-
-#site{
-  position:relative;
-  z-index:2;
-  min-height:100vh;
-  opacity:0;
-}
-
-#site.visible{
-  animation:siteAppear .9s ease forwards;
-}
-
-@keyframes siteAppear{
-  from{
-    opacity:0;
-    transform:translateY(25px);
-  }
-  to{
-    opacity:1;
-    transform:translateY(0);
-  }
-}
-
-/* =========================================================
-   HEADER
-========================================================= */
-
-header{
-  position:sticky;
-  top:0;
-  z-index:100;
-  background:rgba(5,2,10,.75);
-  border-bottom:1px solid rgba(255,255,255,.07);
-  backdrop-filter:blur(20px);
-}
-
-.nav{
-  width:min(1180px,92%);
-  min-height:76px;
-  margin:auto;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-}
-
-.logo{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  font-size:20px;
-  font-weight:950;
-  letter-spacing:2px;
-}
-
-.logoIcon{
-  width:39px;
-  height:39px;
-  display:grid;
-  place-items:center;
-  border-radius:12px;
-  background:linear-gradient(135deg,#6f20ff,#c15bff);
-  box-shadow:0 0 25px rgba(126,38,255,.45);
-}
-
-.cartBtn{
-  padding:12px 18px;
-  border-radius:13px;
-  border:1px solid rgba(255,255,255,.12);
-  color:white;
-  background:rgba(255,255,255,.05);
-  cursor:pointer;
-  transition:.2s;
-}
-
-.cartBtn:hover{
-  transform:translateY(-2px);
-  border-color:#a65aff;
-  background:rgba(133,40,255,.1);
-}
-
-.cartCount{
-  display:inline-grid;
-  place-items:center;
-  min-width:20px;
-  height:20px;
-  padding:0 5px;
-  margin-left:5px;
-  border-radius:99px;
-  background:#9d42ff;
-  font-size:11px;
-  font-weight:900;
-}
-
-/* =========================================================
-   HERO
-========================================================= */
-
-.container{
-  width:min(1180px,92%);
-  margin:auto;
-}
-
-.hero{
-  min-height:calc(100vh - 76px);
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  align-items:center;
-  gap:65px;
-}
-
-.badge{
-  display:inline-flex;
-  padding:8px 14px;
-  margin-bottom:20px;
-  border-radius:99px;
-  border:1px solid rgba(180,95,255,.3);
-  color:#d3aaff;
-  background:rgba(125,37,255,.08);
-  font-size:12px;
-  font-weight:900;
-  letter-spacing:1px;
-}
-
-.hero h1{
-  font-size:clamp(50px,7vw,90px);
-  line-height:.9;
-  letter-spacing:-5px;
-  margin-bottom:25px;
-}
-
-.hero h1 span{
-  display:block;
-  background:linear-gradient(90deg,#fff,#ce88ff,#8c3dff);
-  -webkit-background-clip:text;
-  background-clip:text;
-  color:transparent;
-}
-
-.heroText{
-  max-width:590px;
-  color:#a89eaf;
-  font-size:17px;
-  line-height:1.7;
-  margin-bottom:28px;
-}
-
-.buttons{
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-}
-
-.primaryBtn,
-.secondaryBtn{
-  padding:14px 21px;
-  border-radius:14px;
-  cursor:pointer;
-  font-weight:900;
-  transition:.25s;
-}
-
-.primaryBtn{
-  border:0;
-  color:#fff;
-  background:linear-gradient(135deg,#7021ff,#bd50ff);
-  box-shadow:0 12px 35px rgba(116,31,255,.3);
-}
-
-.primaryBtn:hover{
-  transform:translateY(-3px);
-  box-shadow:0 16px 45px rgba(116,31,255,.45);
-}
-
-.secondaryBtn{
-  border:1px solid rgba(255,255,255,.11);
-  color:#fff;
-  background:rgba(255,255,255,.04);
-}
-
-.secondaryBtn:hover{
-  transform:translateY(-3px);
-  border-color:#a85cff;
-}
-
-/* =========================================================
-   PRODUIT
-========================================================= */
-
-.visual{
-  position:relative;
-  min-height:520px;
-  display:grid;
-  place-items:center;
-}
-
-.productGlow{
-  position:absolute;
-  width:400px;
-  height:400px;
-  border-radius:50%;
-  background:#7727ff;
-  filter:blur(125px);
-  opacity:.24;
-  animation:productGlow 3s ease-in-out infinite alternate;
-}
-
-@keyframes productGlow{
-  from{
-    transform:scale(.8);
-    opacity:.16;
-  }
-  to{
-    transform:scale(1.15);
-    opacity:.32;
-  }
-}
-
-.orbit{
-  position:absolute;
-  width:440px;
-  height:440px;
-  border-radius:50%;
-  border:1px solid rgba(188,109,255,.18);
-  animation:orbit 14s linear infinite;
-}
-
-.orbit::before,
-.orbit::after{
-  content:"";
-  position:absolute;
-  width:9px;
-  height:9px;
-  border-radius:50%;
-  background:#c57eff;
-  box-shadow:0 0 20px #a63dff;
-}
-
-.orbit::before{
-  top:30px;
-  left:75px;
-}
-
-.orbit::after{
-  right:30px;
-  bottom:75px;
-}
-
-@keyframes orbit{
-  to{transform:rotate(360deg)}
-}
-
-.productCard{
-  position:relative;
-  width:min(390px,85vw);
-  padding:30px;
-  border-radius:28px;
-  border:1px solid rgba(215,166,255,.24);
-  background:
-    linear-gradient(
-      145deg,
-      rgba(43,17,72,.95),
-      rgba(9,6,16,.98)
-    );
-  box-shadow:
-    0 35px 100px rgba(0,0,0,.6),
-    0 0 60px rgba(127,39,255,.16);
-  animation:productFloat 4s ease-in-out infinite;
-}
-
-@keyframes productFloat{
-  0%,100%{
-    transform:translateY(0) rotateY(-5deg);
-  }
-  50%{
-    transform:translateY(-14px) rotateY(-2deg);
-  }
-}
-
-.productTop{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:42px;
-}
-
-.productStatus{
-  padding:6px 9px;
-  border-radius:99px;
-  color:#74ffad;
-  background:rgba(80,255,150,.06);
-  border:1px solid rgba(80,255,150,.2);
-  font-size:10px;
-  font-weight:900;
-}
-
-.productSmall{
-  color:#998ca2;
-  font-size:12px;
-  letter-spacing:2px;
-}
-
-.productNumber{
-  font-size:60px;
-  font-weight:950;
-  letter-spacing:-4px;
-  margin-top:8px;
-}
-
-.productName{
-  color:#c879ff;
-  font-weight:900;
-  letter-spacing:4px;
-  margin-bottom:38px;
-}
-
-.productBottom{
-  display:flex;
-  justify-content:space-between;
-  color:#81758b;
-  font-size:11px;
-}
-
-/* =========================================================
-   FEATURES
-========================================================= */
-
-.features{
-  padding:30px 0 90px;
-}
-
-.featureGrid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:15px;
-}
-
-.feature{
-  padding:22px;
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,.07);
-  background:rgba(255,255,255,.025);
-}
-
-.featureIcon{
-  font-size:26px;
-  margin-bottom:12px;
-}
-
-.feature h3{
-  font-size:15px;
-  margin-bottom:7px;
-}
-
-.feature p{
-  color:#857a8e;
-  font-size:13px;
-  line-height:1.5;
-}
-
-/* =========================================================
-   OVERLAY
-========================================================= */
-
-#drawerOverlay{
-  position:fixed;
-  inset:0;
-  z-index:500;
-  background:rgba(0,0,0,.72);
-  backdrop-filter:blur(5px);
-  opacity:0;
-  visibility:hidden;
-  transition:.3s;
-}
-
-#drawerOverlay.open{
-  opacity:1;
-  visibility:visible;
-}
-
-/* =========================================================
-   DRAWERS
-========================================================= */
-
-.drawer{
-  position:fixed;
-  top:0;
-  bottom:0;
-  z-index:600;
-  width:min(50vw,560px);
-  padding:25px;
-  overflow-y:auto;
-  background:
-    radial-gradient(circle at top,rgba(128,39,255,.14),transparent 40%),
-    rgba(8,5,14,.98);
-  transition:transform .5s cubic-bezier(.22,1,.36,1);
-}
-
-.drawerLeft{
-  left:0;
-  transform:translateX(-105%);
-  border-right:1px solid rgba(255,255,255,.08);
-}
-
-.drawerRight{
-  right:0;
-  transform:translateX(105%);
-  border-left:1px solid rgba(255,255,255,.08);
-}
-
-.drawer.open{
-  transform:translateX(0);
-}
-
-.drawerHeader{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:28px;
-}
-
-.drawerHeader h2{
-  font-size:23px;
-}
-
-.closeBtn{
-  width:42px;
-  height:42px;
-  border-radius:12px;
-  border:1px solid rgba(255,255,255,.1);
-  color:white;
-  background:rgba(255,255,255,.04);
-  cursor:pointer;
-  font-size:22px;
-  transition:.2s;
-}
-
-.closeBtn:hover{
-  transform:rotate(90deg);
-  border-color:#ff607d;
-}
-
-/* =========================================================
-   PACK
-========================================================= */
-
-.pack{
-  padding:20px;
-  border-radius:18px;
-  border:1px solid rgba(177,91,255,.18);
-  background:rgba(116,34,255,.05);
-}
-
-.packTop{
-  display:flex;
-  align-items:center;
-  gap:15px;
-  margin-bottom:22px;
-}
-
-.packIcon{
-  width:62px;
-  height:62px;
-  display:grid;
-  place-items:center;
-  border-radius:16px;
-  background:linear-gradient(135deg,#5c16c9,#bd59ff);
-  box-shadow:0 0 25px rgba(136,42,255,.3);
-  font-size:28px;
-}
-
-.packTop h3{
-  margin-bottom:5px;
-}
-
-.packTop p{
-  color:#897d92;
-  font-size:12px;
-}
-
-.quantityRow{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:20px 0;
-  border-top:1px solid rgba(255,255,255,.07);
-}
-
-.quantityControls{
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
-
-.qtyBtn{
-  width:43px;
-  height:43px;
-  border-radius:12px;
-  border:1px solid rgba(255,255,255,.1);
-  color:#fff;
-  background:rgba(255,255,255,.05);
-  cursor:pointer;
-  font-size:20px;
-}
-
-.qtyBtn:hover{
-  background:rgba(123,35,255,.2);
-}
-
-.quantityValue{
-  min-width:60px;
-  text-align:center;
-  font-size:20px;
-  font-weight:900;
-}
-
-.totalBox{
-  margin-top:20px;
-  padding:20px;
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,.07);
-  background:rgba(255,255,255,.035);
-}
-
-.totalLine{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-}
-
-.totalLabel{
-  color:#918598;
-}
-
-.totalPrice{
-  font-size:29px;
-  font-weight:950;
-  color:#d194ff;
-}
-
-.addCartBtn{
-  width:100%;
-  margin-top:18px;
-}
-
-/* =========================================================
-   PANIER
-========================================================= */
-
-.cartItem{
-  display:flex;
-  align-items:center;
-  gap:13px;
-  padding:15px;
-  margin-bottom:10px;
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,.07);
-  background:rgba(255,255,255,.025);
-}
-
-.cartItemIcon{
-  width:55px;
-  height:55px;
-  flex:0 0 55px;
-  display:grid;
-  place-items:center;
-  border-radius:14px;
-  background:linear-gradient(135deg,#6219d0,#b34dff);
-  font-size:23px;
-}
-
-.cartInfo{
-  flex:1;
-}
-
-.cartInfo strong{
-  display:block;
-  margin-bottom:5px;
-}
-
-.cartInfo span{
-  display:block;
-  color:#887d91;
-  font-size:12px;
-  margin-top:3px;
-}
-
-.removeItem{
-  border:0;
-  background:none;
-  color:#ff7187;
-  cursor:pointer;
-  font-size:21px;
-}
-
-.emptyCart{
-  min-height:300px;
-  display:grid;
-  place-items:center;
-  text-align:center;
-  color:#867b8d;
-}
-
-.emptyIcon{
-  font-size:55px;
-  margin-bottom:15px;
-}
-
-.paypalBtn{
-  width:100%;
-  margin-top:18px;
-  padding:15px;
-  border:0;
-  border-radius:14px;
-  background:#ffc439;
-  color:#111;
-  cursor:pointer;
-  font-weight:950;
-}
-
-.paypalBtn:hover{
-  filter:brightness(1.06);
-  transform:translateY(-2px);
-}
-
-/* =========================================================
-   TOAST
-========================================================= */
-
-#toast{
-  position:fixed;
-  left:50%;
-  bottom:25px;
-  z-index:1000;
-  transform:translate(-50%,100px);
-  opacity:0;
-  padding:14px 19px;
-  border-radius:14px;
-  border:1px solid rgba(192,101,255,.3);
-  background:rgba(15,8,25,.97);
-  box-shadow:0 15px 45px rgba(0,0,0,.5);
-  transition:.3s;
-}
-
-#toast.show{
-  transform:translate(-50%,0);
-  opacity:1;
-}
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
-
-@media(max-width:800px){
-
-  .hero{
-    grid-template-columns:1fr;
-    padding:60px 0;
-  }
-
-  .visual{
-    min-height:430px;
-  }
-
-  .orbit{
-    width:330px;
-    height:330px;
-  }
-
-  .featureGrid{
-    grid-template-columns:1fr;
-  }
-
-  .drawer{
-    width:100vw;
-  }
-}
-
-@media(max-width:520px){
-
-  .loaderTitle{
-    font-size:28px;
-  }
-
-  .hero h1{
-    letter-spacing:-3px;
-  }
-
-  .productNumber{
-    font-size:50px;
-  }
-
-  .productCard{
-    padding:23px;
-  }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NOVASHOP • MEMBERS</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      font-family: Inter, Arial, sans-serif;
+      background: #05020b;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 50% 20%, rgba(132, 0, 255, .18), transparent 35%),
+        radial-gradient(circle at 10% 80%, rgba(85, 0, 255, .12), transparent 30%),
+        #05020b;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    /* =========================
+       BACKGROUND
+    ========================= */
+
+    #space {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 0 8px rgba(255,255,255,.9);
+      animation: starPulse 2s infinite alternate;
+    }
+
+    @keyframes starPulse {
+      from {
+        opacity: .2;
+        transform: scale(.7);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1.5);
+      }
+    }
+
+    .lightning {
+      position: absolute;
+      width: 2px;
+      height: 190px;
+      background: linear-gradient(
+        to bottom,
+        transparent,
+        #b66cff,
+        #fff,
+        #7d2cff,
+        transparent
+      );
+      filter: drop-shadow(0 0 12px #8c35ff);
+      opacity: .25;
+      transform: rotate(25deg);
+      animation: lightningMove 4s infinite;
+    }
+
+    @keyframes lightningMove {
+      0%,
+      100% {
+        opacity: 0;
+      }
+
+      20% {
+        opacity: .25;
+      }
+
+      25% {
+        opacity: 1;
+      }
+
+      30% {
+        opacity: .1;
+      }
+
+      60% {
+        opacity: .35;
+      }
+    }
+
+    /* =========================
+       LOADER
+    ========================= */
+
+    #loader {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #020106;
+      transition: opacity .8s ease, visibility .8s ease;
+    }
+
+    #loader.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .loaderBox {
+      text-align: center;
+    }
+
+    .loaderLogo {
+      font-size: 46px;
+      font-weight: 900;
+      letter-spacing: 7px;
+      color: #d4a5ff;
+      text-shadow:
+        0 0 15px #8e2dff,
+        0 0 50px rgba(142,45,255,.8);
+      animation: logoPulse 1.2s infinite alternate;
+    }
+
+    @keyframes logoPulse {
+      from {
+        transform: scale(.98);
+        opacity: .7;
+      }
+
+      to {
+        transform: scale(1.04);
+        opacity: 1;
+      }
+    }
+
+    .loaderText {
+      margin-top: 15px;
+      color: #aaa;
+      font-size: 14px;
+      letter-spacing: 3px;
+    }
+
+    .loaderBar {
+      width: 280px;
+      height: 4px;
+      margin: 28px auto 0;
+      border-radius: 99px;
+      background: #1c1227;
+      overflow: hidden;
+    }
+
+    .loaderProgress {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #7124ff, #d09aff);
+      box-shadow: 0 0 15px #9b45ff;
+    }
+
+    /* =========================
+       FIRE TRANSITION
+    ========================= */
+
+    #fireTransition {
+      position: fixed;
+      inset: 0;
+      z-index: 9998;
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+      background: #020106;
+      overflow: hidden;
+    }
+
+    #fireTransition.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .fireGlow {
+      position: absolute;
+      left: 50%;
+      bottom: -180px;
+      width: 600px;
+      height: 500px;
+      transform: translateX(-50%);
+      background: radial-gradient(
+        ellipse,
+        rgba(255,80,0,.8),
+        rgba(255,20,0,.35),
+        transparent 70%
+      );
+      filter: blur(30px);
+      animation: fireGlow 1s infinite alternate;
+    }
+
+    @keyframes fireGlow {
+      from {
+        transform: translateX(-50%) scale(.9);
+      }
+
+      to {
+        transform: translateX(-50%) scale(1.1);
+      }
+    }
+
+    .flame {
+      position: absolute;
+      bottom: -120px;
+      width: 120px;
+      height: 330px;
+      border-radius: 60% 40% 55% 45%;
+      background: linear-gradient(
+        to top,
+        #ff1e00,
+        #ff6500 45%,
+        #ffc400 75%,
+        transparent
+      );
+      filter: blur(5px);
+      transform-origin: bottom;
+      animation: flameDance .65s infinite alternate;
+    }
+
+    .flame:nth-child(2) {
+      left: 10%;
+      animation-delay: .1s;
+      transform: rotate(-9deg);
+    }
+
+    .flame:nth-child(3) {
+      left: 28%;
+      height: 420px;
+      animation-delay: .25s;
+    }
+
+    .flame:nth-child(4) {
+      right: 25%;
+      height: 380px;
+      animation-delay: .15s;
+    }
+
+    .flame:nth-child(5) {
+      right: 7%;
+      height: 320px;
+      animation-delay: .4s;
+    }
+
+    @keyframes flameDance {
+      from {
+        transform: scaleY(.85) rotate(-5deg);
+      }
+
+      to {
+        transform: scaleY(1.12) rotate(7deg);
+      }
+    }
+
+    .smoke {
+      position: absolute;
+      bottom: 80px;
+      left: 50%;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: rgba(80,80,80,.25);
+      filter: blur(20px);
+      animation: smokeRise 2s infinite ease-out;
+    }
+
+    @keyframes smokeRise {
+      from {
+        opacity: .5;
+        transform: translate(-50%, 0) scale(.7);
+      }
+
+      to {
+        opacity: 0;
+        transform: translate(-20%, -400px) scale(2.8);
+      }
+    }
+
+    /* =========================
+       SITE
+    ========================= */
+
+    #site {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      opacity: 0;
+      transform: scale(1.03);
+      transition: opacity 1s ease, transform 1s ease;
+    }
+
+    #site.visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 6%;
+      background: rgba(5,2,11,.7);
+      border-bottom: 1px solid rgba(180,100,255,.15);
+      backdrop-filter: blur(18px);
+    }
+
+    .brand {
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: 3px;
+      color: #d7adff;
+      text-shadow: 0 0 20px rgba(150,60,255,.7);
+    }
+
+    .cartButton {
+      border: 1px solid rgba(196,135,255,.3);
+      background: rgba(120,30,255,.12);
+      color: #fff;
+      padding: 11px 18px;
+      border-radius: 12px;
+      transition: .2s;
+    }
+
+    .cartButton:hover {
+      background: rgba(140,50,255,.25);
+      border-color: rgba(210,160,255,.7);
+      transform: translateY(-2px);
+    }
+
+    /* =========================
+       HERO
+    ========================= */
+
+    main {
+      position: relative;
+      z-index: 2;
+      width: min(1100px, 92%);
+      margin: auto;
+    }
+
+    .hero {
+      min-height: calc(100vh - 76px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .heroContent {
+      width: 100%;
+      max-width: 850px;
+    }
+
+    .badge {
+      display: inline-flex;
+      padding: 8px 15px;
+      border-radius: 999px;
+      border: 1px solid rgba(188,110,255,.35);
+      background: rgba(132,0,255,.1);
+      color: #d7adff;
+      font-size: 13px;
+      margin-bottom: 25px;
+    }
+
+    h1 {
+      font-size: clamp(55px, 9vw, 105px);
+      line-height: .9;
+      font-weight: 1000;
+      letter-spacing: -5px;
+      color: #fff;
+      text-shadow:
+        0 0 20px rgba(180,100,255,.35),
+        0 0 70px rgba(120,20,255,.3);
+    }
+
+    .subtitle {
+      max-width: 650px;
+      margin: 30px auto;
+      color: #aaa;
+      font-size: 18px;
+      line-height: 1.7;
+    }
+
+    .price {
+      font-size: 32px;
+      font-weight: 900;
+      color: #d9b2ff;
+      margin-bottom: 25px;
+    }
+
+    .primaryButton {
+      border: 0;
+      padding: 16px 30px;
+      border-radius: 14px;
+      color: #fff;
+      font-weight: 800;
+      background: linear-gradient(135deg, #651cff, #a54cff);
+      box-shadow:
+        0 0 25px rgba(126,42,255,.35),
+        inset 0 1px rgba(255,255,255,.25);
+      transition: .25s;
+    }
+
+    .primaryButton:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow:
+        0 0 40px rgba(126,42,255,.55),
+        inset 0 1px rgba(255,255,255,.3);
+    }
+
+    /* =========================
+       DRAWERS
+    ========================= */
+
+    .drawerOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      background: rgba(0,0,0,.65);
+      opacity: 0;
+      visibility: hidden;
+      transition: .3s;
+      backdrop-filter: blur(5px);
+    }
+
+    .drawerOverlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      z-index: 501;
+      width: min(500px, 100%);
+      padding: 30px;
+      background:
+        radial-gradient(circle at top, rgba(120,40,255,.18), transparent 35%),
+        #09050f;
+      border-color: rgba(190,120,255,.2);
+      box-shadow: 0 0 70px rgba(0,0,0,.6);
+      transition: transform .45s cubic-bezier(.2,.8,.2,1);
+    }
+
+    #quantityDrawer {
+      left: 0;
+      transform: translateX(-105%);
+      border-right: 1px solid rgba(190,120,255,.2);
+    }
+
+    #cartDrawer {
+      right: 0;
+      transform: translateX(105%);
+      border-left: 1px solid rgba(190,120,255,.2);
+    }
+
+    #quantityDrawer.open,
+    #cartDrawer.open {
+      transform: translateX(0);
+    }
+
+    .drawerHeader {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 35px;
+    }
+
+    .drawerHeader h2 {
+      font-size: 25px;
+    }
+
+    .closeButton {
+      width: 42px;
+      height: 42px;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 12px;
+      background: rgba(255,255,255,.05);
+      color: #fff;
+      font-size: 21px;
+    }
+
+    .closeButton:hover {
+      background: rgba(255,70,70,.15);
+    }
+
+    .discordInfo {
+      margin-bottom: 30px;
+      padding: 17px;
+      border: 1px solid rgba(190,120,255,.15);
+      border-radius: 16px;
+      background: rgba(130,40,255,.06);
+    }
+
+    .discordInfo strong {
+      color: #d9b3ff;
+    }
+
+    .field {
+      margin-bottom: 20px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 8px;
+      color: #bbb;
+      font-size: 14px;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 14px 15px;
+      border-radius: 12px;
+      border: 1px solid rgba(190,120,255,.2);
+      outline: none;
+      color: #fff;
+      background: rgba(255,255,255,.045);
+    }
+
+    .field input:focus {
+      border-color: #9b50ff;
+      box-shadow: 0 0 0 3px rgba(155,80,255,.1);
+    }
+
+    .quantityBox {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 25px;
+      margin: 30px 0;
+    }
+
+    .quantityButton {
+      width: 50px;
+      height: 50px;
+      border: 1px solid rgba(190,120,255,.3);
+      border-radius: 14px;
+      background: rgba(140,40,255,.12);
+      color: #fff;
+      font-size: 25px;
+    }
+
+    .quantityButton:hover {
+      background: rgba(140,40,255,.25);
+    }
+
+    #quantityValue {
+      min-width: 100px;
+      text-align: center;
+      font-size: 32px;
+      font-weight: 900;
+    }
+
+    .membersPreview {
+      text-align: center;
+      color: #aaa;
+      margin-bottom: 12px;
+    }
+
+    .totalPreview {
+      text-align: center;
+      font-size: 27px;
+      font-weight: 900;
+      color: #d6a7ff;
+      margin-bottom: 25px;
+    }
+
+    .fullButton {
+      width: 100%;
+    }
+
+    /* =========================
+       CART
+    ========================= */
+
+    #cartItems {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 55vh;
+      overflow-y: auto;
+    }
+
+    .cartItem {
+      padding: 17px;
+      border-radius: 15px;
+      border: 1px solid rgba(190,120,255,.14);
+      background: rgba(255,255,255,.035);
+    }
+
+    .cartItemTop {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 8px;
+    }
+
+    .cartItemName {
+      font-weight: 800;
+    }
+
+    .cartItemPrice {
+      color: #d7adff;
+      font-weight: 800;
+    }
+
+    .cartItemMeta {
+      color: #999;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .removeButton {
+      margin-top: 12px;
+      border: 0;
+      background: transparent;
+      color: #ff7777;
+      font-size: 13px;
+    }
+
+    .emptyCart {
+      color: #888;
+      text-align: center;
+      padding: 60px 10px;
+    }
+
+    .cartBottom {
+      position: absolute;
+      left: 30px;
+      right: 30px;
+      bottom: 30px;
+    }
+
+    .cartTotal {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      font-size: 20px;
+    }
+
+    .paypalButton {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 15px;
+      border: 0;
+      border-radius: 13px;
+      background: #ffc439;
+      color: #111;
+      font-weight: 900;
+    }
+
+    .paypalButton:hover {
+      filter: brightness(1.05);
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 600px) {
+      header {
+        padding: 0 20px;
+      }
+
+      h1 {
+        letter-spacing: -3px;
+      }
+
+      .drawer {
+        padding: 22px;
+      }
+
+      .cartBottom {
+        left: 22px;
+        right: 22px;
+        bottom: 22px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<div id="stars"></div>
+  <div id="space"></div>
 
-<!-- =========================================================
-     LOADER
-========================================================= -->
-
-<div id="loader">
-
-  <div class="loaderBox">
-
-    <div class="loaderLogo">
-      <div class="loaderRing"></div>
-      <div class="loaderRing2"></div>
-      <div class="loaderBolt">ϟ</div>
+  <!-- LOADER -->
+  <div id="loader">
+    <div class="loaderBox">
+      <div class="loaderLogo">NOVA</div>
+      <div class="loaderText">INITIALISATION...</div>
+      <div class="loaderBar">
+        <div id="loaderProgress" class="loaderProgress"></div>
+      </div>
     </div>
-
-    <div class="loaderTitle">
-      NOVASHOP
-    </div>
-
-    <div class="loaderText">
-      CHARGEMENT DU PRODUIT
-    </div>
-
-    <div class="loaderProgress">
-      <div
-        class="loaderBar"
-        id="loaderBar"
-      ></div>
-    </div>
-
-    <div
-      class="loaderPercent"
-      id="loaderPercent"
-    >
-      0%
-    </div>
-
   </div>
 
-</div>
-
-<!-- =========================================================
-     FEU
-========================================================= -->
-
-<div id="fire">
-
-  <div class="fireDark"></div>
-
-  <div class="fireLight"></div>
-
-  <div class="realFlame flameA"></div>
-  <div class="realFlame flameB"></div>
-  <div class="realFlame flameC"></div>
-  <div class="realFlame flameD"></div>
-  <div class="realFlame flameE"></div>
-
-  <div class="innerFire"></div>
-
-  <div class="smoke smoke1"></div>
-  <div class="smoke smoke2"></div>
-  <div class="smoke smoke3"></div>
-
-  <div class="fireLogo">
-    NOVASHOP
+  <!-- FIRE -->
+  <div id="fireTransition">
+    <div class="fireGlow"></div>
+    <div class="flame"></div>
+    <div class="flame"></div>
+    <div class="flame"></div>
+    <div class="flame"></div>
+    <div class="smoke"></div>
   </div>
 
-  <div class="embers">
-    <span class="ember"></span>
-    <span class="ember"></span>
-    <span class="ember"></span>
-    <span class="ember"></span>
-    <span class="ember"></span>
-    <span class="ember"></span>
-    <span class="ember"></span>
-    <span class="ember"></span>
-    <span class="ember"></span>
-  </div>
+  <!-- SITE -->
+  <div id="site">
 
-  <div id="ashLayer"></div>
+    <header>
+      <div class="brand">NOVASHOP</div>
 
-</div>
-
-<!-- =========================================================
-     SITE
-========================================================= -->
-
-<div id="site">
-
-<header>
-
-  <div class="nav">
-
-    <div class="logo">
-      <div class="logoIcon">ϟ</div>
-      NOVASHOP
-    </div>
-
-    <button
-      type="button"
-      class="cartBtn"
-      id="cartButton"
-    >
-      🛒 Panier
-      <span
-        class="cartCount"
-        id="cartCount"
-      >0</span>
-    </button>
-
-  </div>
-
-</header>
-
-<main>
-
-<section class="container hero">
-
-  <div>
-
-    <div class="badge">
-      ✦ MEMBERS
-    </div>
-
-    <h1>
-      BOOSTE TON
-      <span>MEMBERS.</span>
-    </h1>
-
-    <p class="heroText">
-      Choisis la quantité de MEMBERS que tu souhaites,
-      ajoute ton pack au panier puis passe au paiement
-      PayPal.
-    </p>
-
-    <div class="buttons">
-
-      <button
-        type="button"
-        class="primaryBtn"
-        id="chooseButton"
-      >
-        ✦ Choisir mon pack
+      <button id="cartButton" class="cartButton">
+        🛒 Panier <span id="cartCount">0</span>
       </button>
+    </header>
 
-      <button
-        type="button"
-        class="secondaryBtn"
-        id="heroCartButton"
-      >
-        🛒 Voir le panier
-      </button>
+    <main>
+      <section class="hero">
+        <div class="heroContent">
 
-    </div>
+          <div class="badge">⚡ PREMIUM DISCORD MEMBERS</div>
 
-  </div>
+          <h1>MEMBERS</h1>
 
-  <div class="visual">
+          <p class="subtitle">
+            Développe ton serveur avec des packs MEMBERS.
+            Choisis la quantité dont tu as besoin et renseigne
+            ton Discord avant de continuer.
+          </p>
 
-    <div class="productGlow"></div>
-    <div class="orbit"></div>
+          <div class="price">1K MEMBERS • 5,49 €</div>
 
-    <div class="productCard">
+          <button id="chooseButton" class="primaryButton">
+            ⚡ Choisir mon pack
+          </button>
 
-      <div class="productTop">
-
-        <strong>
-          NOVASHOP
-        </strong>
-
-        <div class="productStatus">
-          ● ACTIVE
         </div>
-
-      </div>
-
-      <div class="productSmall">
-        MEMBERS PACK
-      </div>
-
-      <div class="productNumber">
-        1K
-      </div>
-
-      <div class="productName">
-        MEMBERS
-      </div>
-
-      <div class="productBottom">
-
-        <span>
-          NOVA DIGITAL
-        </span>
-
-        <span>
-          1K MEMBERS
-        </span>
-
-      </div>
-
-    </div>
+      </section>
+    </main>
 
   </div>
 
-</section>
+  <!-- OVERLAY -->
+  <div id="drawerOverlay" class="drawerOverlay"></div>
 
-<section class="container features">
+  <!-- QUANTITY DRAWER -->
+  <aside id="quantityDrawer" class="drawer">
 
-  <div class="featureGrid">
+    <div class="drawerHeader">
+      <h2>Choisir ton pack</h2>
 
-    <div class="feature">
-      <div class="featureIcon">⚡</div>
-      <h3>Quantité flexible</h3>
-      <p>
-        Choisis exactement le nombre de packs MEMBERS.
-      </p>
+      <button id="closeQuantity" class="closeButton">
+        ×
+      </button>
     </div>
 
-    <div class="feature">
-      <div class="featureIcon">🔒</div>
-      <h3>Paiement PayPal</h3>
-      <p>
-        Le paiement est effectué directement via PayPal.
-      </p>
+    <div class="discordInfo">
+      <strong>Discord requis</strong><br>
+      Indique ton pseudo et ton serveur Discord.
+      Aucun mot de passe ne sera demandé.
     </div>
 
-    <div class="feature">
-      <div class="featureIcon">✦</div>
-      <h3>NOVASHOP</h3>
-      <p>
-        Interface sombre, violette et animée.
-      </p>
-    </div>
+    <div class="field">
+      <label for="discordUsername">
+        Pseudo Discord
+      </label>
 
-  </div>
-
-</section>
-
-</main>
-
-</div>
-
-<!-- =========================================================
-     OVERLAY
-========================================================= -->
-
-<div id="drawerOverlay"></div>
-
-<!-- =========================================================
-     DRAWER CHOIX
-========================================================= -->
-
-<aside
-  class="drawer drawerLeft"
-  id="quantityDrawer"
->
-
-  <div class="drawerHeader">
-
-    <h2>
-      Choisir le pack
-    </h2>
-
-    <button
-      type="button"
-      class="closeBtn"
-      id="closeQuantity"
-    >
-      ×
-    </button>
-
-  </div>
-
-  <div class="pack">
-
-    <div class="packTop">
-
-      <div class="packIcon">
-        ϟ
-      </div>
-
-      <div>
-
-        <h3>
-          MEMBERS
-        </h3>
-
-        <p>
-          5,49 € par 1K MEMBERS
-        </p>
-
-      </div>
-
-    </div>
-
-    <div class="quantityRow">
-
-      <div>
-
-        <strong>
-          Quantité
-        </strong>
-
-        <p style="color:#84798c;font-size:12px;margin-top:5px;">
-          1 = 1K MEMBERS
-        </p>
-
-      </div>
-
-      <div class="quantityControls">
-
-        <button
-          type="button"
-          class="qtyBtn"
-          id="minusButton"
-        >
-          −
-        </button>
-
-        <div
-          class="quantityValue"
-          id="quantityValue"
-        >
-          1
-        </div>
-
-        <button
-          type="button"
-          class="qtyBtn"
-          id="plusButton"
-        >
-          +
-        </button>
-
-      </div>
-
-    </div>
-
-    <div class="totalBox">
-
-      <div class="totalLine">
-
-        <span class="totalLabel">
-          Total
-        </span>
-
-        <span
-          class="totalPrice"
-          id="totalPrice"
-        >
-          5,49 €
-        </span>
-
-      </div>
-
-      <button
-        type="button"
-        class="primaryBtn addCartBtn"
-        id="addCartButton"
+      <input
+        id="discordUsername"
+        type="text"
+        maxlength="100"
+        autocomplete="off"
+        placeholder="Ex : Nova_123"
       >
-        🛒 Ajouter au panier
+    </div>
+
+    <div class="field">
+      <label for="discordServer">
+        Serveur Discord
+      </label>
+
+      <input
+        id="discordServer"
+        type="text"
+        maxlength="100"
+        autocomplete="off"
+        placeholder="Ex : NovaShop"
+      >
+    </div>
+
+    <div class="quantityBox">
+
+      <button id="minusButton" class="quantityButton">
+        −
+      </button>
+
+      <div id="quantityValue">
+        1
+      </div>
+
+      <button id="plusButton" class="quantityButton">
+        +
       </button>
 
     </div>
 
-  </div>
+    <div id="membersPreview" class="membersPreview">
+      1K MEMBERS
+    </div>
 
-</aside>
+    <div id="totalPreview" class="totalPreview">
+      5,49 €
+    </div>
 
-<!-- =========================================================
-     DRAWER PANIER
-========================================================= -->
-
-<aside
-  class="drawer drawerRight"
-  id="cartDrawer"
->
-
-  <div class="drawerHeader">
-
-    <h2>
-      Ton panier
-    </h2>
-
-    <button
-      type="button"
-      class="closeBtn"
-      id="closeCart"
-    >
-      ×
+    <button id="addCartButton" class="primaryButton fullButton">
+      🛒 Ajouter au panier
     </button>
 
-  </div>
+  </aside>
 
-  <div id="cartContent"></div>
+  <!-- CART DRAWER -->
+  <aside id="cartDrawer" class="drawer">
 
-</aside>
+    <div class="drawerHeader">
+      <h2>Ton panier</h2>
 
-<div id="toast"></div>
+      <button id="closeCart" class="closeButton">
+        ×
+      </button>
+    </div>
 
-<!-- =========================================================
-     SCRIPT PRINCIPAL DIRECT
-     Les boutons fonctionnent même si APP.JS n'est pas chargé.
-========================================================= -->
+    <div id="cartItems"></div>
 
-<script>
-(function(){
+    <div class="cartBottom">
 
-"use strict";
+      <div class="cartTotal">
+        <span>Total</span>
+        <strong id="cartTotal">0,00 €</strong>
+      </div>
 
-/* =========================================================
-   CONFIG
-========================================================= */
+      <button id="paypalButton" class="paypalButton">
+        Payer avec PayPal
+      </button>
 
-var PRODUCT_PRICE = 5.49;
-var PRODUCT_MEMBERS = 1000;
-var quantity = 1;
-var cart = [];
+    </div>
 
-/* =========================================================
-   ELEMENTS
-========================================================= */
+  </aside>
 
-var loader = document.getElementById("loader");
-var loaderBar = document.getElementById("loaderBar");
-var loaderPercent = document.getElementById("loaderPercent");
-
-var fire = document.getElementById("fire");
-var ashLayer = document.getElementById("ashLayer");
-var site = document.getElementById("site");
-
-var chooseButton = document.getElementById("chooseButton");
-var heroCartButton = document.getElementById("heroCartButton");
-var cartButton = document.getElementById("cartButton");
-
-var overlay = document.getElementById("drawerOverlay");
-
-var quantityDrawer = document.getElementById("quantityDrawer");
-var cartDrawer = document.getElementById("cartDrawer");
-
-var closeQuantity = document.getElementById("closeQuantity");
-var closeCart = document.getElementById("closeCart");
-
-var minusButton = document.getElementById("minusButton");
-var plusButton = document.getElementById("plusButton");
-
-var quantityValue = document.getElementById("quantityValue");
-var totalPrice = document.getElementById("totalPrice");
-
-var addCartButton = document.getElementById("addCartButton");
-
-var cartCount = document.getElementById("cartCount");
-var cartContent = document.getElementById("cartContent");
-
-var toast = document.getElementById("toast");
-
-/* =========================================================
-   PRIX
-========================================================= */
-
-function formatPrice(value){
-
-  return Number(value)
-    .toFixed(2)
-    .replace(".", ",") + " €";
-}
-
-/* =========================================================
-   TOAST
-========================================================= */
-
-var toastTimer = null;
-
-function showToast(message){
-
-  if(!toast){
-    return;
-  }
-
-  toast.textContent = message;
-  toast.classList.add("show");
-
-  clearTimeout(toastTimer);
-
-  toastTimer = setTimeout(function(){
-
-    toast.classList.remove("show");
-
-  },2200);
-}
-
-/* =========================================================
-   LOCAL STORAGE
-========================================================= */
-
-function loadCart(){
-
-  try{
-
-    var saved =
-      localStorage.getItem(
-        "novashop_members_cart"
-      );
-
-    if(saved){
-
-      var parsed =
-        JSON.parse(saved);
-
-      if(Array.isArray(parsed)){
-        cart = parsed;
-      }
-    }
-
-  }catch(error){
-
-    cart = [];
-  }
-}
-
-function saveCart(){
-
-  try{
-
-    localStorage.setItem(
-      "novashop_members_cart",
-      JSON.stringify(cart)
-    );
-
-  }catch(error){
-
-    console.error(error);
-  }
-}
-
-/* =========================================================
-   DRAWERS
-========================================================= */
-
-function openDrawer(drawer){
-
-  if(!drawer){
-    return;
-  }
-
-  quantityDrawer.classList.remove("open");
-  cartDrawer.classList.remove("open");
-
-  overlay.classList.add("open");
-
-  drawer.classList.add("open");
-}
-
-function closeDrawers(){
-
-  quantityDrawer.classList.remove("open");
-  cartDrawer.classList.remove("open");
-
-  overlay.classList.remove("open");
-}
-
-/* =========================================================
-   QUANTITE
-========================================================= */
-
-function updateQuantity(){
-
-  quantityValue.textContent =
-    quantity;
-
-  totalPrice.textContent =
-    formatPrice(
-      quantity * PRODUCT_PRICE
-    );
-}
-
-function increaseQuantity(){
-
-  quantity++;
-
-  updateQuantity();
-}
-
-function decreaseQuantity(){
-
-  if(quantity <= 1){
-    return;
-  }
-
-  quantity--;
-
-  updateQuantity();
-}
-
-/* =========================================================
-   CHOISIR
-========================================================= */
-
-function openQuantity(){
-
-  updateQuantity();
-
-  openDrawer(
-    quantityDrawer
-  );
-}
-
-/* =========================================================
-   PANIER
-========================================================= */
-
-function getCartQuantity(){
-
-  var total = 0;
-
-  cart.forEach(function(item){
-
-    total += Number(
-      item.quantity
-    ) || 0;
-
-  });
-
-  return total;
-}
-
-function getCartTotal(){
-
-  var total = 0;
-
-  cart.forEach(function(item){
-
-    total +=
-      Number(item.quantity || 0) *
-      Number(item.price || 0);
-
-  });
-
-  return total;
-}
-
-function updateCartCount(){
-
-  cartCount.textContent =
-    getCartQuantity();
-}
-
-/* =========================================================
-   AJOUT
-========================================================= */
-
-function addToCart(){
-
-  var existing = null;
-
-  for(
-    var i = 0;
-    i < cart.length;
-    i++
-  ){
-
-    if(
-      cart[i].id ===
-      "members-1k"
-    ){
-
-      existing = cart[i];
-      break;
-    }
-  }
-
-  if(existing){
-
-    existing.quantity +=
-      quantity;
-
-  }else{
-
-    cart.push({
-
-      id:"members-1k",
-
-      name:"MEMBERS",
-
-      quantity:quantity,
-
-      members:PRODUCT_MEMBERS,
-
-      price:PRODUCT_PRICE
-
-    });
-  }
-
-  saveCart();
-
-  updateCartCount();
-
-  showToast(
-    quantity +
-    " × 1K MEMBERS ajouté"
-  );
-
-  closeDrawers();
-
-  setTimeout(function(){
-
-    openCart();
-
-  },350);
-}
-
-/* =========================================================
-   PANIER
-========================================================= */
-
-function openCart(){
-
-  renderCart();
-
-  openDrawer(
-    cartDrawer
-  );
-}
-
-function removeItem(index){
-
-  if(
-    index < 0 ||
-    index >= cart.length
-  ){
-    return;
-  }
-
-  cart.splice(
-    index,
-    1
-  );
-
-  saveCart();
-
-  updateCartCount();
-
-  renderCart();
-
-  showToast(
-    "Article supprimé"
-  );
-}
-
-function renderCart(){
-
-  if(!cartContent){
-    return;
-  }
-
-  if(cart.length === 0){
-
-    cartContent.innerHTML =
-
-      '<div class="emptyCart">' +
-        '<div>' +
-          '<div class="emptyIcon">🛒</div>' +
-          '<h3>Panier vide</h3>' +
-          '<p style="margin-top:8px;">' +
-            'Ajoute ton premier pack MEMBERS.' +
-          '</p>' +
-          '<button ' +
-            'type="button" ' +
-            'class="primaryBtn" ' +
-            'id="emptyChooseButton" ' +
-            'style="margin-top:20px;"' +
-          '>' +
-            '✦ Choisir un pack' +
-          '</button>' +
-        '</div>' +
-      '</div>';
-
-    var emptyChoose =
-      document.getElementById(
-        "emptyChooseButton"
-      );
-
-    if(emptyChoose){
-
-      emptyChoose.onclick =
-        function(){
-
-          closeDrawers();
-
-          setTimeout(
-            openQuantity,
-            250
-          );
-
-        };
-    }
-
-    return;
-  }
-
-  var html = "";
-
-  cart.forEach(function(item,index){
-
-    var itemTotal =
-      Number(item.quantity) *
-      Number(item.price);
-
-    var members =
-      Number(item.quantity) *
-      Number(item.members);
-
-    html +=
-
-      '<div class="cartItem">' +
-
-        '<div class="cartItemIcon">' +
-          'ϟ' +
-        '</div>' +
-
-        '<div class="cartInfo">' +
-
-          '<strong>' +
-            'MEMBERS' +
-          '</strong>' +
-
-          '<span>' +
-            item.quantity +
-            ' × 1K MEMBERS' +
-          '</span>' +
-
-          '<span>' +
-            members.toLocaleString("fr-FR") +
-            ' MEMBERS' +
-          '</span>' +
-
-          '<span style="color:#c18bff;">' +
-            formatPrice(itemTotal) +
-          '</span>' +
-
-        '</div>' +
-
-        '<button ' +
-          'type="button" ' +
-          'class="removeItem" ' +
-          'data-index="' +
-          index +
-          '"' +
-        '>' +
-          '×' +
-        '</button>' +
-
-      '</div>';
-  });
-
-  html +=
-
-    '<div class="totalBox">' +
-
-      '<div class="totalLine">' +
-
-        '<span class="totalLabel">' +
-          'Total' +
-        '</span>' +
-
-        '<span class="totalPrice">' +
-          formatPrice(
-            getCartTotal()
-          ) +
-        '</span>' +
-
-      '</div>' +
-
-      '<button ' +
-        'type="button" ' +
-        'class="paypalBtn" ' +
-        'id="paypalButton"' +
-      '>' +
-        'PayPal · Payer maintenant' +
-      '</button>' +
-
-      '<p style="' +
-        'margin-top:12px;' +
-        'text-align:center;' +
-        'color:#756a7d;' +
-        'font-size:11px;' +
-      '">' +
-        'Redirection vers PayPal pour le paiement.' +
-      '</p>' +
-
-    '</div>';
-
-  cartContent.innerHTML = html;
-
-  var removeButtons =
-    document.querySelectorAll(
-      ".removeItem"
-    );
-
-  removeButtons.forEach(
-    function(button){
-
-      button.onclick =
-        function(){
-
-          removeItem(
-            Number(
-              button.dataset.index
-            )
-          );
-
-        };
-    }
-  );
-
-  var paypalButton =
-    document.getElementById(
-      "paypalButton"
-    );
-
-  if(paypalButton){
-
-    paypalButton.onclick =
-      checkout;
-  }
-}
-
-/* =========================================================
-   PAYPAL
-========================================================= */
-
-function checkout(){
-
-  var total =
-    getCartTotal();
-
-  if(
-    !cart.length ||
-    total <= 0
-  ){
-
-    showToast(
-      "Le panier est vide."
-    );
-
-    return;
-  }
-
-  var amount =
-    total.toFixed(2);
-
-  var url =
-    "https://paypal.me/SH0PNOVA/" +
-    amount;
-
-  showToast(
-    "Redirection vers PayPal..."
-  );
-
-  setTimeout(function(){
-
-    window.location.href =
-      url;
-
-  },700);
-}
-
-/* =========================================================
-   EVENEMENTS
-========================================================= */
-
-chooseButton.onclick =
-  openQuantity;
-
-heroCartButton.onclick =
-  openCart;
-
-cartButton.onclick =
-  openCart;
-
-closeQuantity.onclick =
-  closeDrawers;
-
-closeCart.onclick =
-  closeDrawers;
-
-overlay.onclick =
-  closeDrawers;
-
-minusButton.onclick =
-  decreaseQuantity;
-
-plusButton.onclick =
-  increaseQuantity;
-
-addCartButton.onclick =
-  addToCart;
-
-document.addEventListener(
-  "keydown",
-  function(event){
-
-    if(event.key === "Escape"){
-      closeDrawers();
-    }
-
-  }
-);
-
-/* =========================================================
-   CHARGEMENT
-   3 SECONDES
-========================================================= */
-
-var loadingStart =
-  performance.now();
-
-var loadingDuration =
-  3000;
-
-function loadingLoop(now){
-
-  var elapsed =
-    now - loadingStart;
-
-  var progress =
-    Math.min(
-      1,
-      elapsed / loadingDuration
-    );
-
-  var percent =
-    Math.floor(
-      progress * 100
-    );
-
-  loaderBar.style.width =
-    percent + "%";
-
-  loaderPercent.textContent =
-    percent + "%";
-
-  if(progress < 1){
-
-    requestAnimationFrame(
-      loadingLoop
-    );
-
-    return;
-  }
-
-  startFire();
-}
-
-function startFire(){
-
-  loader.style.display =
-    "none";
-
-  fire.classList.add(
-    "active"
-  );
-
-  setTimeout(function(){
-
-    ashLayer.classList.add(
-      "start"
-    );
-
-  },1500);
-
-  setTimeout(function(){
-
-    fire.style.transition =
-      "opacity 1.7s ease";
-
-    fire.style.opacity =
-      "0";
-
-    setTimeout(function(){
-
-      fire.style.display =
-        "none";
-
-      site.classList.add(
-        "visible"
-      );
-
-    },1700);
-
-  },2200);
-}
-
-/* =========================================================
-   INIT
-========================================================= */
-
-loadCart();
-
-updateCartCount();
-
-updateQuantity();
-
-renderCart();
-
-requestAnimationFrame(
-  loadingLoop
-);
-
-console.log(
-  "NOVASHOP MEMBERS : READY"
-);
-
-})();
-</script>
-
-<!-- APP.JS conservé pour le projet -->
-<script src="./APP.JS"></script>
+  <!-- IMPORTANT :
+       Toute la logique est dans APP.JS -->
+  <script src="./APP.JS"></script>
 
 </body>
 </html>
