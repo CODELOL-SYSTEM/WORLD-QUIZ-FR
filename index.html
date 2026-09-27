@@ -73,6 +73,7 @@ body {
         );
     opacity: 1;
     visibility: visible;
+    pointer-events: auto;
     transition:
         opacity 0.7s ease,
         visibility 0.7s ease;
@@ -269,8 +270,7 @@ body {
 .flame {
     width: clamp(25px, 5vw, 80px);
     height: 50%;
-    border-radius:
-        55% 45% 35% 35%;
+    border-radius: 55% 45% 35% 35%;
     transform-origin: bottom;
     background:
         linear-gradient(
@@ -448,24 +448,22 @@ body {
    SITE
 ========================================================= */
 
+/*
+   IMPORTANT :
+   Le site reste maintenant visible sous le loader.
+   Le loader est simplement une couche au-dessus.
+   Cela évite qu'un problème de script laisse la page
+   complètement invisible.
+*/
+
 #site {
     position: relative;
     z-index: 10;
     width: 100%;
     min-height: 100vh;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transform: translateY(15px);
-    transition:
-        opacity 0.8s ease,
-        transform 0.8s ease;
-}
-
-#site.visible {
-    opacity: 1 !important;
-    visibility: visible !important;
-    pointer-events: auto !important;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
     transform: translateY(0);
 }
 
@@ -479,16 +477,12 @@ header {
     z-index: 100;
     width: 100%;
     height: 76px;
-    padding:
-        0
-        5vw;
+    padding: 0 5vw;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background:
-        rgba(5,3,10,0.76);
-    border-bottom:
-        1px solid rgba(168,85,247,0.15);
+    background: rgba(5,3,10,0.76);
+    border-bottom: 1px solid rgba(168,85,247,0.15);
     backdrop-filter: blur(22px);
 }
 
@@ -501,8 +495,7 @@ header {
 
 .logo span {
     color: #a855f7;
-    text-shadow:
-        0 0 20px #a855f7;
+    text-shadow: 0 0 20px #a855f7;
 }
 
 .nav-actions {
@@ -522,9 +515,7 @@ header {
     color: white;
     font-size: 14px;
     font-weight: 900;
-    padding:
-        13px
-        18px;
+    padding: 13px 18px;
     border-radius: 13px;
     transition:
         transform 0.2s ease,
@@ -586,11 +577,8 @@ header {
     position: relative;
     z-index: 5;
     width: 100%;
-    min-height:
-        calc(100vh - 76px);
-    padding:
-        75px 5vw
-        90px;
+    min-height: calc(100vh - 76px);
+    padding: 75px 5vw 90px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -599,9 +587,7 @@ header {
 .hero-inner {
     width: min(1150px, 100%);
     display: grid;
-    grid-template-columns:
-        1.05fr
-        0.95fr;
+    grid-template-columns: 1.05fr 0.95fr;
     gap: 70px;
     align-items: center;
 }
@@ -610,14 +596,10 @@ header {
     display: inline-flex;
     align-items: center;
     gap: 9px;
-    padding:
-        9px
-        14px;
+    padding: 9px 14px;
     border-radius: 999px;
-    background:
-        rgba(168,85,247,0.1);
-    border:
-        1px solid rgba(168,85,247,0.25);
+    background: rgba(168,85,247,0.1);
+    border: 1px solid rgba(168,85,247,0.25);
     color: #d8b4fe;
     font-size: 12px;
     font-weight: 900;
@@ -629,14 +611,12 @@ header {
     height: 7px;
     border-radius: 50%;
     background: #c084fc;
-    box-shadow:
-        0 0 12px #a855f7;
+    box-shadow: 0 0 12px #a855f7;
 }
 
 h1 {
     margin-top: 24px;
-    font-size:
-        clamp(54px, 8vw, 110px);
+    font-size: clamp(54px, 8vw, 110px);
     line-height: 0.88;
     letter-spacing: -6px;
     font-weight: 1000;
@@ -671,9 +651,7 @@ h1 {
 }
 
 .big-button {
-    padding:
-        17px
-        23px;
+    padding: 17px 23px;
     font-size: 15px;
 }
 
@@ -693,8 +671,7 @@ h1 {
             rgba(255,255,255,0.09),
             rgba(255,255,255,0.025)
         );
-    border:
-        1px solid rgba(168,85,247,0.24);
+    border: 1px solid rgba(168,85,247,0.24);
     box-shadow:
         0 30px 100px rgba(0,0,0,0.45),
         inset 0 0 70px rgba(124,58,237,0.06);
@@ -708,8 +685,7 @@ h1 {
     right: -110px;
     top: -110px;
     border-radius: 50%;
-    background:
-        rgba(168,85,247,0.15);
+    background: rgba(168,85,247,0.15);
     filter: blur(55px);
 }
 
@@ -728,8 +704,7 @@ h1 {
             rgba(124,58,237,0.32),
             rgba(168,85,247,0.1)
         );
-    border:
-        1px solid rgba(192,132,252,0.25);
+    border: 1px solid rgba(192,132,252,0.25);
     font-size: 50px;
     box-shadow:
         0 0 40px rgba(124,58,237,0.28);
@@ -778,12 +753,9 @@ h1 {
 }
 
 .meta {
-    padding:
-        8px
-        11px;
+    padding: 8px 11px;
     border-radius: 10px;
-    background:
-        rgba(255,255,255,0.055);
+    background: rgba(255,255,255,0.055);
     color: #c4b5fd;
     font-size: 12px;
     font-weight: 800;
@@ -798,10 +770,7 @@ h1 {
     z-index: 5;
     width: min(1150px, 90%);
     margin: 0 auto;
-    padding:
-        30px
-        0
-        120px;
+    padding: 30px 0 120px;
 }
 
 .features-title {
@@ -812,8 +781,7 @@ h1 {
 
 .features-grid {
     display: grid;
-    grid-template-columns:
-        repeat(3, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 17px;
     margin-top: 35px;
 }
@@ -821,10 +789,8 @@ h1 {
 .feature {
     padding: 28px;
     border-radius: 22px;
-    background:
-        rgba(255,255,255,0.035);
-    border:
-        1px solid rgba(255,255,255,0.07);
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(255,255,255,0.07);
     transition:
         transform 0.25s ease,
         border-color 0.25s ease,
@@ -833,10 +799,8 @@ h1 {
 
 .feature:hover {
     transform: translateY(-6px);
-    border-color:
-        rgba(168,85,247,0.3);
-    background:
-        rgba(168,85,247,0.055);
+    border-color: rgba(168,85,247,0.3);
+    background: rgba(168,85,247,0.055);
 }
 
 .feature-icon {
@@ -863,8 +827,7 @@ h1 {
     position: fixed;
     inset: 0;
     z-index: 500;
-    background:
-        rgba(0,0,0,0.72);
+    background: rgba(0,0,0,0.72);
     backdrop-filter: blur(7px);
     opacity: 0;
     visibility: hidden;
@@ -902,8 +865,7 @@ h1 {
     box-shadow:
         0 0 80px rgba(0,0,0,0.65);
     transition:
-        transform 0.42s
-        cubic-bezier(.22,.8,.22,1);
+        transform 0.42s cubic-bezier(.22,.8,.22,1);
 }
 
 #quantityDrawer {
@@ -949,8 +911,7 @@ h1 {
     border: 0;
     border-radius: 13px;
     cursor: pointer;
-    background:
-        rgba(255,255,255,0.07);
+    background: rgba(255,255,255,0.07);
     color: white;
     font-size: 24px;
     transition:
@@ -960,8 +921,7 @@ h1 {
 
 .close-button:hover {
     transform: rotate(90deg);
-    background:
-        rgba(168,85,247,0.2);
+    background: rgba(168,85,247,0.2);
 }
 
 /* =========================================================
@@ -972,10 +932,8 @@ h1 {
     margin-top: 28px;
     padding: 24px;
     border-radius: 22px;
-    background:
-        rgba(255,255,255,0.045);
-    border:
-        1px solid rgba(255,255,255,0.07);
+    background: rgba(255,255,255,0.045);
+    border: 1px solid rgba(255,255,255,0.07);
 }
 
 .quantity-product-name {
@@ -1006,10 +964,8 @@ h1 {
     margin-top: 12px;
     padding: 8px;
     border-radius: 17px;
-    background:
-        rgba(0,0,0,0.28);
-    border:
-        1px solid rgba(255,255,255,0.08);
+    background: rgba(0,0,0,0.28);
+    border: 1px solid rgba(255,255,255,0.08);
 }
 
 .quantity-button {
@@ -1018,15 +974,13 @@ h1 {
     border: 0;
     border-radius: 13px;
     cursor: pointer;
-    background:
-        rgba(168,85,247,0.12);
+    background: rgba(168,85,247,0.12);
     color: white;
     font-size: 25px;
 }
 
 .quantity-button:hover {
-    background:
-        rgba(168,85,247,0.25);
+    background: rgba(168,85,247,0.25);
 }
 
 .quantity-value {
@@ -1041,10 +995,8 @@ h1 {
     margin-top: 25px;
     padding: 20px;
     border-radius: 17px;
-    background:
-        rgba(124,58,237,0.09);
-    border:
-        1px solid rgba(168,85,247,0.17);
+    background: rgba(124,58,237,0.09);
+    border: 1px solid rgba(168,85,247,0.17);
 }
 
 .member-total-row {
@@ -1116,10 +1068,8 @@ h1 {
     margin-top: 20px;
     padding: 20px;
     border-radius: 19px;
-    background:
-        rgba(255,255,255,0.045);
-    border:
-        1px solid rgba(255,255,255,0.07);
+    background: rgba(255,255,255,0.045);
+    border: 1px solid rgba(255,255,255,0.07);
 }
 
 .cart-item-top {
@@ -1204,14 +1154,10 @@ h1 {
     left: 50%;
     bottom: 25px;
     z-index: 1000;
-    padding:
-        13px
-        18px;
+    padding: 13px 18px;
     border-radius: 13px;
-    background:
-        rgba(20,12,30,0.96);
-    border:
-        1px solid rgba(168,85,247,0.3);
+    background: rgba(20,12,30,0.96);
+    border: 1px solid rgba(168,85,247,0.3);
     box-shadow:
         0 15px 40px rgba(0,0,0,0.4);
     color: white;
@@ -1219,8 +1165,7 @@ h1 {
     font-weight: 800;
     opacity: 0;
     visibility: hidden;
-    transform:
-        translate(-50%, 20px);
+    transform: translate(-50%, 20px);
     transition:
         opacity 0.3s ease,
         visibility 0.3s ease,
@@ -1230,8 +1175,7 @@ h1 {
 #toast.show {
     opacity: 1;
     visibility: visible;
-    transform:
-        translate(-50%, 0);
+    transform: translate(-50%, 0);
 }
 
 /* =========================================================
@@ -1241,8 +1185,7 @@ h1 {
 footer {
     position: relative;
     z-index: 5;
-    padding:
-        40px 5vw;
+    padding: 40px 5vw;
     text-align: center;
     color: #686170;
     border-top:
@@ -1257,13 +1200,11 @@ footer {
 @media (max-width: 850px) {
 
     header {
-        padding:
-            0 20px;
+        padding: 0 20px;
     }
 
     .hero {
-        padding:
-            55px 20px 80px;
+        padding: 55px 20px 80px;
     }
 
     .hero-inner {
@@ -1272,8 +1213,7 @@ footer {
     }
 
     .features {
-        width:
-            calc(100% - 40px);
+        width: calc(100% - 40px);
     }
 
     .features-grid {
@@ -1338,7 +1278,6 @@ footer {
 ========================================================= */
 
 @keyframes loaderSpin {
-
     from {
         transform: rotate(0deg);
     }
@@ -1346,11 +1285,9 @@ footer {
     to {
         transform: rotate(360deg);
     }
-
 }
 
 @keyframes loaderReverse {
-
     from {
         transform: rotate(0deg);
     }
@@ -1358,11 +1295,9 @@ footer {
     to {
         transform: rotate(-360deg);
     }
-
 }
 
 @keyframes loaderLogoPulse {
-
     0%,
     100% {
         transform: scale(1);
@@ -1373,11 +1308,9 @@ footer {
         transform: scale(1.04);
         opacity: 1;
     }
-
 }
 
 @keyframes loaderCore {
-
     0%,
     100% {
         transform:
@@ -1392,11 +1325,9 @@ footer {
             scale(1.15);
         opacity: 1;
     }
-
 }
 
 @keyframes loaderParticle {
-
     from {
         transform:
             translateY(110vh)
@@ -1414,11 +1345,9 @@ footer {
             scale(1.2);
         opacity: 0;
     }
-
 }
 
 @keyframes fireRise {
-
     from {
         transform:
             translateY(100%);
@@ -1428,11 +1357,9 @@ footer {
         transform:
             translateY(0);
     }
-
 }
 
 @keyframes flameDance {
-
     from {
         transform:
             scaleY(0.8)
@@ -1444,11 +1371,9 @@ footer {
             scaleY(1.15)
             rotate(5deg);
     }
-
 }
 
 @keyframes emberRise {
-
     0% {
         transform:
             translateY(0)
@@ -1468,11 +1393,9 @@ footer {
             scale(0);
         opacity: 0;
     }
-
 }
 
 @keyframes starBlink {
-
     from {
         opacity: 0.2;
         transform: scale(0.7);
@@ -1482,11 +1405,9 @@ footer {
         opacity: 1;
         transform: scale(1.4);
     }
-
 }
 
 @keyframes lightningFlash {
-
     0%,
     80%,
     100% {
@@ -1508,11 +1429,9 @@ footer {
     86% {
         opacity: 0;
     }
-
 }
 
 @keyframes productFloat {
-
     0%,
     100% {
         transform: translateY(0);
@@ -1521,7 +1440,6 @@ footer {
     50% {
         transform: translateY(-10px);
     }
-
 }
 
 </style>
@@ -1586,7 +1504,6 @@ footer {
     <div class="fire-background"></div>
 
     <div class="flames">
-
         <div class="flame"></div>
         <div class="flame"></div>
         <div class="flame"></div>
@@ -1599,7 +1516,6 @@ footer {
         <div class="flame"></div>
         <div class="flame"></div>
         <div class="flame"></div>
-
     </div>
 
     <div
@@ -1672,9 +1588,7 @@ footer {
 
                     <div class="badge">
 
-                        <span
-                            class="badge-dot">
-                        </span>
+                        <span class="badge-dot"></span>
 
                         NOVA MEMBERS
 
@@ -2044,7 +1958,7 @@ footer {
 <div id="toast"></div>
 
 <!-- =====================================================
-     LOADER SCRIPT
+     LOADER
 ===================================================== -->
 
 <script>
@@ -2055,9 +1969,6 @@ footer {
 
     const loader =
         document.getElementById("loader");
-
-    const site =
-        document.getElementById("site");
 
     const fire =
         document.getElementById("fireTransition");
@@ -2072,7 +1983,6 @@ footer {
         document.getElementById("loaderStatus");
 
     let progress = 0;
-
     let finished = false;
 
     const messages = [
@@ -2083,19 +1993,6 @@ footer {
         "FINALISATION...",
         "PRÊT."
     ];
-
-    function showSite() {
-
-        if (!site) {
-            return;
-        }
-
-        site.style.opacity = "1";
-        site.style.visibility = "visible";
-        site.style.pointerEvents = "auto";
-        site.classList.add("visible");
-
-    }
 
     function hideLoader() {
 
@@ -2120,7 +2017,6 @@ footer {
         }
 
         finished = true;
-
         progress = 100;
 
         if (percent) {
@@ -2138,17 +2034,6 @@ footer {
         if (fire) {
             fire.classList.add("active");
         }
-
-        /*
-         * LE SITE EST AFFICHÉ ICI AVANT
-         * LA DISPARITION DU LOADER.
-         */
-
-        setTimeout(function () {
-
-            showSite();
-
-        }, 1700);
 
         setTimeout(function () {
 
@@ -2194,9 +2079,7 @@ footer {
 
                 const index =
                     Math.min(
-                        Math.floor(
-                            progress / 20
-                        ),
+                        Math.floor(progress / 20),
                         messages.length - 1
                     );
 
@@ -2208,18 +2091,11 @@ footer {
             if (progress >= 100) {
 
                 clearInterval(interval);
-
                 finish();
 
             }
 
         }, 60);
-
-    /*
-     * SÉCURITÉ ABSOLUE :
-     * le site sera visible au plus tard
-     * après 6 secondes.
-     */
 
     setTimeout(function () {
 
@@ -2227,9 +2103,7 @@ footer {
 
             clearInterval(interval);
 
-            showSite();
-
-            hideLoader();
+            finish();
 
         }
 
@@ -2243,7 +2117,10 @@ footer {
      APP.JS
 ===================================================== -->
 
-<script src="./APP.JS"></script>
+<script
+    src="./APP.JS"
+    defer>
+</script>
 
 </body>
 </html>
