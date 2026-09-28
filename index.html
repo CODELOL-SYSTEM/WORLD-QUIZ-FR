@@ -3,1454 +3,756 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NOVA MEMBERS</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#070511">
+<title>MEMBERS SHOP</title>
 
 <style>
 *{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
 }
 
-html,
+html{
+  scroll-behavior:smooth;
+}
+
 body{
-    width:100%;
-    min-height:100%;
-    background:#030107;
-    color:#fff;
-    font-family:Arial,Helvetica,sans-serif;
-    overflow-x:hidden;
+  min-height:100vh;
+  overflow-x:hidden;
+  font-family:Arial,Helvetica,sans-serif;
+  color:#fff;
+  background:
+    radial-gradient(circle at 50% -10%,rgba(126,74,255,.28),transparent 38%),
+    radial-gradient(circle at 0% 100%,rgba(90,35,220,.18),transparent 35%),
+    #06040d;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:-2;
+  background-image:
+    linear-gradient(rgba(155,100,255,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(155,100,255,.035) 1px,transparent 1px);
+  background-size:55px 55px;
+}
+
+button,
+input,
+select{
+  font:inherit;
 }
 
 button{
-    font:inherit;
-    cursor:pointer;
+  cursor:pointer;
 }
-
-/* =========================================================
-   INTRO
-========================================================= */
-
-#intro{
-    position:fixed;
-    inset:0;
-    z-index:10000;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    overflow:hidden;
-    background:
-        radial-gradient(
-            circle at center,
-            #29104e 0%,
-            #10051d 42%,
-            #020106 100%
-        );
-}
-
-#intro.finished{
-    opacity:0;
-    visibility:hidden;
-    pointer-events:none;
-    transition:
-        opacity .8s ease,
-        visibility .8s ease;
-}
-
-.intro-content{
-    position:relative;
-    z-index:20;
-    text-align:center;
-}
-
-.intro-nova{
-    font-size:clamp(52px,10vw,110px);
-    font-weight:1000;
-    letter-spacing:12px;
-    line-height:.9;
-    text-shadow:
-        0 0 10px #fff,
-        0 0 30px #a855f7,
-        0 0 70px #7c3aed;
-}
-
-.intro-members{
-    margin-top:14px;
-    font-size:clamp(24px,4vw,45px);
-    font-weight:900;
-    letter-spacing:10px;
-    color:#c084fc;
-    text-shadow:
-        0 0 10px #c084fc,
-        0 0 35px #7c3aed;
-}
-
-#loadingText{
-    margin-top:35px;
-    min-height:24px;
-    color:#c8b9d4;
-    font-size:14px;
-    letter-spacing:2px;
-}
-
-.loading-bar{
-    width:min(350px,75vw);
-    height:4px;
-    margin:18px auto 0;
-    border-radius:99px;
-    overflow:hidden;
-    background:rgba(255,255,255,.08);
-}
-
-.loading-fill{
-    width:0%;
-    height:100%;
-    border-radius:99px;
-    background:linear-gradient(
-        90deg,
-        #7c3aed,
-        #c084fc
-    );
-    box-shadow:0 0 20px #a855f7;
-    transition:width .4s ease;
-}
-
-/* =========================================================
-   BALL
-========================================================= */
-
-#ball{
-    position:absolute;
-    z-index:100;
-    left:-150px;
-    top:50%;
-    width:58px;
-    height:58px;
-    border-radius:50%;
-    opacity:0;
-    background:
-        radial-gradient(
-            circle at 30% 25%,
-            #fff 0 5%,
-            #aaa 12%,
-            #444 35%,
-            #080808 72%
-        );
-    box-shadow:
-        0 0 15px #fff,
-        0 0 40px #aaa,
-        0 0 80px rgba(255,255,255,.5);
-}
-
-#ball.fly{
-    opacity:1;
-    animation:
-        ballFly 1.15s
-        cubic-bezier(.05,.8,.12,1)
-        forwards;
-}
-
-@keyframes ballFly{
-    from{
-        left:-150px;
-        transform:
-            translateY(-50%)
-            rotate(0deg);
-    }
-
-    to{
-        left:calc(50% - 29px);
-        transform:
-            translateY(-50%)
-            rotate(1800deg);
-    }
-}
-
-/* =========================================================
-   IMPACT
-========================================================= */
-
-#impact{
-    position:absolute;
-    z-index:110;
-    left:50%;
-    top:50%;
-    width:30px;
-    height:30px;
-    border-radius:50%;
-    background:#fff;
-    opacity:0;
-    transform:
-        translate(-50%,-50%)
-        scale(.1);
-    pointer-events:none;
-}
-
-#impact.active{
-    animation:
-        impactBurst .8s ease-out forwards;
-}
-
-@keyframes impactBurst{
-    0%{
-        opacity:1;
-        transform:
-            translate(-50%,-50%)
-            scale(.1);
-    }
-
-    100%{
-        opacity:0;
-        transform:
-            translate(-50%,-50%)
-            scale(20);
-        filter:blur(15px);
-    }
-}
-
-/* =========================================================
-   DEBRIS
-========================================================= */
-
-#debris{
-    position:absolute;
-    inset:0;
-    z-index:80;
-    pointer-events:none;
-}
-
-.debris-piece{
-    position:absolute;
-    left:50%;
-    top:50%;
-    width:7px;
-    height:7px;
-    border-radius:1px;
-    background:#cfcfcf;
-    opacity:0;
-    transform:
-        translate(-50%,-50%);
-}
-
-#intro.explode .debris-piece{
-    animation:
-        debrisFly var(--duration)
-        cubic-bezier(.15,.8,.2,1)
-        forwards;
-    animation-delay:var(--delay);
-}
-
-@keyframes debrisFly{
-    0%{
-        opacity:1;
-        transform:
-            translate(-50%,-50%)
-            rotate(0deg)
-            scale(1);
-    }
-
-    45%{
-        opacity:.95;
-    }
-
-    100%{
-        opacity:.75;
-        transform:
-            translate(
-                calc(-50% + var(--x)),
-                calc(-50% + var(--y))
-            )
-            rotate(var(--rotate))
-            scale(.35);
-    }
-}
-
-/* =========================================================
-   TRASH CAN
-========================================================= */
-
-#trash{
-    position:absolute;
-    z-index:120;
-    left:50%;
-    bottom:-300px;
-    width:130px;
-    height:170px;
-    opacity:0;
-    transform:
-        translateX(-50%)
-        rotate(0deg);
-    pointer-events:none;
-}
-
-#intro.trash-visible #trash{
-    opacity:1;
-    animation:
-        trashAppear .9s ease forwards;
-}
-
-@keyframes trashAppear{
-    from{
-        bottom:-300px;
-        transform:
-            translateX(-50%)
-            rotate(0deg);
-    }
-
-    to{
-        bottom:45px;
-        transform:
-            translateX(-50%)
-            rotate(0deg);
-    }
-}
-
-.trash-lid{
-    position:absolute;
-    top:0;
-    left:-8px;
-    width:146px;
-    height:25px;
-    border-radius:8px 8px 4px 4px;
-    background:#3d3d45;
-    border:2px solid #666;
-}
-
-.trash-body{
-    position:absolute;
-    left:10px;
-    top:22px;
-    width:110px;
-    height:145px;
-    border-radius:8px 8px 18px 18px;
-    background:
-        linear-gradient(
-            90deg,
-            #25252c,
-            #45454d,
-            #202027
-        );
-    border:2px solid #5e5e68;
-    box-shadow:
-        0 20px 60px rgba(0,0,0,.7);
-}
-
-.trash-mark{
-    position:absolute;
-    left:50%;
-    top:50%;
-    transform:translate(-50%,-50%);
-    font-size:48px;
-}
-
-#intro.trash-open .trash-lid{
-    animation:
-        lidOpen .65s ease forwards;
-}
-
-@keyframes lidOpen{
-    to{
-        transform:
-            translateY(-25px)
-            rotate(-18deg);
-        transform-origin:right center;
-    }
-}
-
-/* =========================================================
-   SCREEN TILT
-========================================================= */
-
-#intro.tilt{
-    animation:
-        screenTilt 1.2s ease-in-out;
-}
-
-@keyframes screenTilt{
-    0%{
-        transform:rotate(0deg);
-    }
-
-    35%{
-        transform:rotate(-5deg);
-    }
-
-    70%{
-        transform:rotate(4deg);
-    }
-
-    100%{
-        transform:rotate(0deg);
-    }
-}
-
-/* =========================================================
-   BACKGROUND
-========================================================= */
-
-#space{
-    position:fixed;
-    inset:0;
-    z-index:0;
-    pointer-events:none;
-    overflow:hidden;
-    background:
-        radial-gradient(
-            circle at 20% 20%,
-            rgba(124,58,237,.15),
-            transparent 35%
-        ),
-        radial-gradient(
-            circle at 80% 80%,
-            rgba(168,85,247,.1),
-            transparent 35%
-        ),
-        #05020d;
-}
-
-.star{
-    position:absolute;
-    border-radius:50%;
-    background:#fff;
-    opacity:.7;
-    animation:
-        blink 2.5s ease-in-out infinite;
-}
-
-@keyframes blink{
-    0%,100%{
-        opacity:.15;
-    }
-
-    50%{
-        opacity:.9;
-    }
-}
-
-/* =========================================================
-   SITE
-========================================================= */
-
-#site{
-    position:relative;
-    z-index:10;
-    min-height:100vh;
-    opacity:0;
-    transform:translateY(18px);
-    transition:
-        opacity .9s ease,
-        transform .9s ease;
-}
-
-#site.visible{
-    opacity:1;
-    transform:translateY(0);
-}
-
-.container{
-    width:min(1180px,calc(100% - 36px));
-    margin:auto;
-}
-
-/* =========================================================
-   HEADER
-========================================================= */
 
 header{
-    position:sticky;
-    top:0;
-    z-index:100;
-    background:rgba(5,2,13,.82);
-    backdrop-filter:blur(18px);
-    border-bottom:
-        1px solid rgba(168,85,247,.18);
+  position:relative;
+  padding:30px 20px 80px;
+  text-align:center;
 }
 
-.header-inner{
-    min-height:74px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:20px;
+.topbar{
+  width:min(1100px,100%);
+  margin:auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
 }
 
-.brand{
-    font-size:20px;
-    font-weight:1000;
-    letter-spacing:4px;
+.logo{
+  color:#fff;
+  font-size:22px;
+  font-weight:1000;
+  letter-spacing:3px;
 }
 
-.brand span{
-    color:#a855f7;
+.logo span{
+  color:#a970ff;
 }
 
-.header-actions{
-    display:flex;
-    gap:10px;
+.cartButton{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  border:1px solid rgba(175,110,255,.35);
+  border-radius:13px;
+  padding:12px 16px;
+  color:#fff;
+  background:rgba(17,10,31,.85);
+  transition:.25s;
 }
 
-/* =========================================================
-   BUTTONS
-========================================================= */
-
-.btn{
-    border:0;
-    border-radius:13px;
-    padding:12px 18px;
-    color:#fff;
-    font-weight:800;
-    transition:
-        transform .2s ease,
-        box-shadow .2s ease;
+.cartButton:hover{
+  transform:translateY(-2px);
+  border-color:#a970ff;
+  box-shadow:0 10px 35px rgba(133,73,255,.2);
 }
 
-.btn:hover{
-    transform:translateY(-2px);
+.cartCount{
+  min-width:23px;
+  height:23px;
+  padding:0 6px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50px;
+  background:#8c4cff;
+  font-size:11px;
+  font-weight:1000;
 }
-
-.btn-purple{
-    background:
-        linear-gradient(
-            135deg,
-            #7c3aed,
-            #a855f7
-        );
-    box-shadow:
-        0 10px 35px rgba(124,58,237,.28);
-}
-
-.btn-dark{
-    background:rgba(255,255,255,.06);
-    border:
-        1px solid rgba(255,255,255,.12);
-}
-
-/* =========================================================
-   HERO
-========================================================= */
 
 .hero{
-    padding:90px 0 55px;
+  width:min(900px,100%);
+  margin:95px auto 0;
 }
 
-.hero-grid{
-    display:grid;
-    grid-template-columns:1.1fr .9fr;
-    gap:55px;
-    align-items:center;
-}
-
-.eyebrow{
-    display:inline-block;
-    padding:8px 12px;
-    border-radius:999px;
-    color:#c084fc;
-    background:rgba(168,85,247,.12);
-    border:
-        1px solid rgba(168,85,247,.25);
-    font-size:13px;
-    font-weight:800;
-    margin-bottom:18px;
+.heroBadge{
+  display:inline-block;
+  padding:9px 16px;
+  border:1px solid rgba(166,102,255,.35);
+  border-radius:50px;
+  color:#b985ff;
+  background:rgba(130,70,255,.08);
+  font-size:10px;
+  font-weight:1000;
+  letter-spacing:3px;
 }
 
 .hero h1{
-    font-size:clamp(48px,8vw,88px);
-    line-height:.95;
-    letter-spacing:-4px;
-    margin-bottom:24px;
+  margin-top:25px;
+  font-size:clamp(50px,10vw,100px);
+  line-height:.95;
+  font-weight:1000;
+  letter-spacing:4px;
+  background:linear-gradient(90deg,#fff,#c496ff,#8d4dff,#fff);
+  background-size:250%;
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:shine 5s linear infinite;
 }
 
-.hero h1 span{
-    color:#a855f7;
-    text-shadow:
-        0 0 35px rgba(168,85,247,.45);
+@keyframes shine{
+  to{
+    background-position:-250%;
+  }
 }
 
 .hero p{
-    max-width:650px;
-    color:#aaa2b8;
-    font-size:18px;
-    line-height:1.7;
-    margin-bottom:28px;
+  max-width:650px;
+  margin:24px auto 0;
+  color:#8e879d;
+  font-size:15px;
+  line-height:1.7;
 }
 
-.hero-actions{
-    display:flex;
-    flex-wrap:wrap;
-    gap:12px;
+.heroButton{
+  margin-top:32px;
+  border:0;
+  border-radius:13px;
+  padding:15px 26px;
+  background:linear-gradient(135deg,#9b5cff,#6e35e8);
+  color:#fff;
+  font-weight:1000;
+  box-shadow:0 12px 40px rgba(125,63,255,.28);
+  transition:.25s;
 }
 
-/* =========================================================
-   PRODUCT
-========================================================= */
-
-.product-card{
-    position:relative;
-    padding:30px;
-    border-radius:28px;
-    overflow:hidden;
-    background:
-        linear-gradient(
-            145deg,
-            rgba(124,58,237,.16),
-            rgba(255,255,255,.035)
-        );
-    border:
-        1px solid rgba(168,85,247,.28);
-    box-shadow:
-        0 25px 80px rgba(0,0,0,.35);
+.heroButton:hover{
+  transform:translateY(-3px);
+  box-shadow:0 18px 50px rgba(125,63,255,.4);
 }
 
-.product-icon{
-    width:90px;
-    height:90px;
-    display:grid;
-    place-items:center;
-    border-radius:24px;
-    background:
-        linear-gradient(
-            135deg,
-            #7c3aed,
-            #a855f7
-        );
-    font-size:42px;
-    margin-bottom:25px;
+main{
+  width:min(1100px,calc(100% - 30px));
+  margin:auto;
+  padding-bottom:100px;
 }
 
-.product-card h2{
-    font-size:38px;
-    margin-bottom:10px;
+.sectionTitle{
+  margin:0 0 25px;
+  color:#8c829d;
+  font-size:11px;
+  font-weight:1000;
+  letter-spacing:3px;
 }
 
-.description{
-    color:#aaa2b8;
-    line-height:1.6;
-    margin-bottom:25px;
+.products{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:20px;
+}
+
+.product{
+  position:relative;
+  overflow:hidden;
+  padding:27px;
+  border:1px solid rgba(165,103,255,.17);
+  border-radius:23px;
+  background:
+    linear-gradient(145deg,rgba(25,15,44,.96),rgba(9,6,18,.98));
+  box-shadow:0 25px 70px rgba(0,0,0,.35);
+  transition:.3s;
+}
+
+.product::before{
+  content:"";
+  position:absolute;
+  width:180px;
+  height:180px;
+  top:-100px;
+  right:-80px;
+  border-radius:50%;
+  background:rgba(135,73,255,.14);
+  filter:blur(5px);
+}
+
+.product:hover{
+  transform:translateY(-5px);
+  border-color:rgba(165,103,255,.45);
+  box-shadow:
+    0 30px 80px rgba(0,0,0,.5),
+    0 0 35px rgba(128,68,255,.1);
+}
+
+.productTop{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+}
+
+.productIcon{
+  width:62px;
+  height:62px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:18px;
+  border:1px solid rgba(175,110,255,.4);
+  background:rgba(126,66,255,.1);
+  font-size:28px;
+}
+
+.productNumber{
+  color:#62566f;
+  font-size:11px;
+  font-weight:1000;
+}
+
+.product h2{
+  position:relative;
+  margin-top:22px;
+  font-size:25px;
+}
+
+.productDescription{
+  position:relative;
+  min-height:50px;
+  margin-top:10px;
+  color:#847b91;
+  font-size:13px;
+  line-height:1.6;
+}
+
+.priceRow{
+  position:relative;
+  display:flex;
+  align-items:baseline;
+  gap:8px;
+  margin-top:23px;
 }
 
 .price{
-    font-size:34px;
-    font-weight:1000;
+  font-size:34px;
+  font-weight:1000;
 }
 
-.price small{
-    color:#8e8798;
-    font-size:14px;
+.priceSuffix{
+  color:#746b82;
+  font-size:12px;
 }
 
-.product-actions{
-    margin-top:22px;
+.productActions{
+  position:relative;
+  display:flex;
+  gap:10px;
+  margin-top:23px;
 }
 
-.product-actions .btn{
-    width:100%;
+.chooseButton{
+  flex:1;
+  border:0;
+  border-radius:11px;
+  padding:14px;
+  color:#fff;
+  background:linear-gradient(135deg,#9255ff,#6d35e7);
+  font-size:13px;
+  font-weight:1000;
+  transition:.25s;
 }
 
-/* =========================================================
-   FEATURES
-========================================================= */
-
-.features{
-    padding:60px 0 100px;
+.chooseButton:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 35px rgba(125,63,255,.3);
 }
 
-.feature-grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:18px;
+.addDirect{
+  width:48px;
+  border:1px solid rgba(165,103,255,.25);
+  border-radius:11px;
+  color:#fff;
+  background:#120b20;
+  font-size:20px;
+  transition:.25s;
 }
 
-.feature{
-    padding:24px;
-    border-radius:20px;
-    background:rgba(255,255,255,.035);
-    border:
-        1px solid rgba(255,255,255,.08);
+.addDirect:hover{
+  border-color:#a970ff;
 }
 
-.feature-icon{
-    font-size:28px;
-    margin-bottom:12px;
+.empty{
+  padding:30px;
+  border:1px dashed rgba(165,103,255,.2);
+  border-radius:18px;
+  text-align:center;
+  color:#756c82;
 }
 
-.feature h3{
-    margin-bottom:8px;
+.overlay{
+  position:fixed;
+  inset:0;
+  z-index:100;
+  background:rgba(0,0,0,.68);
+  backdrop-filter:blur(6px);
+  opacity:0;
+  pointer-events:none;
+  transition:.25s;
 }
 
-.feature p{
-    color:#9e97a8;
-    line-height:1.5;
+.overlay.active{
+  opacity:1;
+  pointer-events:auto;
 }
-
-/* =========================================================
-   FOOTER
-========================================================= */
-
-footer{
-    padding:30px 0;
-    text-align:center;
-    color:#777080;
-    border-top:
-        1px solid rgba(255,255,255,.08);
-}
-
-/* =========================================================
-   OVERLAY
-========================================================= */
-
-#drawerOverlay{
-    position:fixed;
-    inset:0;
-    z-index:500;
-    opacity:0;
-    visibility:hidden;
-    pointer-events:none;
-    background:rgba(0,0,0,.65);
-    backdrop-filter:blur(5px);
-    transition:
-        opacity .3s ease,
-        visibility .3s ease;
-}
-
-#drawerOverlay.active{
-    opacity:1;
-    visibility:visible;
-    pointer-events:auto;
-}
-
-/* =========================================================
-   DRAWERS
-========================================================= */
 
 .drawer{
-    position:fixed;
-    top:0;
-    bottom:0;
-    z-index:600;
-    width:min(470px,94vw);
-    overflow-y:auto;
-    background:
-        linear-gradient(
-            180deg,
-            #10071d,
-            #07030d
-        );
-    box-shadow:
-        0 0 80px rgba(0,0,0,.65);
-    transition:
-        transform .4s cubic-bezier(.22,.61,.36,1);
+  position:fixed;
+  right:0;
+  top:0;
+  bottom:0;
+  z-index:110;
+  width:min(480px,100%);
+  padding:25px;
+  overflow-y:auto;
+  background:
+    linear-gradient(180deg,#100a1c,#07050d);
+  border-left:1px solid rgba(165,103,255,.2);
+  box-shadow:-25px 0 80px rgba(0,0,0,.55);
+  transform:translateX(105%);
+  transition:.3s;
 }
 
-#quantityDrawer{
-    left:0;
-    transform:translateX(-105%);
-    border-right:
-        1px solid rgba(168,85,247,.25);
+.drawer.active{
+  transform:translateX(0);
 }
 
-#quantityDrawer.open{
-    transform:translateX(0);
+.drawerHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  margin-bottom:25px;
 }
 
-#cartDrawer{
-    right:0;
-    transform:translateX(105%);
-    border-left:
-        1px solid rgba(168,85,247,.25);
+.drawerHeader h3{
+  font-size:20px;
 }
 
-#cartDrawer.open{
-    transform:translateX(0);
+.closeButton{
+  width:38px;
+  height:38px;
+  border:1px solid rgba(165,103,255,.2);
+  border-radius:10px;
+  color:#fff;
+  background:#120b1c;
+  font-size:18px;
 }
 
-.drawer-header{
-    position:sticky;
-    top:0;
-    z-index:2;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:22px;
-    background:rgba(16,7,29,.94);
-    backdrop-filter:blur(15px);
-    border-bottom:
-        1px solid rgba(255,255,255,.07);
+.quantityProduct{
+  padding:20px;
+  border:1px solid rgba(165,103,255,.16);
+  border-radius:17px;
+  background:rgba(18,10,31,.8);
 }
 
-.drawer-header h2{
-    font-size:22px;
+.quantityProductName{
+  font-size:19px;
+  font-weight:1000;
 }
 
-.close-btn{
-    width:42px;
-    height:42px;
-    border:0;
-    border-radius:12px;
-    color:#fff;
-    background:rgba(255,255,255,.07);
-    font-size:22px;
+.quantityProductPrice{
+  margin-top:7px;
+  color:#9d6cff;
+  font-size:13px;
+  font-weight:900;
 }
 
-.drawer-body{
-    padding:24px;
+.quantityControls{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:22px;
+  margin:28px 0;
 }
 
-/* =========================================================
-   QUANTITY
-========================================================= */
-
-.quantity-product{
-    padding:24px;
-    border-radius:22px;
-    text-align:center;
-    background:rgba(255,255,255,.045);
-    border:
-        1px solid rgba(255,255,255,.08);
+.quantityButton{
+  width:45px;
+  height:45px;
+  border:1px solid rgba(165,103,255,.25);
+  border-radius:12px;
+  color:#fff;
+  background:#120b20;
+  font-size:22px;
 }
 
-.quantity-product-icon{
-    font-size:55px;
-    margin-bottom:15px;
-}
-
-.quantity-product h3{
-    font-size:30px;
-    margin-bottom:8px;
-}
-
-.quantity-product p{
-    color:#aaa2b8;
-}
-
-.quantity-control{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:22px;
-    margin:32px 0;
-}
-
-.quantity-button{
-    width:52px;
-    height:52px;
-    border:0;
-    border-radius:15px;
-    color:#fff;
-    background:rgba(168,85,247,.16);
-    border:
-        1px solid rgba(168,85,247,.28);
-    font-size:28px;
-    font-weight:900;
-}
-
-#quantityValue{
-    min-width:70px;
-    text-align:center;
-    font-size:36px;
-    font-weight:1000;
+.quantityValue{
+  min-width:55px;
+  text-align:center;
+  font-size:25px;
+  font-weight:1000;
 }
 
 .summary{
-    padding:20px;
-    border-radius:18px;
-    background:rgba(255,255,255,.04);
-    margin-bottom:18px;
+  display:grid;
+  gap:10px;
+  margin-top:20px;
 }
 
-.summary-row{
-    display:flex;
-    justify-content:space-between;
-    padding:10px 0;
-    color:#bdb5c8;
+.summaryLine{
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+  color:#8b8198;
+  font-size:13px;
 }
 
-.summary-row strong{
-    color:#fff;
+.summaryLine strong{
+  color:#fff;
 }
 
-.summary-total{
-    margin-top:8px;
-    padding-top:16px;
-    border-top:
-        1px solid rgba(255,255,255,.08);
-    font-size:20px;
+.primaryButton{
+  width:100%;
+  margin-top:22px;
+  border:0;
+  border-radius:12px;
+  padding:16px;
+  background:#8e50ff;
+  color:#fff;
+  font-weight:1000;
+  transition:.25s;
 }
 
-#addCartButton{
-    width:100%;
+.primaryButton:hover{
+  background:#a168ff;
+  transform:translateY(-2px);
 }
 
-/* =========================================================
-   CART
-========================================================= */
-
-.empty-cart{
-    padding:65px 20px;
-    text-align:center;
+.cartItems{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
 }
 
-.empty-cart-icon{
-    font-size:65px;
-    margin-bottom:18px;
+.cartItem{
+  padding:17px;
+  border:1px solid rgba(165,103,255,.15);
+  border-radius:15px;
+  background:rgba(17,9,29,.8);
 }
 
-.empty-cart p{
-    color:#aaa2b8;
+.cartItemTop{
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
 }
 
-.cart-item{
-    padding:20px;
-    margin-bottom:14px;
-    border-radius:18px;
-    background:rgba(255,255,255,.04);
-    border:
-        1px solid rgba(255,255,255,.08);
+.cartItemName{
+  font-weight:1000;
 }
 
-.cart-item-top{
-    display:flex;
-    justify-content:space-between;
-    gap:15px;
+.cartItemQty{
+  margin-top:6px;
+  color:#81778e;
+  font-size:12px;
 }
 
-.cart-item-name{
+.cartItemBottom{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:14px;
+}
+
+.cartItemPrice{
+  color:#b27dff;
+  font-weight:1000;
+}
+
+.removeButton{
+  border:1px solid rgba(255,80,100,.2);
+  border-radius:9px;
+  padding:8px 11px;
+  color:#ff8291;
+  background:rgba(255,60,80,.06);
+  font-size:11px;
+  font-weight:900;
+}
+
+.cartTotal{
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+  margin-top:25px;
+  padding-top:20px;
+  border-top:1px solid rgba(165,103,255,.15);
+  font-size:18px;
+  font-weight:1000;
+}
+
+.cartTotal span:last-child{
+  color:#b47fff;
+}
+
+.paypalButton{
+  width:100%;
+  margin-top:15px;
+  border:0;
+  border-radius:12px;
+  padding:16px;
+  background:#ffc439;
+  color:#111;
+  font-weight:1000;
+  transition:.25s;
+}
+
+.paypalButton:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 35px rgba(255,196,57,.2);
+}
+
+.emailBox{
+  margin-top:20px;
+}
+
+.emailInput{
+  width:100%;
+  border:1px solid rgba(165,103,255,.2);
+  border-radius:11px;
+  outline:0;
+  padding:13px;
+  color:#fff;
+  background:#0e0917;
+}
+
+.emailInput::placeholder{
+  color:#675d73;
+}
+
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:25px;
+  z-index:300;
+  max-width:calc(100% - 30px);
+  padding:13px 18px;
+  border:1px solid rgba(165,103,255,.3);
+  border-radius:12px;
+  color:#fff;
+  background:#130c20;
+  box-shadow:0 15px 45px rgba(0,0,0,.5);
+  transform:translate(-50%,30px);
+  opacity:0;
+  pointer-events:none;
+  transition:.25s;
+  font-size:13px;
+  font-weight:800;
+}
+
+.toast.show{
+  transform:translate(-50%,0);
+  opacity:1;
+}
+
+footer{
+  padding:30px 20px;
+  border-top:1px solid rgba(165,103,255,.1);
+  text-align:center;
+  color:#62596d;
+  font-size:10px;
+  letter-spacing:2px;
+}
+
+@media(max-width:750px){
+  .products{
+    grid-template-columns:1fr;
+  }
+
+  .hero{
+    margin-top:70px;
+  }
+
+  .product{
+    padding:23px;
+  }
+
+  .topbar{
+    align-items:flex-start;
+  }
+
+  .logo{
     font-size:18px;
-    font-weight:900;
+  }
 }
 
-.cart-item-members{
-    margin-top:7px;
-    color:#928a9c;
-    font-size:14px;
-    line-height:1.5;
-}
+@media(max-width:500px){
+  header{
+    padding-left:14px;
+    padding-right:14px;
+  }
 
-.cart-item-price{
-    font-weight:900;
-    white-space:nowrap;
-}
+  main{
+    width:calc(100% - 20px);
+  }
 
-.cart-item-remove{
-    margin-top:16px;
-    padding:8px 11px;
-    border:0;
-    border-radius:9px;
-    color:#fca5a5;
-    background:rgba(239,68,68,.1);
-}
+  .cartButton{
+    padding:10px 12px;
+  }
 
-.cart-total{
-    margin-top:25px;
-    padding:20px;
-    border-radius:20px;
-    background:rgba(124,58,237,.1);
-    border:
-        1px solid rgba(168,85,247,.2);
-}
+  .productActions{
+    flex-direction:column;
+  }
 
-.cart-total-row{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    margin-bottom:18px;
-}
-
-.cart-total-price{
-    font-size:25px;
-}
-
-.paypal-button{
+  .addDirect{
     width:100%;
-    padding:15px;
-    border:0;
-    border-radius:13px;
-    color:#fff;
-    background:
-        linear-gradient(
-            135deg,
-            #0070ba,
-            #003087
-        );
-    font-weight:900;
-}
-
-/* =========================================================
-   TOAST
-========================================================= */
-
-#toast{
-    position:fixed;
-    left:50%;
-    bottom:25px;
-    z-index:20000;
-    padding:14px 20px;
-    border-radius:14px;
-    opacity:0;
-    pointer-events:none;
-    color:#fff;
-    background:rgba(18,10,30,.96);
-    border:
-        1px solid rgba(168,85,247,.3);
-    transform:
-        translate(-50%,25px);
-    transition:
-        opacity .25s ease,
-        transform .25s ease;
-}
-
-#toast.show{
-    opacity:1;
-    transform:
-        translate(-50%,0);
-}
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media(max-width:800px){
-
-    .hero-grid{
-        grid-template-columns:1fr;
-    }
-
-    .feature-grid{
-        grid-template-columns:1fr;
-    }
-
-    .hero{
-        padding-top:60px;
-    }
-
-    .header-inner{
-        min-height:65px;
-    }
-
-    .brand{
-        font-size:16px;
-    }
-
-    .header-actions .btn{
-        padding:10px 12px;
-        font-size:13px;
-    }
+    height:45px;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<!-- =======================================================
-     INTRO
-======================================================= -->
-
-<div id="intro">
-
-    <div class="intro-content">
-
-        <div class="intro-nova">
-            NOVA
-        </div>
-
-        <div class="intro-members">
-            MEMBERS
-        </div>
-
-        <div id="loadingText">
-            CHARGEMENT DU SITE<span class="loading-dots">...</span>
-        </div>
-
-        <div class="loading-bar">
-            <div
-                id="loadingFill"
-                class="loading-fill"
-            ></div>
-        </div>
-
-    </div>
-
-    <div id="ball"></div>
-    <div id="impact"></div>
-    <div id="debris"></div>
-
-    <div id="trash">
-
-        <div class="trash-lid"></div>
-
-        <div class="trash-body">
-
-            <div class="trash-mark">
-                🗑️
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-<!-- =======================================================
-     BACKGROUND
-======================================================= -->
-
-<div id="space"></div>
-
-<!-- =======================================================
-     SITE
-======================================================= -->
-
-<main id="site">
-
 <header>
+  <div class="topbar">
+    <div class="logo">MEMBERS <span>SHOP</span></div>
 
-    <div class="container header-inner">
+    <button class="cartButton" id="openCart">
+      🛒 Panier
+      <span class="cartCount" id="cartCount">0</span>
+    </button>
+  </div>
 
-        <div class="brand">
-            NOVA <span>MEMBERS</span>
-        </div>
+  <div class="hero">
+    <div class="heroBadge">MEMBERS SHOP</div>
 
-        <div class="header-actions">
+    <h1>MEMBERS</h1>
 
-            <button
-                class="btn btn-dark"
-                id="heroCartButton"
-                type="button"
-            >
-                🛒 Panier
-                <span id="cartCount">0</span>
-            </button>
+    <p>
+      Choisis ton produit, sélectionne la quantité et ajoute-le
+      directement à ton panier.
+    </p>
 
-            <button
-                class="btn btn-purple"
-                id="chooseButton"
-                type="button"
-            >
-                Choisir
-            </button>
-
-        </div>
-
-    </div>
-
+    <button class="heroButton" id="scrollProducts">
+      Voir les produits
+    </button>
+  </div>
 </header>
 
-<section class="hero">
+<main id="productsSection">
 
-    <div class="container hero-grid">
+  <div class="sectionTitle">PRODUITS DISPONIBLES</div>
 
-        <div>
-
-            <span class="eyebrow">
-                ✦ NOVA MEMBERS
-            </span>
-
-            <h1>
-                Obtiens tes
-                <span>MEMBERS</span>.
-            </h1>
-
-            <p>
-                Choisis ton pack MEMBERS,
-                sélectionne la quantité,
-                ajoute-la au panier puis continue
-                vers PayPal.
-            </p>
-
-            <div class="hero-actions">
-
-                <button
-                    class="btn btn-purple"
-                    id="heroChooseButton"
-                    type="button"
-                >
-                    Choisir un pack
-                </button>
-
-                <button
-                    class="btn btn-dark"
-                    id="heroCartButton2"
-                    type="button"
-                >
-                    🛒 Voir le panier
-                </button>
-
-            </div>
-
-        </div>
-
-        <div class="product-card">
-
-            <div class="product-icon">
-                ✦
-            </div>
-
-            <h2>
-                MEMBERS
-            </h2>
-
-            <p class="description">
-                Pack de 1 000 MEMBERS.
-                Choisis combien de packs tu souhaites.
-            </p>
-
-            <div class="price">
-                5,49 €
-                <small>/ 1K MEMBERS</small>
-            </div>
-
-            <div class="product-actions">
-
-                <button
-                    class="btn btn-purple"
-                    id="cardChooseButton"
-                    type="button"
-                >
-                    Choisir ce pack
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-<section class="features">
-
-    <div class="container">
-
-        <div class="feature-grid">
-
-            <div class="feature">
-
-                <div class="feature-icon">
-                    ⚡
-                </div>
-
-                <h3>
-                    Simple
-                </h3>
-
-                <p>
-                    Sélectionne la quantité de packs
-                    MEMBERS que tu souhaites.
-                </p>
-
-            </div>
-
-            <div class="feature">
-
-                <div class="feature-icon">
-                    🛒
-                </div>
-
-                <h3>
-                    Panier
-                </h3>
-
-                <p>
-                    Vérifie les quantités et le total
-                    avant de continuer.
-                </p>
-
-            </div>
-
-            <div class="feature">
-
-                <div class="feature-icon">
-                    💳
-                </div>
-
-                <h3>
-                    PayPal
-                </h3>
-
-                <p>
-                    Le bouton ouvre PayPal avec
-                    le montant calculé.
-                </p>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-<footer>
-
-    NOVA MEMBERS
-
-</footer>
+  <div class="products" id="productsGrid"></div>
 
 </main>
 
-<!-- =======================================================
-     OVERLAY
-======================================================= -->
+<footer>
+  MEMBERS SHOP • BOUTIQUE OFFICIELLE
+</footer>
 
-<div
-    id="drawerOverlay"
-    aria-hidden="true"
-></div>
+<div class="overlay" id="overlay"></div>
 
-<!-- =======================================================
-     QUANTITY DRAWER
-======================================================= -->
+<div class="drawer" id="quantityDrawer">
 
-<aside
-    id="quantityDrawer"
-    class="drawer"
-    aria-hidden="true"
->
+  <div class="drawerHeader">
+    <h3>Choisir la quantité</h3>
+    <button class="closeButton" id="closeQuantity">×</button>
+  </div>
 
-    <div class="drawer-header">
+  <div class="quantityProduct">
+    <div class="quantityProductName" id="quantityProductName">
+      MEMBERS
+    </div>
 
-        <h2>
-            Choisir ton pack
-        </h2>
+    <div class="quantityProductPrice" id="quantityProductPrice">
+      5,49 € / 1K
+    </div>
 
-        <button
-            class="close-btn"
-            id="closeQuantity"
-            type="button"
-        >
-            ×
-        </button>
+    <div class="quantityControls">
+      <button class="quantityButton" id="minusButton">−</button>
+
+      <div class="quantityValue" id="quantityValue">1</div>
+
+      <button class="quantityButton" id="plusButton">+</button>
+    </div>
+
+    <div class="summary">
+
+      <div class="summaryLine">
+        <span>Quantité</span>
+        <strong id="summaryQuantity">1</strong>
+      </div>
+
+      <div class="summaryLine">
+        <span>MEMBERS</span>
+        <strong id="summaryMembers">1 000</strong>
+      </div>
+
+      <div class="summaryLine">
+        <span>Total</span>
+        <strong id="summaryPrice">5,49 €</strong>
+      </div>
 
     </div>
 
-    <div class="drawer-body">
+    <button class="primaryButton" id="addCartButton">
+      🛒 Ajouter au panier
+    </button>
+  </div>
 
-        <div class="quantity-product">
+</div>
 
-            <div class="quantity-product-icon">
-                ✦
-            </div>
+<div class="drawer" id="cartDrawer">
 
-            <h3>
-                MEMBERS
-            </h3>
+  <div class="drawerHeader">
+    <h3>🛒 Ton panier</h3>
+    <button class="closeButton" id="closeCart">×</button>
+  </div>
 
-            <p>
-                1 000 MEMBERS par pack
-            </p>
+  <div id="cartContent"></div>
 
-        </div>
+</div>
 
-        <div class="quantity-control">
-
-            <button
-                class="quantity-button"
-                id="minusButton"
-                type="button"
-            >
-                −
-            </button>
-
-            <div id="quantityValue">
-                1
-            </div>
-
-            <button
-                class="quantity-button"
-                id="plusButton"
-                type="button"
-            >
-                +
-            </button>
-
-        </div>
-
-        <div class="summary">
-
-            <div class="summary-row">
-
-                <span>
-                    Packs
-                </span>
-
-                <strong id="summaryQuantity">
-                    1
-                </strong>
-
-            </div>
-
-            <div class="summary-row">
-
-                <span>
-                    MEMBERS
-                </span>
-
-                <strong id="summaryMembers">
-                    1 000
-                </strong>
-
-            </div>
-
-            <div class="summary-row summary-total">
-
-                <span>
-                    Total
-                </span>
-
-                <strong id="summaryPrice">
-                    5,49 €
-                </strong>
-
-            </div>
-
-        </div>
-
-        <button
-            class="btn btn-purple"
-            id="addCartButton"
-            type="button"
-        >
-            Ajouter au panier
-        </button>
-
-    </div>
-
-</aside>
-
-<!-- =======================================================
-     CART DRAWER
-======================================================= -->
-
-<aside
-    id="cartDrawer"
-    class="drawer"
-    aria-hidden="true"
->
-
-    <div class="drawer-header">
-
-        <h2>
-            🛒 Mon panier
-        </h2>
-
-        <button
-            class="close-btn"
-            id="closeCart"
-            type="button"
-        >
-            ×
-        </button>
-
-    </div>
-
-    <div
-        class="drawer-body"
-        id="cartContent"
-    ></div>
-
-</aside>
-
-<div id="toast"></div>
+<div class="toast" id="toast"></div>
 
 <script src="./APP.JS"></script>
 
