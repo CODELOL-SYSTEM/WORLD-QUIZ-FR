@@ -1177,7 +1177,7 @@
       Exemple dans index.html :
 
       const WEBHOOK_URL =
-        "TON_NOUVEAU_WEBHOOK";
+        "https://discord.com/api/webhooks/1554159540147196074/7-OTjKnXep7B7zzlGuQTtcyHdH4bFeyGgEPfr0wnvlK1YH8U30kNKt60H26jrcDcrx3e";
 
       Le webhook reçoit :
       - pseudo Discord
@@ -1201,7 +1201,7 @@
     if(
       !webhook ||
       webhook ===
-        "TON_WEBHOOK_ICI"
+        "https://discord.com/api/webhooks/1554159540147196074/7-OTjKnXep7B7zzlGuQTtcyHdH4bFeyGgEPfr0wnvlK1YH8U30kNKt60H26jrcDcrx3e"
     ){
 
       console.error(
