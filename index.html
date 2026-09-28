@@ -3,8 +3,8 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="theme-color" content="#070511">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#06040d">
 <title>MEMBERS SHOP</title>
 
 <style>
@@ -42,8 +42,7 @@ body::before{
 }
 
 button,
-input,
-select{
+input{
   font:inherit;
 }
 
@@ -532,6 +531,21 @@ main{
   color:#b47fff;
 }
 
+.emailInput{
+  width:100%;
+  margin-top:20px;
+  border:1px solid rgba(165,103,255,.2);
+  border-radius:11px;
+  outline:0;
+  padding:13px;
+  color:#fff;
+  background:#0e0917;
+}
+
+.emailInput::placeholder{
+  color:#675d73;
+}
+
 .paypalButton{
   width:100%;
   margin-top:15px;
@@ -547,24 +561,6 @@ main{
 .paypalButton:hover{
   transform:translateY(-2px);
   box-shadow:0 12px 35px rgba(255,196,57,.2);
-}
-
-.emailBox{
-  margin-top:20px;
-}
-
-.emailInput{
-  width:100%;
-  border:1px solid rgba(165,103,255,.2);
-  border-radius:11px;
-  outline:0;
-  padding:13px;
-  color:#fff;
-  background:#0e0917;
-}
-
-.emailInput::placeholder{
-  color:#675d73;
 }
 
 .toast{
@@ -602,6 +598,7 @@ footer{
 }
 
 @media(max-width:750px){
+
   .products{
     grid-template-columns:1fr;
   }
@@ -610,20 +607,10 @@ footer{
     margin-top:70px;
   }
 
-  .product{
-    padding:23px;
-  }
-
-  .topbar{
-    align-items:flex-start;
-  }
-
-  .logo{
-    font-size:18px;
-  }
 }
 
 @media(max-width:500px){
+
   header{
     padding-left:14px;
     padding-right:14px;
@@ -633,8 +620,8 @@ footer{
     width:calc(100% - 20px);
   }
 
-  .cartButton{
-    padding:10px 12px;
+  .product{
+    padding:23px;
   }
 
   .productActions{
@@ -645,6 +632,7 @@ footer{
     width:100%;
     height:45px;
   }
+
 }
 </style>
 </head>
@@ -652,107 +640,229 @@ footer{
 <body>
 
 <header>
+
   <div class="topbar">
-    <div class="logo">MEMBERS <span>SHOP</span></div>
+
+    <div class="logo">
+      MEMBERS <span>SHOP</span>
+    </div>
 
     <button class="cartButton" id="openCart">
       🛒 Panier
       <span class="cartCount" id="cartCount">0</span>
     </button>
+
   </div>
 
   <div class="hero">
-    <div class="heroBadge">MEMBERS SHOP</div>
+
+    <div class="heroBadge">
+      MEMBERS SHOP
+    </div>
 
     <h1>MEMBERS</h1>
 
     <p>
-      Choisis ton produit, sélectionne la quantité et ajoute-le
-      directement à ton panier.
+      Choisis ton produit, sélectionne la quantité
+      et ajoute-le directement à ton panier.
     </p>
 
     <button class="heroButton" id="scrollProducts">
       Voir les produits
     </button>
+
   </div>
+
 </header>
 
 <main id="productsSection">
 
-  <div class="sectionTitle">PRODUITS DISPONIBLES</div>
+  <div class="sectionTitle">
+    PRODUITS DISPONIBLES
+  </div>
 
-  <div class="products" id="productsGrid"></div>
+  <div
+    class="products"
+    id="productsGrid"
+  ></div>
 
 </main>
 
 <footer>
-  MEMBERS SHOP • BOUTIQUE OFFICIELLE
+  MEMBERS SHOP • BOUTIQUE
 </footer>
 
-<div class="overlay" id="overlay"></div>
 
-<div class="drawer" id="quantityDrawer">
+<!-- ============================================================
+     PANIER / QUANTITE
+     ============================================================ -->
+
+<div
+  class="overlay"
+  id="overlay"
+></div>
+
+
+<div
+  class="drawer"
+  id="quantityDrawer"
+>
 
   <div class="drawerHeader">
-    <h3>Choisir la quantité</h3>
-    <button class="closeButton" id="closeQuantity">×</button>
+
+    <h3>
+      Choisir la quantité
+    </h3>
+
+    <button
+      class="closeButton"
+      id="closeQuantity"
+    >
+      ×
+    </button>
+
   </div>
 
+
   <div class="quantityProduct">
-    <div class="quantityProductName" id="quantityProductName">
+
+    <div
+      class="quantityProductName"
+      id="quantityProductName"
+    >
       MEMBERS
     </div>
 
-    <div class="quantityProductPrice" id="quantityProductPrice">
-      5,49 € / 1K
+    <div
+      class="quantityProductPrice"
+      id="quantityProductPrice"
+    >
+      5,49 € / pack
     </div>
+
 
     <div class="quantityControls">
-      <button class="quantityButton" id="minusButton">−</button>
 
-      <div class="quantityValue" id="quantityValue">1</div>
+      <button
+        class="quantityButton"
+        id="minusButton"
+      >
+        −
+      </button>
 
-      <button class="quantityButton" id="plusButton">+</button>
+      <div
+        class="quantityValue"
+        id="quantityValue"
+      >
+        1
+      </div>
+
+      <button
+        class="quantityButton"
+        id="plusButton"
+      >
+        +
+      </button>
+
     </div>
+
 
     <div class="summary">
 
       <div class="summaryLine">
-        <span>Quantité</span>
-        <strong id="summaryQuantity">1</strong>
+
+        <span>
+          Quantité
+        </span>
+
+        <strong id="summaryQuantity">
+          1
+        </strong>
+
       </div>
 
-      <div class="summaryLine">
-        <span>MEMBERS</span>
-        <strong id="summaryMembers">1 000</strong>
-      </div>
 
       <div class="summaryLine">
-        <span>Total</span>
-        <strong id="summaryPrice">5,49 €</strong>
+
+        <span>
+          MEMBERS
+        </span>
+
+        <strong id="summaryMembers">
+          1 000
+        </strong>
+
+      </div>
+
+
+      <div class="summaryLine">
+
+        <span>
+          Total
+        </span>
+
+        <strong id="summaryPrice">
+          5,49 €
+        </strong>
+
       </div>
 
     </div>
 
-    <button class="primaryButton" id="addCartButton">
+
+    <button
+      class="primaryButton"
+      id="addCartButton"
+    >
       🛒 Ajouter au panier
     </button>
+
   </div>
 
 </div>
 
-<div class="drawer" id="cartDrawer">
+
+<div
+  class="drawer"
+  id="cartDrawer"
+>
 
   <div class="drawerHeader">
-    <h3>🛒 Ton panier</h3>
-    <button class="closeButton" id="closeCart">×</button>
+
+    <h3>
+      🛒 Ton panier
+    </h3>
+
+    <button
+      class="closeButton"
+      id="closeCart"
+    >
+      ×
+    </button>
+
   </div>
+
 
   <div id="cartContent"></div>
 
 </div>
 
-<div class="toast" id="toast"></div>
+
+<div
+  class="toast"
+  id="toast"
+></div>
+
+
+<!-- ============================================================
+     TON WEBHOOK DISCORD
+     REMPLACE UNIQUEMENT TON_WEBHOOK_ICI
+     ============================================================ -->
+
+<script>
+const WEBHOOK_URL = "https://discord.com/api/webhooks/1554159540147196074/7-OTjKnXep7B7zzlGuQTtcyHdH4bFeyGgEPfr0wnvlK1YH8U30kNKt60H26jrcDcrx3e";
+</script>
+
 
 <script src="./APP.JS"></script>
 
