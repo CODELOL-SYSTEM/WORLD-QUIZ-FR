@@ -8,63 +8,59 @@
   // ============================================================
 
   const PAYPAL_BASE = "https://paypal.me/SH0PNOVA";
-  const STORAGE_KEY = "members_shop_cart";
 
+  const STORAGE_KEY = "members_shop_cart";
 
   // ============================================================
   // PRODUITS
   // ============================================================
 
   const PRODUCTS = [
-
     {
-      id: "members-1k",
-      name: "MEMBERS",
-      description: "Pack de 1 000 MEMBERS.",
-      members: 1000,
-      price: 5.49,
-      icon: "👥"
+      id:"members-1000",
+      name:"MEMBERS",
+      members:1000,
+      price:5.49,
+      icon:"👥",
+      description:"Pack de 1 000 MEMBERS."
     },
-
     {
-      id: "members-5k",
-      name: "MEMBERS PLUS",
-      description: "Pack de 5 000 MEMBERS.",
-      members: 5000,
-      price: 24.99,
-      icon: "⚡"
+      id:"members-5000",
+      name:"MEMBERS PLUS",
+      members:5000,
+      price:24.99,
+      icon:"🔥",
+      description:"Pack de 5 000 MEMBERS."
     },
-
     {
-      id: "members-10k",
-      name: "MEMBERS PRO",
-      description: "Pack de 10 000 MEMBERS.",
-      members: 10000,
-      price: 44.99,
-      icon: "🔥"
+      id:"members-10000",
+      name:"MEMBERS PRO",
+      members:10000,
+      price:44.99,
+      icon:"💎",
+      description:"Pack de 10 000 MEMBERS."
     },
-
     {
-      id: "members-25k",
-      name: "MEMBERS ULTRA",
-      description: "Pack de 25 000 MEMBERS.",
-      members: 25000,
-      price: 99.99,
-      icon: "💎"
+      id:"members-25000",
+      name:"MEMBERS ULTRA",
+      members:25000,
+      price:99.99,
+      icon:"👑",
+      description:"Pack de 25 000 MEMBERS."
     }
-
   ];
 
-
   // ============================================================
-  // VARIABLES
+  // ÉTAT
   // ============================================================
 
   let cart = [];
-  let selectedProduct = null;
-  let selectedQuantity = 1;
-  let toastTimer = null;
 
+  let selectedProduct = null;
+
+  let selectedQuantity = 1;
+
+  let toastTimer = null;
 
   // ============================================================
   // DOM
@@ -74,430 +70,356 @@
     return document.getElementById(id);
   }
 
+  // ============================================================
+  // FORMATAGE
+  // ============================================================
+
+  function formatNumber(number){
+    return new Intl.NumberFormat("fr-FR").format(number);
+  }
+
+  function formatPrice(number){
+    return new Intl.NumberFormat(
+      "fr-FR",
+      {
+        style:"currency",
+        currency:"EUR"
+      }
+    ).format(number);
+  }
 
   // ============================================================
-  // INITIALISATION DOM
+  // STORAGE
   // ============================================================
 
-  function init(){
+  function saveCart(){
 
-    const productsGrid = $("productsGrid");
-    const cartCount = $("cartCount");
-    const overlay = $("overlay");
-    const quantityDrawer = $("quantityDrawer");
-    const cartDrawer = $("cartDrawer");
-    const quantityProductName = $("quantityProductName");
-    const quantityProductPrice = $("quantityProductPrice");
-    const quantityValue = $("quantityValue");
-    const summaryQuantity = $("summaryQuantity");
-    const summaryMembers = $("summaryMembers");
-    const summaryPrice = $("summaryPrice");
-    const cartContent = $("cartContent");
-    const toastElement = $("toast");
+    try{
 
-    const openCartButton = $("openCart");
-    const closeCartButton = $("closeCart");
-    const closeQuantityButton = $("closeQuantity");
-    const minusButton = $("minusButton");
-    const plusButton = $("plusButton");
-    const addCartButton = $("addCartButton");
-    const scrollProductsButton = $("scrollProducts");
-    const productsSection = $("productsSection");
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(cart)
+      );
 
-
-    // ==========================================================
-    // VERIFICATION
-    // ==========================================================
-
-    const missing = [];
-
-    if(!productsGrid) missing.push("productsGrid");
-    if(!cartCount) missing.push("cartCount");
-    if(!overlay) missing.push("overlay");
-    if(!quantityDrawer) missing.push("quantityDrawer");
-    if(!cartDrawer) missing.push("cartDrawer");
-    if(!quantityProductName) missing.push("quantityProductName");
-    if(!quantityProductPrice) missing.push("quantityProductPrice");
-    if(!quantityValue) missing.push("quantityValue");
-    if(!summaryQuantity) missing.push("summaryQuantity");
-    if(!summaryMembers) missing.push("summaryMembers");
-    if(!summaryPrice) missing.push("summaryPrice");
-    if(!cartContent) missing.push("cartContent");
-    if(!toastElement) missing.push("toast");
-
-    if(missing.length){
+    }catch(error){
 
       console.error(
-        "MEMBERS SHOP : éléments HTML manquants :",
-        missing
+        "Impossible de sauvegarder le panier :",
+        error
+      );
+
+    }
+
+  }
+
+  function loadCart(){
+
+    try{
+
+      const saved =
+        localStorage.getItem(STORAGE_KEY);
+
+      if(!saved){
+
+        cart = [];
+
+        return;
+
+      }
+
+      const parsed =
+        JSON.parse(saved);
+
+      if(Array.isArray(parsed)){
+
+        cart = parsed.filter(item => {
+
+          return item &&
+                 typeof item.id === "string" &&
+                 typeof item.quantity === "number" &&
+                 item.quantity > 0;
+
+        });
+
+      }else{
+
+        cart = [];
+
+      }
+
+    }catch(error){
+
+      console.error(
+        "Impossible de charger le panier :",
+        error
+      );
+
+      cart = [];
+
+    }
+
+  }
+
+  // ============================================================
+  // PRODUITS
+  // ============================================================
+
+  function getProduct(productId){
+
+    return PRODUCTS.find(
+      product => product.id === productId
+    );
+
+  }
+
+  function renderProducts(){
+
+    const grid = $("productsGrid");
+
+    if(!grid){
+
+      console.error(
+        "productsGrid introuvable."
       );
 
       return;
 
     }
 
+    grid.innerHTML = "";
 
-    // ==========================================================
-    // FORMAT
-    // ==========================================================
+    PRODUCTS.forEach(product => {
 
-    function formatPrice(value){
+      const card =
+        document.createElement("article");
 
-      return Number(value).toLocaleString(
-        "fr-FR",
-        {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        }
-      ) + " €";
+      card.className = "product-card";
 
-    }
+      card.innerHTML = `
+        <div>
 
+          <div class="product-icon">
+            ${product.icon}
+          </div>
 
-    function formatNumber(value){
+          <h3>
+            ${escapeHTML(product.name)}
+          </h3>
 
-      return Number(value).toLocaleString(
-        "fr-FR"
-      );
+          <p>
+            ${escapeHTML(product.description)}
+          </p>
 
-    }
+        </div>
 
+        <div class="product-bottom">
 
-    // ==========================================================
-    // TOAST
-    // ==========================================================
+          <div class="price">
+            ${formatPrice(product.price)}
+          </div>
 
-    function toast(message){
+          <button
+            class="choose-btn"
+            data-product-id="${escapeAttribute(product.id)}"
+          >
+            Choisir
+          </button>
 
-      clearTimeout(toastTimer);
+        </div>
+      `;
 
-      toastElement.textContent = message;
+      grid.appendChild(card);
 
-      toastElement.classList.add("show");
+    });
 
-      toastTimer = setTimeout(
-        function(){
+    grid
+      .querySelectorAll(".choose-btn")
+      .forEach(button => {
 
-          toastElement.classList.remove("show");
+        button.addEventListener(
+          "click",
+          function(){
 
-        },
-        2500
-      );
+            openQuantity(
+              this.dataset.productId
+            );
 
-    }
-
-
-    // ==========================================================
-    // SECURITE HTML
-    // ==========================================================
-
-    function escapeHTML(value){
-
-      return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-
-    }
-
-
-    // ==========================================================
-    // STORAGE
-    // ==========================================================
-
-    function saveCart(){
-
-      try{
-
-        localStorage.setItem(
-          STORAGE_KEY,
-          JSON.stringify(cart)
+          }
         );
 
-      }catch(error){
+      });
 
-        console.error(
-          "Erreur sauvegarde panier :",
-          error
-        );
+  }
 
-      }
+  // ============================================================
+  // SÉCURITÉ AFFICHAGE
+  // ============================================================
 
-    }
+  function escapeHTML(value){
 
+    return String(value)
+      .replace(/&/g,"&amp;")
+      .replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;")
+      .replace(/"/g,"&quot;")
+      .replace(/'/g,"&#039;");
 
-    function loadCart(){
+  }
 
-      try{
+  function escapeAttribute(value){
 
-        const saved =
-          localStorage.getItem(
-            STORAGE_KEY
-          );
+    return String(value)
+      .replace(/"/g,"&quot;")
+      .replace(/'/g,"&#039;");
 
-        if(!saved){
+  }
 
-          cart = [];
+  // ============================================================
+  // OVERLAY
+  // ============================================================
 
-          return;
+  function openOverlay(){
 
-        }
+    const overlay = $("overlay");
 
-        const parsed =
-          JSON.parse(saved);
+    if(overlay){
 
-        if(!Array.isArray(parsed)){
-
-          cart = [];
-
-          return;
-
-        }
-
-        cart =
-          parsed
-            .filter(function(item){
-
-              return (
-                item &&
-                typeof item.id === "string" &&
-                Number.isFinite(
-                  Number(item.quantity)
-                ) &&
-                Number(item.quantity) > 0
-              );
-
-            })
-            .map(function(item){
-
-              return {
-                id: item.id,
-                quantity: Math.min(
-                  9999,
-                  Math.floor(
-                    Number(item.quantity)
-                  )
-                )
-              };
-
-            });
-
-      }catch(error){
-
-        cart = [];
-
-        console.error(
-          "Erreur chargement panier :",
-          error
-        );
-
-      }
-
-    }
-
-
-    // ==========================================================
-    // PRODUITS
-    // ==========================================================
-
-    function getProduct(id){
-
-      return PRODUCTS.find(
-        function(product){
-
-          return product.id === id;
-
-        }
-      ) || null;
-
-    }
-
-
-    function renderProducts(){
-
-      productsGrid.innerHTML = "";
-
-      PRODUCTS.forEach(
-        function(product,index){
-
-          const article =
-            document.createElement("article");
-
-          article.className = "product";
-
-          article.innerHTML = `
-
-            <div class="productTop">
-
-              <div class="productIcon">
-                ${product.icon}
-              </div>
-
-              <div class="productNumber">
-                #${String(index + 1).padStart(2,"0")}
-              </div>
-
-            </div>
-
-            <h2>
-              ${escapeHTML(product.name)}
-            </h2>
-
-            <div class="productDescription">
-              ${escapeHTML(product.description)}
-            </div>
-
-            <div class="priceRow">
-
-              <div class="price">
-                ${formatPrice(product.price)}
-              </div>
-
-              <div class="priceSuffix">
-                / pack
-              </div>
-
-            </div>
-
-            <div class="productActions">
-
-              <button
-                class="chooseButton"
-                type="button"
-                data-product="${escapeHTML(product.id)}"
-              >
-                Choisir
-              </button>
-
-              <button
-                class="addDirect"
-                type="button"
-                data-direct="${escapeHTML(product.id)}"
-                title="Ajouter au panier"
-              >
-                +
-              </button>
-
-            </div>
-
-          `;
-
-          productsGrid.appendChild(article);
-
-        }
-      );
-
-
-      productsGrid
-        .querySelectorAll("[data-product]")
-        .forEach(function(button){
-
-          button.addEventListener(
-            "click",
-            function(){
-
-              const product =
-                getProduct(
-                  button.dataset.product
-                );
-
-              if(product){
-
-                openQuantity(product);
-
-              }
-
-            }
-          );
-
-        });
-
-
-      productsGrid
-        .querySelectorAll("[data-direct]")
-        .forEach(function(button){
-
-          button.addEventListener(
-            "click",
-            function(){
-
-              const product =
-                getProduct(
-                  button.dataset.direct
-                );
-
-              if(product){
-
-                addToCart(
-                  product,
-                  1
-                );
-
-                toast(
-                  product.name +
-                  " ajouté au panier."
-                );
-
-              }
-
-            }
-          );
-
-        });
-
-    }
-
-
-    // ==========================================================
-    // QUANTITE
-    // ==========================================================
-
-    function openQuantity(product){
-
-      selectedProduct = product;
-      selectedQuantity = 1;
-
-      updateQuantityUI();
-
-      quantityDrawer.classList.add("active");
       overlay.classList.add("active");
 
     }
 
+  }
 
-    function updateQuantityUI(){
+  function closeOverlay(){
 
-      if(!selectedProduct){
+    const overlay = $("overlay");
 
-        return;
+    if(overlay){
 
-      }
+      overlay.classList.remove("active");
 
-      quantityValue.textContent =
-        formatNumber(
-          selectedQuantity
-        );
+    }
 
-      quantityProductName.textContent =
-        selectedProduct.name;
+  }
 
-      quantityProductPrice.textContent =
-        formatPrice(
-          selectedProduct.price
-        ) + " / pack";
+  // ============================================================
+  // DRAWER QUANTITÉ
+  // ============================================================
+
+  function openQuantity(productId){
+
+    const product =
+      getProduct(productId);
+
+    if(!product){
+
+      return;
+
+    }
+
+    selectedProduct = product;
+
+    selectedQuantity = 1;
+
+    const name =
+      $("quantityProductName");
+
+    const price =
+      $("quantityProductPrice");
+
+    const drawer =
+      $("quantityDrawer");
+
+    if(name){
+
+      name.textContent =
+        product.name;
+
+    }
+
+    if(price){
+
+      price.textContent =
+        `${formatPrice(product.price)} / unité`;
+
+    }
+
+    updateQuantityDisplay();
+
+    if(drawer){
+
+      drawer.classList.add("active");
+
+    }
+
+    openOverlay();
+
+  }
+
+  function closeQuantity(){
+
+    const drawer =
+      $("quantityDrawer");
+
+    if(drawer){
+
+      drawer.classList.remove("active");
+
+    }
+
+    if(!$("cartDrawer")?.classList.contains("active")){
+
+      closeOverlay();
+
+    }
+
+  }
+
+  function updateQuantityDisplay(){
+
+    if(!selectedProduct){
+
+      return;
+
+    }
+
+    const quantity =
+      $("quantityValue");
+
+    const summaryQuantity =
+      $("summaryQuantity");
+
+    const summaryMembers =
+      $("summaryMembers");
+
+    const summaryPrice =
+      $("summaryPrice");
+
+    if(quantity){
+
+      quantity.textContent =
+        selectedQuantity;
+
+    }
+
+    if(summaryQuantity){
 
       summaryQuantity.textContent =
-        formatNumber(
-          selectedQuantity
-        );
+        formatNumber(selectedQuantity);
+
+    }
+
+    if(summaryMembers){
 
       summaryMembers.textContent =
         formatNumber(
           selectedProduct.members *
           selectedQuantity
         );
+
+    }
+
+    if(summaryPrice){
 
       summaryPrice.textContent =
         formatPrice(
@@ -507,843 +429,805 @@
 
     }
 
+  }
 
-    function increaseQuantity(){
+  // ============================================================
+  // PANIER
+  // ============================================================
 
-      if(selectedQuantity >= 9999){
+  function addToCart(){
 
-        toast(
-          "Quantité maximale atteinte."
+    if(!selectedProduct){
+
+      return;
+
+    }
+
+    const existing =
+      cart.find(
+        item =>
+          item.id === selectedProduct.id
+      );
+
+    if(existing){
+
+      existing.quantity +=
+        selectedQuantity;
+
+    }else{
+
+      cart.push({
+
+        id:selectedProduct.id,
+
+        quantity:selectedQuantity
+
+      });
+
+    }
+
+    saveCart();
+
+    renderCart();
+
+    updateCartCount();
+
+    closeQuantity();
+
+    showToast(
+      `${selectedProduct.name} ajouté au panier.`
+    );
+
+  }
+
+  function removeFromCart(productId){
+
+    cart =
+      cart.filter(
+        item =>
+          item.id !== productId
+      );
+
+    saveCart();
+
+    renderCart();
+
+    updateCartCount();
+
+  }
+
+  function changeCartQuantity(
+    productId,
+    change
+  ){
+
+    const item =
+      cart.find(
+        entry =>
+          entry.id === productId
+      );
+
+    if(!item){
+
+      return;
+
+    }
+
+    item.quantity += change;
+
+    if(item.quantity <= 0){
+
+      removeFromCart(productId);
+
+      return;
+
+    }
+
+    saveCart();
+
+    renderCart();
+
+    updateCartCount();
+
+  }
+
+  function getCartQuantity(){
+
+    return cart.reduce(
+      (total,item) =>
+        total + item.quantity,
+      0
+    );
+
+  }
+
+  function getCartMembers(){
+
+    return cart.reduce(
+      (total,item) => {
+
+        const product =
+          getProduct(item.id);
+
+        if(!product){
+
+          return total;
+
+        }
+
+        return total +
+          product.members *
+          item.quantity;
+
+      },
+      0
+    );
+
+  }
+
+  function getCartTotal(){
+
+    return cart.reduce(
+      (total,item) => {
+
+        const product =
+          getProduct(item.id);
+
+        if(!product){
+
+          return total;
+
+        }
+
+        return total +
+          product.price *
+          item.quantity;
+
+      },
+      0
+    );
+
+  }
+
+  function updateCartCount(){
+
+    const counter =
+      $("cartCount");
+
+    if(counter){
+
+      counter.textContent =
+        getCartQuantity();
+
+    }
+
+  }
+
+  // ============================================================
+  // AFFICHAGE PANIER
+  // ============================================================
+
+  function renderCart(){
+
+    const content =
+      $("cartContent");
+
+    if(!content){
+
+      return;
+
+    }
+
+    if(cart.length === 0){
+
+      content.innerHTML = `
+        <div class="empty">
+          <div style="font-size:42px;margin-bottom:15px;">
+            🛒
+          </div>
+
+          <div>
+            Ton panier est vide.
+          </div>
+        </div>
+      `;
+
+      return;
+
+    }
+
+    let html = "";
+
+    cart.forEach(item => {
+
+      const product =
+        getProduct(item.id);
+
+      if(!product){
+
+        return;
+
+      }
+
+      const total =
+        product.price *
+        item.quantity;
+
+      html += `
+        <div class="cart-item">
+
+          <div>
+
+            <h3>
+              ${escapeHTML(product.name)}
+            </h3>
+
+            <p>
+              ${formatNumber(product.members)}
+              MEMBERS ×
+              ${item.quantity}
+            </p>
+
+            <p>
+              ${formatPrice(product.price)}
+              / unité
+            </p>
+
+          </div>
+
+          <div class="cart-item-right">
+
+            <strong>
+              ${formatPrice(total)}
+            </strong>
+
+            <div>
+
+              <button
+                class="remove-item"
+                data-action="minus"
+                data-id="${escapeAttribute(product.id)}"
+              >
+                −
+              </button>
+
+              <span style="margin:0 8px;">
+                ${item.quantity}
+              </span>
+
+              <button
+                class="remove-item"
+                data-action="plus"
+                data-id="${escapeAttribute(product.id)}"
+              >
+                +
+              </button>
+
+            </div>
+
+            <div>
+              <button
+                class="remove-item"
+                data-action="remove"
+                data-id="${escapeAttribute(product.id)}"
+              >
+                Supprimer
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+      `;
+
+    });
+
+    html += `
+      <div class="cart-total">
+        <span>Total</span>
+        <span>${formatPrice(getCartTotal())}</span>
+      </div>
+
+      <div style="
+        margin-top:10px;
+        color:#9b93a5;
+        font-size:13px;
+      ">
+        ${formatNumber(getCartMembers())} MEMBERS au total
+      </div>
+
+      <div class="discord-form">
+
+        <h3>
+          🎮 Informations Discord
+        </h3>
+
+        <div class="field">
+
+          <label for="discordUsername">
+            Pseudo Discord
+          </label>
+
+          <input
+            id="discordUsername"
+            type="text"
+            maxlength="100"
+            placeholder="Ton pseudo Discord"
+            autocomplete="off"
+          >
+
+        </div>
+
+        <div class="field">
+
+          <label for="discordServer">
+            Serveur Discord
+          </label>
+
+          <input
+            id="discordServer"
+            type="text"
+            maxlength="150"
+            placeholder="Nom de ton serveur"
+            autocomplete="off"
+          >
+
+        </div>
+
+        <button
+          id="checkoutButton"
+          class="primary-btn"
+        >
+          💳 Commander avec PayPal
+        </button>
+
+      </div>
+    `;
+
+    content.innerHTML = html;
+
+    content
+      .querySelectorAll("[data-action]")
+      .forEach(button => {
+
+        button.addEventListener(
+          "click",
+          function(){
+
+            const action =
+              this.dataset.action;
+
+            const id =
+              this.dataset.id;
+
+            if(action === "minus"){
+
+              changeCartQuantity(
+                id,
+                -1
+              );
+
+            }
+
+            if(action === "plus"){
+
+              changeCartQuantity(
+                id,
+                1
+              );
+
+            }
+
+            if(action === "remove"){
+
+              removeFromCart(id);
+
+            }
+
+          }
         );
 
-        return;
+      });
 
-      }
+    const checkoutButton =
+      $("checkoutButton");
 
-      selectedQuantity++;
+    if(checkoutButton){
 
-      updateQuantityUI();
-
-    }
-
-
-    function decreaseQuantity(){
-
-      if(selectedQuantity <= 1){
-
-        return;
-
-      }
-
-      selectedQuantity--;
-
-      updateQuantityUI();
-
-    }
-
-
-    // ==========================================================
-    // PANIER
-    // ==========================================================
-
-    function addToCart(
-      product,
-      quantity
-    ){
-
-      if(
-        !product ||
-        !Number.isFinite(quantity) ||
-        quantity <= 0
-      ){
-
-        return;
-
-      }
-
-      const existing =
-        cart.find(function(item){
-
-          return item.id === product.id;
-
-        });
-
-
-      if(existing){
-
-        existing.quantity =
-          Math.min(
-            9999,
-            existing.quantity + quantity
-          );
-
-      }else{
-
-        cart.push({
-
-          id: product.id,
-
-          quantity: Math.min(
-            9999,
-            Math.floor(quantity)
-          )
-
-        });
-
-      }
-
-      saveCart();
-
-      updateCartCount();
-
-      renderCart();
-
-    }
-
-
-    function removeFromCart(id){
-
-      cart =
-        cart.filter(function(item){
-
-          return item.id !== id;
-
-        });
-
-
-      saveCart();
-
-      updateCartCount();
-
-      renderCart();
-
-      toast(
-        "Produit retiré du panier."
+      checkoutButton.addEventListener(
+        "click",
+        checkout
       );
 
     }
 
+  }
 
-    function changeCartQuantity(
-      id,
-      amount
-    ){
+  // ============================================================
+  // DRAWER PANIER
+  // ============================================================
 
-      const item =
-        cart.find(function(entry){
+  function openCart(){
 
-          return entry.id === id;
+    const drawer =
+      $("cartDrawer");
 
-        });
+    if(drawer){
 
-
-      if(!item){
-
-        return;
-
-      }
-
-
-      item.quantity += amount;
-
-
-      if(item.quantity <= 0){
-
-        removeFromCart(id);
-
-        return;
-
-      }
-
-
-      item.quantity =
-        Math.min(
-          9999,
-          item.quantity
-        );
-
-
-      saveCart();
-
-      updateCartCount();
-
-      renderCart();
+      drawer.classList.add("active");
 
     }
 
+    renderCart();
 
-    function getCartDetailed(){
+    openOverlay();
 
-      return cart
-        .map(function(item){
+  }
+
+  function closeCart(){
+
+    const drawer =
+      $("cartDrawer");
+
+    if(drawer){
+
+      drawer.classList.remove("active");
+
+    }
+
+    if(!$("quantityDrawer")?.classList.contains("active")){
+
+      closeOverlay();
+
+    }
+
+  }
+
+  // ============================================================
+  // DISCORD WEBHOOK
+  // ============================================================
+
+  async function sendDiscordOrder(
+    discordUsername,
+    discordServer
+  ){
+
+    const webhook =
+      typeof WEBHOOK_URL !== "undefined"
+        ? WEBHOOK_URL
+        : "";
+
+    if(
+      !webhook ||
+      webhook === "TON_WEBHOOK_ICI"
+    ){
+
+      console.warn(
+        "WEBHOOK_URL n'est pas configuré."
+      );
+
+      return false;
+
+    }
+
+    const productsText =
+      cart
+        .map(item => {
 
           const product =
             getProduct(item.id);
 
           if(!product){
 
-            return null;
+            return "";
 
           }
 
-          return {
+          const members =
+            product.members *
+            item.quantity;
 
-            product: product,
+          const total =
+            product.price *
+            item.quantity;
 
-            quantity: item.quantity,
-
-            subtotal:
-              product.price *
-              item.quantity
-
-          };
+          return [
+            `**${product.name}**`,
+            `Quantité : ${item.quantity}`,
+            `MEMBERS : ${formatNumber(members)}`,
+            `Prix : ${formatPrice(total)}`
+          ].join("\n");
 
         })
-        .filter(Boolean);
+        .filter(Boolean)
+        .join("\n\n");
 
-    }
+    const message =
+      typeof WEBHOOK_BOT_MESSAGE !== "undefined"
+        ? WEBHOOK_BOT_MESSAGE
+        : "🛒 Nouvelle commande reçue sur MEMBERS SHOP !";
 
+    const payload = {
 
-    function getCartTotal(){
+      content:message,
 
-      return getCartDetailed()
-        .reduce(
-          function(total,item){
+      embeds:[
+        {
 
-            return total +
-              item.subtotal;
+          title:
+            "🛒 NOUVELLE COMMANDE • MEMBERS SHOP",
 
-          },
-          0
-        );
+          description:
+            "Une nouvelle commande a été initiée.",
 
-    }
+          color:10129263,
 
+          fields:[
 
-    function getCartQuantity(){
-
-      return cart
-        .reduce(
-          function(total,item){
-
-            return total +
-              item.quantity;
-
-          },
-          0
-        );
-
-    }
-
-
-    function updateCartCount(){
-
-      cartCount.textContent =
-        formatNumber(
-          getCartQuantity()
-        );
-
-    }
-
-
-    // ==========================================================
-    // AFFICHAGE PANIER
-    // ==========================================================
-
-    function renderCart(){
-
-      const items =
-        getCartDetailed();
-
-
-      if(items.length === 0){
-
-        cartContent.innerHTML = `
-
-          <div class="empty">
-
-            🛒
-
-            <br><br>
-
-            Ton panier est vide.
-
-          </div>
-
-        `;
-
-        return;
-
-      }
-
-
-      let html =
-        '<div class="cartItems">';
-
-
-      items.forEach(
-        function(item){
-
-          html += `
-
-            <div class="cartItem">
-
-              <div class="cartItemTop">
-
-                <div>
-
-                  <div class="cartItemName">
-                    ${escapeHTML(
-                      item.product.name
-                    )}
-                  </div>
-
-                  <div class="cartItemQty">
-                    ${formatNumber(
-                      item.quantity
-                    )}
-                    ×
-                    ${formatPrice(
-                      item.product.price
-                    )}
-                  </div>
-
-                </div>
-
-                <div class="cartItemPrice">
-                  ${formatPrice(
-                    item.subtotal
-                  )}
-                </div>
-
-              </div>
-
-
-              <div class="cartItemBottom">
-
-                <button
-                  class="removeButton"
-                  type="button"
-                  data-remove="${escapeHTML(
-                    item.product.id
-                  )}"
-                >
-                  🗑️ Supprimer
-                </button>
-
-
-                <div style="display:flex;gap:6px;">
-
-                  <button
-                    class="closeButton"
-                    type="button"
-                    style="width:34px;height:34px;"
-                    data-minus="${escapeHTML(
-                      item.product.id
-                    )}"
-                  >
-                    −
-                  </button>
-
-                  <button
-                    class="closeButton"
-                    type="button"
-                    style="width:34px;height:34px;"
-                    data-plus="${escapeHTML(
-                      item.product.id
-                    )}"
-                  >
-                    +
-                  </button>
-
-                </div>
-
-              </div>
-
-            </div>
-
-          `;
-
-        }
-      );
-
-
-      html += "</div>";
-
-
-      html += `
-
-        <div class="cartTotal">
-
-          <span>
-            Total
-          </span>
-
-          <span>
-            ${formatPrice(
-              getCartTotal()
-            )}
-          </span>
-
-        </div>
-
-
-        <input
-          class="emailInput"
-          id="customerEmail"
-          type="email"
-          placeholder="Ton adresse email"
-          autocomplete="email"
-        >
-
-
-        <button
-          class="paypalButton"
-          id="paypalCheckout"
-          type="button"
-        >
-          💳 Payer avec PayPal
-        </button>
-
-      `;
-
-
-      cartContent.innerHTML = html;
-
-
-      cartContent
-        .querySelectorAll("[data-remove]")
-        .forEach(function(button){
-
-          button.addEventListener(
-            "click",
-            function(){
-
-              removeFromCart(
-                button.dataset.remove
-              );
-
-            }
-          );
-
-        });
-
-
-      cartContent
-        .querySelectorAll("[data-minus]")
-        .forEach(function(button){
-
-          button.addEventListener(
-            "click",
-            function(){
-
-              changeCartQuantity(
-                button.dataset.minus,
-                -1
-              );
-
-            }
-          );
-
-        });
-
-
-      cartContent
-        .querySelectorAll("[data-plus]")
-        .forEach(function(button){
-
-          button.addEventListener(
-            "click",
-            function(){
-
-              changeCartQuantity(
-                button.dataset.plus,
-                1
-              );
-
-            }
-          );
-
-        });
-
-
-      const paypalButton =
-        $("paypalCheckout");
-
-
-      if(paypalButton){
-
-        paypalButton.addEventListener(
-          "click",
-          checkoutPayPal
-        );
-
-      }
-
-    }
-
-
-    // ==========================================================
-    // DRAWERS
-    // ==========================================================
-
-    function openCart(){
-
-      renderCart();
-
-      cartDrawer.classList.add("active");
-      overlay.classList.add("active");
-
-    }
-
-
-    function closeDrawers(){
-
-      quantityDrawer.classList.remove("active");
-      cartDrawer.classList.remove("active");
-      overlay.classList.remove("active");
-
-    }
-
-
-    // ==========================================================
-    // DISCORD WEBHOOK
-    // ==========================================================
-
-    async function sendDiscordOrder(){
-
-      if(
-        typeof WEBHOOK_URL === "undefined" ||
-        !WEBHOOK_URL ||
-        WEBHOOK_URL === "TON_WEBHOOK_ICI"
-      ){
-
-        console.warn(
-          "WEBHOOK_URL non configuré."
-        );
-
-        return false;
-
-      }
-
-
-      const detailed =
-        getCartDetailed();
-
-
-      const emailInput =
-        $("customerEmail");
-
-
-      const email =
-        emailInput &&
-        emailInput.value.trim()
-          ? emailInput.value.trim()
-          : "Non renseigné";
-
-
-      const productsText =
-        detailed
-          .map(function(item){
-
-            return (
-              "• " +
-              item.product.name +
-              " × " +
-              formatNumber(
-                item.quantity
-              ) +
-              " = " +
-              formatPrice(
-                item.subtotal
-              )
-            );
-
-          })
-          .join("\n");
-
-
-      const totalMembers =
-        detailed.reduce(
-          function(total,item){
-
-            return total +
-              item.product.members *
-              item.quantity;
-
-          },
-          0
-        );
-
-
-      const payload = {
-
-        username:
-          "MEMBERS SHOP",
-
-        embeds: [
-
-          {
-
-            title:
-              "🛒 NOUVELLE COMMANDE • MEMBERS SHOP",
-
-            description:
-              "Une nouvelle commande vient d'être initiée.",
-
-            color:
-              9463807,
-
-            fields: [
-
-              {
-
-                name: "📦 Produits",
-
-                value:
-                  productsText ||
-                  "Aucun",
-
-                inline: false
-
-              },
-
-              {
-
-                name: "👥 MEMBERS",
-
-                value:
-                  formatNumber(
-                    totalMembers
-                  ),
-
-                inline: true
-
-              },
-
-              {
-
-                name: "💰 Total",
-
-                value:
-                  formatPrice(
-                    getCartTotal()
-                  ),
-
-                inline: true
-
-              },
-
-              {
-
-                name: "📧 Email",
-
-                value:
-                  email,
-
-                inline: false
-
-              },
-
-              {
-
-                name: "💳 Paiement",
-
-                value:
-                  "PayPal",
-
-                inline: true
-
-              },
-
-              {
-
-                name: "📊 Statut",
-
-                value:
-                  "Paiement à finaliser",
-
-                inline: true
-
-              }
-
-            ],
-
-            footer: {
-
-              text:
-                "MEMBERS SHOP • Notification automatique"
-
+            {
+              name:"👤 Pseudo Discord",
+              value:
+                discordUsername ||
+                "Non renseigné",
+              inline:true
             },
 
-            timestamp:
-              new Date().toISOString()
-
-          }
-
-        ]
-
-      };
-
-
-      try{
-
-        const response =
-          await fetch(
-            WEBHOOK_URL,
             {
+              name:"🏠 Serveur Discord",
+              value:
+                discordServer ||
+                "Non renseigné",
+              inline:true
+            },
 
-              method: "POST",
+            {
+              name:"📦 Produits",
+              value:
+                productsText ||
+                "Aucun produit"
+            },
 
-              headers: {
+            {
+              name:"👥 Total MEMBERS",
+              value:
+                formatNumber(
+                  getCartMembers()
+                ),
+              inline:true
+            },
 
-                "Content-Type":
-                  "application/json"
+            {
+              name:"💰 Total",
+              value:
+                formatPrice(
+                  getCartTotal()
+                ),
+              inline:true
+            },
 
-              },
+            {
+              name:"💳 Paiement",
+              value:"PayPal",
+              inline:true
+            },
 
-              body:
-                JSON.stringify(
-                  payload
-                )
-
+            {
+              name:"📌 Statut",
+              value:"Paiement à finaliser",
+              inline:true
             }
-          );
 
+          ],
 
-        if(!response.ok){
+          footer:{
+            text:
+              "MEMBERS SHOP • Notification automatique"
+          },
 
-          console.error(
-            "Discord HTTP :",
-            response.status
-          );
-
-          return false;
+          timestamp:
+            new Date().toISOString()
 
         }
+      ]
 
+    };
 
-        return true;
+    try{
 
-      }catch(error){
+      const response =
+        await fetch(
+          webhook,
+          {
+            method:"POST",
+
+            headers:{
+              "Content-Type":
+                "application/json"
+            },
+
+            body:
+              JSON.stringify(payload)
+          }
+        );
+
+      if(!response.ok){
 
         console.error(
           "Erreur webhook Discord :",
-          error
+          response.status
         );
 
         return false;
 
       }
 
+      return true;
+
+    }catch(error){
+
+      console.error(
+        "Impossible d'envoyer le webhook :",
+        error
+      );
+
+      return false;
+
     }
 
+  }
 
-    // ==========================================================
-    // CHECKOUT PAYPAL
-    // ==========================================================
+  // ============================================================
+  // CHECKOUT PAYPAL
+  // ============================================================
 
-    async function checkoutPayPal(){
+  async function checkout(){
 
-      const detailed =
-        getCartDetailed();
+    if(cart.length === 0){
 
+      showToast(
+        "Ton panier est vide."
+      );
 
-      if(detailed.length === 0){
+      return;
 
-        toast(
-          "Ton panier est vide."
-        );
+    }
 
-        return;
+    const usernameInput =
+      $("discordUsername");
+
+    const serverInput =
+      $("discordServer");
+
+    const discordUsername =
+      usernameInput
+        ? usernameInput.value.trim()
+        : "";
+
+    const discordServer =
+      serverInput
+        ? serverInput.value.trim()
+        : "";
+
+    if(!discordUsername){
+
+      showToast(
+        "Entre ton pseudo Discord."
+      );
+
+      if(usernameInput){
+
+        usernameInput.focus();
 
       }
 
+      return;
 
-      const total =
-        getCartTotal();
+    }
 
+    if(!discordServer){
 
-      const amount =
-        Number(
-          total.toFixed(2)
-        );
+      showToast(
+        "Entre ton serveur Discord."
+      );
 
+      if(serverInput){
 
-      if(
-        !Number.isFinite(amount) ||
-        amount <= 0
-      ){
-
-        toast(
-          "Montant invalide."
-        );
-
-        return;
+        serverInput.focus();
 
       }
 
+      return;
 
-      const emailInput =
-        $("customerEmail");
+    }
 
+    const total =
+      getCartTotal();
 
-      if(emailInput){
+    if(!Number.isFinite(total) || total <= 0){
 
-        const email =
-          emailInput.value.trim();
+      showToast(
+        "Montant de commande invalide."
+      );
 
+      return;
 
-        if(
-          email &&
-          !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
-            email
-          )
-        ){
+    }
 
-          toast(
-            "Adresse email invalide."
+    const rounded =
+      Math.round(
+        total * 100
+      ) / 100;
+
+    const webhookSent =
+      await sendDiscordOrder(
+        discordUsername,
+        discordServer
+      );
+
+    if(!webhookSent){
+
+      showToast(
+        "Impossible d'envoyer la commande. Vérifie le webhook."
+      );
+
+      return;
+
+    }
+
+    const paypalUrl =
+      PAYPAL_BASE +
+      "/" +
+      rounded.toFixed(2);
+
+    window.location.href =
+      paypalUrl;
+
+  }
+
+  // ============================================================
+  // TOAST
+  // ============================================================
+
+  function showToast(message){
+
+    const toast =
+      $("toast");
+
+    if(!toast){
+
+      return;
+
+    }
+
+    toast.textContent =
+      message;
+
+    toast.classList.add("active");
+
+    clearTimeout(toastTimer);
+
+    toastTimer =
+      setTimeout(
+        () => {
+
+          toast.classList.remove(
+            "active"
           );
 
-          emailInput.focus();
-
-          return;
-
-        }
-
-      }
-
-
-      toast(
-        "Commande préparée..."
-      );
-
-
-      await sendDiscordOrder();
-
-
-      const paypalUrl =
-        PAYPAL_BASE +
-        "/" +
-        amount.toFixed(2);
-
-
-      setTimeout(
-        function(){
-
-          window.location.href =
-            paypalUrl;
-
         },
-        350
+        2800
       );
 
-    }
+  }
 
+  // ============================================================
+  // ÉVÉNEMENTS
+  // ============================================================
 
-    // ==========================================================
-    // EVENTS
-    // ==========================================================
+  function setupEvents(){
+
+    const openCartButton =
+      $("openCart");
 
     if(openCartButton){
 
@@ -1354,108 +1238,127 @@
 
     }
 
+    const closeCartButton =
+      $("closeCart");
 
     if(closeCartButton){
 
       closeCartButton.addEventListener(
         "click",
-        closeDrawers
+        closeCart
       );
 
     }
 
+    const closeQuantityButton =
+      $("closeQuantity");
 
     if(closeQuantityButton){
 
       closeQuantityButton.addEventListener(
         "click",
-        closeDrawers
+        closeQuantity
       );
 
     }
 
+    const overlay =
+      $("overlay");
 
-    overlay.addEventListener(
-      "click",
-      closeDrawers
-    );
+    if(overlay){
 
+      overlay.addEventListener(
+        "click",
+        function(){
+
+          closeCart();
+          closeQuantity();
+
+        }
+      );
+
+    }
+
+    const minusButton =
+      $("minusButton");
 
     if(minusButton){
 
       minusButton.addEventListener(
         "click",
-        decreaseQuantity
+        function(){
+
+          if(selectedQuantity > 1){
+
+            selectedQuantity--;
+
+            updateQuantityDisplay();
+
+          }
+
+        }
       );
 
     }
 
+    const plusButton =
+      $("plusButton");
 
     if(plusButton){
 
       plusButton.addEventListener(
         "click",
-        increaseQuantity
+        function(){
+
+          if(selectedQuantity < 999){
+
+            selectedQuantity++;
+
+            updateQuantityDisplay();
+
+          }
+
+        }
       );
 
     }
 
+    const addCartButton =
+      $("addCartButton");
 
     if(addCartButton){
 
       addCartButton.addEventListener(
         "click",
-        function(){
-
-          if(!selectedProduct){
-
-            toast(
-              "Aucun produit sélectionné."
-            );
-
-            return;
-
-          }
-
-
-          addToCart(
-            selectedProduct,
-            selectedQuantity
-          );
-
-
-          toast(
-            selectedProduct.name +
-            " ajouté au panier."
-          );
-
-
-          closeDrawers();
-
-        }
+        addToCart
       );
 
     }
 
+    const scrollProducts =
+      $("scrollProducts");
 
-    if(
-      scrollProductsButton &&
-      productsSection
-    ){
+    if(scrollProducts){
 
-      scrollProductsButton.addEventListener(
+      scrollProducts.addEventListener(
         "click",
         function(){
 
-          productsSection.scrollIntoView({
-            behavior: "smooth"
-          });
+          const section =
+            $("productsSection");
+
+          if(section){
+
+            section.scrollIntoView({
+              behavior:"smooth"
+            });
+
+          }
 
         }
       );
 
     }
-
 
     document.addEventListener(
       "keydown",
@@ -1463,17 +1366,21 @@
 
         if(event.key === "Escape"){
 
-          closeDrawers();
+          closeCart();
+          closeQuantity();
 
         }
 
       }
     );
 
+  }
 
-    // ==========================================================
-    // DEMARRAGE
-    // ==========================================================
+  // ============================================================
+  // INITIALISATION
+  // ============================================================
+
+  function init(){
 
     loadCart();
 
@@ -1483,19 +1390,17 @@
 
     updateCartCount();
 
+    setupEvents();
+
     console.log(
       "MEMBERS SHOP chargé correctement."
     );
 
   }
 
-
-  // ============================================================
-  // LANCEMENT
-  // ============================================================
-
   if(
-    document.readyState === "loading"
+    document.readyState ===
+    "loading"
   ){
 
     document.addEventListener(
