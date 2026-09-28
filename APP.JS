@@ -4,19 +4,19 @@
 (function(){
 
   // ============================================================
-  // WEBHOOK DISCORD
-  // ============================================================
-
-  const WEBHOOK_URL = "https://discord.com/api/webhooks/1554159540147196074/7-OTjKnXep7B7zzlGuQTtcyHdH4bFeyGgEPfr0wnvlK1YH8U30kNKt60H26jrcDcrx3e";
-
-
-  // ============================================================
   // CONFIGURATION
   // ============================================================
 
-  const PAYPAL_BASE = "https://paypal.me/SH0PNOVA";
+  const PAYPAL_BASE =
+    "https://paypal.me/SH0PNOVA";
 
-  const STORAGE_KEY = "members_shop_cart";
+  const STORAGE_KEY =
+    "members_shop_cart";
+
+
+  // ============================================================
+  // PRODUITS
+  // ============================================================
 
   const PRODUCTS = [
 
@@ -76,33 +76,48 @@
   // DOM
   // ============================================================
 
-  const $ = id => document.getElementById(id);
+  const $ = id =>
+    document.getElementById(id);
 
-  const productsGrid = $("productsGrid");
 
-  const cartCount = $("cartCount");
+  const productsGrid =
+    $("productsGrid");
 
-  const overlay = $("overlay");
+  const cartCount =
+    $("cartCount");
 
-  const quantityDrawer = $("quantityDrawer");
+  const overlay =
+    $("overlay");
 
-  const cartDrawer = $("cartDrawer");
+  const quantityDrawer =
+    $("quantityDrawer");
 
-  const quantityProductName = $("quantityProductName");
+  const cartDrawer =
+    $("cartDrawer");
 
-  const quantityProductPrice = $("quantityProductPrice");
+  const quantityProductName =
+    $("quantityProductName");
 
-  const quantityValue = $("quantityValue");
+  const quantityProductPrice =
+    $("quantityProductPrice");
 
-  const summaryQuantity = $("summaryQuantity");
+  const quantityValue =
+    $("quantityValue");
 
-  const summaryMembers = $("summaryMembers");
+  const summaryQuantity =
+    $("summaryQuantity");
 
-  const summaryPrice = $("summaryPrice");
+  const summaryMembers =
+    $("summaryMembers");
 
-  const cartContent = $("cartContent");
+  const summaryPrice =
+    $("summaryPrice");
 
-  const toastElement = $("toast");
+  const cartContent =
+    $("cartContent");
+
+  const toastElement =
+    $("toast");
 
 
   // ============================================================
@@ -111,17 +126,22 @@
 
   function formatPrice(value){
 
-    return value.toLocaleString("fr-FR",{
-      minimumFractionDigits:2,
-      maximumFractionDigits:2
-    }) + " €";
+    return value.toLocaleString(
+      "fr-FR",
+      {
+        minimumFractionDigits:2,
+        maximumFractionDigits:2
+      }
+    ) + " €";
 
   }
 
 
   function formatNumber(value){
 
-    return value.toLocaleString("fr-FR");
+    return value.toLocaleString(
+      "fr-FR"
+    );
 
   }
 
@@ -132,27 +152,29 @@
 
   function toast(message){
 
-    if(!toastElement){
-      return;
-    }
-
     clearTimeout(toastTimer);
 
-    toastElement.textContent = message;
+    toastElement.textContent =
+      message;
 
-    toastElement.classList.add("show");
+    toastElement.classList.add(
+      "show"
+    );
 
-    toastTimer = setTimeout(function(){
+    toastTimer =
+      setTimeout(function(){
 
-      toastElement.classList.remove("show");
+        toastElement.classList.remove(
+          "show"
+        );
 
-    },2500);
+      },2500);
 
   }
 
 
   // ============================================================
-  // STORAGE
+  // STOCKAGE
   // ============================================================
 
   function saveCart(){
@@ -167,7 +189,7 @@
     }catch(error){
 
       console.error(
-        "Impossible de sauvegarder le panier.",
+        "Erreur sauvegarde panier:",
         error
       );
 
@@ -181,37 +203,51 @@
     try{
 
       const saved =
-        localStorage.getItem(STORAGE_KEY);
-
-      if(!saved){
-        cart = [];
-        return;
-      }
-
-      const parsed = JSON.parse(saved);
-
-      if(!Array.isArray(parsed)){
-        cart = [];
-        return;
-      }
-
-      cart = parsed.filter(function(item){
-
-        return (
-          item &&
-          typeof item.id === "string" &&
-          typeof item.quantity === "number" &&
-          item.quantity > 0
+        localStorage.getItem(
+          STORAGE_KEY
         );
 
-      });
+
+      if(!saved){
+
+        cart = [];
+
+        return;
+
+      }
+
+
+      const parsed =
+        JSON.parse(saved);
+
+
+      if(!Array.isArray(parsed)){
+
+        cart = [];
+
+        return;
+
+      }
+
+
+      cart =
+        parsed.filter(function(item){
+
+          return (
+            item &&
+            typeof item.id === "string" &&
+            Number.isFinite(item.quantity) &&
+            item.quantity > 0
+          );
+
+        });
 
     }catch(error){
 
       cart = [];
 
       console.error(
-        "Impossible de charger le panier.",
+        "Erreur chargement panier:",
         error
       );
 
@@ -224,159 +260,195 @@
   // PRODUITS
   // ============================================================
 
-  function renderProducts(){
+  function getProduct(id){
 
-    if(!productsGrid){
-      return;
-    }
+    return PRODUCTS.find(
+      function(product){
+
+        return product.id === id;
+
+      }
+    ) || null;
+
+  }
+
+
+  function renderProducts(){
 
     productsGrid.innerHTML = "";
 
-    PRODUCTS.forEach(function(product,index){
 
-      const article =
-        document.createElement("article");
+    PRODUCTS.forEach(
+      function(product,index){
 
-      article.className = "product";
+        const article =
+          document.createElement(
+            "article"
+          );
 
-      article.innerHTML = `
 
-        <div class="productTop">
+        article.className =
+          "product";
 
-          <div class="productIcon">
-            ${product.icon}
+
+        article.innerHTML = `
+
+          <div class="productTop">
+
+            <div class="productIcon">
+              ${product.icon}
+            </div>
+
+            <div class="productNumber">
+              #${String(index + 1).padStart(2,"0")}
+            </div>
+
           </div>
 
-          <div class="productNumber">
-            #${String(index + 1).padStart(2,"0")}
+
+          <h2>
+            ${escapeHTML(product.name)}
+          </h2>
+
+
+          <div class="productDescription">
+            ${escapeHTML(product.description)}
           </div>
 
-        </div>
 
-        <h2>${escapeHTML(product.name)}</h2>
+          <div class="priceRow">
 
-        <div class="productDescription">
-          ${escapeHTML(product.description)}
-        </div>
+            <div class="price">
+              ${formatPrice(product.price)}
+            </div>
 
-        <div class="priceRow">
+            <div class="priceSuffix">
+              / pack
+            </div>
 
-          <div class="price">
-            ${formatPrice(product.price)}
           </div>
 
-          <div class="priceSuffix">
-            / pack
+
+          <div class="productActions">
+
+            <button
+              class="chooseButton"
+              data-product="${escapeHTML(product.id)}"
+            >
+              Choisir
+            </button>
+
+            <button
+              class="addDirect"
+              data-direct="${escapeHTML(product.id)}"
+              title="Ajouter au panier"
+            >
+              +
+            </button>
+
           </div>
 
-        </div>
+        `;
 
-        <div class="productActions">
 
-          <button
-            class="chooseButton"
-            data-product="${escapeHTML(product.id)}"
-          >
-            Choisir
-          </button>
+        productsGrid.appendChild(
+          article
+        );
 
-          <button
-            class="addDirect"
-            title="Ajouter directement"
-            data-direct="${escapeHTML(product.id)}"
-          >
-            +
-          </button>
-
-        </div>
-
-      `;
-
-      productsGrid.appendChild(article);
-
-    });
+      }
+    );
 
 
     document
       .querySelectorAll("[data-product]")
-      .forEach(function(button){
+      .forEach(
+        function(button){
 
-        button.addEventListener(
-          "click",
-          function(){
+          button.addEventListener(
+            "click",
+            function(){
 
-            const product =
-              getProduct(button.dataset.product);
+              const product =
+                getProduct(
+                  button.dataset.product
+                );
 
-            if(product){
-              openQuantity(product);
+
+              if(product){
+
+                openQuantity(
+                  product
+                );
+
+              }
+
             }
+          );
 
-          }
-        );
-
-      });
+        }
+      );
 
 
     document
       .querySelectorAll("[data-direct]")
-      .forEach(function(button){
+      .forEach(
+        function(button){
 
-        button.addEventListener(
-          "click",
-          function(){
+          button.addEventListener(
+            "click",
+            function(){
 
-            const product =
-              getProduct(button.dataset.direct);
+              const product =
+                getProduct(
+                  button.dataset.direct
+                );
 
-            if(product){
 
-              addToCart(
-                product,
-                1
-              );
+              if(product){
 
-              toast(
-                product.name +
-                " ajouté au panier."
-              );
+                addToCart(
+                  product,
+                  1
+                );
+
+
+                toast(
+                  product.name +
+                  " ajouté au panier."
+                );
+
+              }
 
             }
+          );
 
-          }
-        );
-
-      });
-
-  }
-
-
-  function getProduct(id){
-
-    return PRODUCTS.find(function(product){
-
-      return product.id === id;
-
-    }) || null;
+        }
+      );
 
   }
 
 
   // ============================================================
-  // QUANTITÉ
+  // QUANTITE
   // ============================================================
 
   function openQuantity(product){
 
-    selectedProduct = product;
+    selectedProduct =
+      product;
 
-    selectedQuantity = 1;
+    selectedQuantity =
+      1;
 
     updateQuantityUI();
 
-    quantityDrawer.classList.add("active");
+    quantityDrawer.classList.add(
+      "active"
+    );
 
-    overlay.classList.add("active");
+    overlay.classList.add(
+      "active"
+    );
 
   }
 
@@ -387,24 +459,36 @@
       return;
     }
 
+
     quantityValue.textContent =
-      formatNumber(selectedQuantity);
+      formatNumber(
+        selectedQuantity
+      );
+
 
     quantityProductName.textContent =
       selectedProduct.name;
 
+
     quantityProductPrice.textContent =
-      formatPrice(selectedProduct.price) +
+      formatPrice(
+        selectedProduct.price
+      ) +
       " / pack";
 
+
     summaryQuantity.textContent =
-      formatNumber(selectedQuantity);
+      formatNumber(
+        selectedQuantity
+      );
+
 
     summaryMembers.textContent =
       formatNumber(
         selectedProduct.members *
         selectedQuantity
       );
+
 
     summaryPrice.textContent =
       formatPrice(
@@ -419,11 +503,14 @@
 
     if(selectedQuantity >= 9999){
 
-      toast("Quantité maximale atteinte.");
+      toast(
+        "Quantité maximale atteinte."
+      );
 
       return;
 
     }
+
 
     selectedQuantity++;
 
@@ -440,6 +527,7 @@
 
     }
 
+
     selectedQuantity--;
 
     updateQuantityUI();
@@ -451,19 +539,25 @@
   // PANIER
   // ============================================================
 
-  function addToCart(product,quantity){
+  function addToCart(
+    product,
+    quantity
+  ){
 
     const existing =
-      cart.find(function(item){
+      cart.find(
+        function(item){
 
-        return item.id === product.id;
+          return item.id === product.id;
 
-      });
+        }
+      );
 
 
     if(existing){
 
-      existing.quantity += quantity;
+      existing.quantity +=
+        quantity;
 
     }else{
 
@@ -490,11 +584,13 @@
   function removeFromCart(id){
 
     cart =
-      cart.filter(function(item){
+      cart.filter(
+        function(item){
 
-        return item.id !== id;
+          return item.id !== id;
 
-      });
+        }
+      );
 
 
     saveCart();
@@ -503,19 +599,26 @@
 
     renderCart();
 
-    toast("Produit retiré du panier.");
+    toast(
+      "Produit retiré du panier."
+    );
 
   }
 
 
-  function changeCartQuantity(id,amount){
+  function changeCartQuantity(
+    id,
+    amount
+  ){
 
     const item =
-      cart.find(function(entry){
+      cart.find(
+        function(entry){
 
-        return entry.id === id;
+          return entry.id === id;
 
-      });
+        }
+      );
 
 
     if(!item){
@@ -523,7 +626,8 @@
     }
 
 
-    item.quantity += amount;
+    item.quantity +=
+      amount;
 
 
     if(item.quantity <= 0){
@@ -537,7 +641,8 @@
 
     if(item.quantity > 9999){
 
-      item.quantity = 9999;
+      item.quantity =
+        9999;
 
     }
 
@@ -554,28 +659,34 @@
   function getCartDetailed(){
 
     return cart
-      .map(function(item){
+      .map(
+        function(item){
 
-        const product =
-          getProduct(item.id);
+          const product =
+            getProduct(item.id);
 
-        if(!product){
-          return null;
+
+          if(!product){
+
+            return null;
+
+          }
+
+
+          return {
+
+            product:product,
+
+            quantity:item.quantity,
+
+            subtotal:
+              product.price *
+              item.quantity
+
+          };
+
         }
-
-        return {
-
-          product:product,
-
-          quantity:item.quantity,
-
-          subtotal:
-            product.price *
-            item.quantity
-
-        };
-
-      })
+      )
       .filter(Boolean);
 
   }
@@ -587,7 +698,8 @@
       .reduce(
         function(total,item){
 
-          return total + item.subtotal;
+          return total +
+            item.subtotal;
 
         },
         0
@@ -602,7 +714,8 @@
       .reduce(
         function(total,item){
 
-          return total + item.quantity;
+          return total +
+            item.quantity;
 
         },
         0
@@ -622,7 +735,7 @@
 
 
   // ============================================================
-  // AFFICHAGE DU PANIER
+  // AFFICHAGE PANIER
   // ============================================================
 
   function renderCart(){
@@ -654,89 +767,111 @@
       '<div class="cartItems">';
 
 
-    items.forEach(function(item){
+    items.forEach(
+      function(item){
 
-      html += `
+        html += `
 
-        <div class="cartItem">
+          <div class="cartItem">
 
-          <div class="cartItemTop">
+            <div class="cartItemTop">
 
-            <div>
+              <div>
 
-              <div class="cartItemName">
-                ${escapeHTML(item.product.name)}
+                <div class="cartItemName">
+                  ${escapeHTML(
+                    item.product.name
+                  )}
+                </div>
+
+                <div class="cartItemQty">
+                  ${formatNumber(
+                    item.quantity
+                  )}
+                  ×
+                  ${formatPrice(
+                    item.product.price
+                  )}
+                </div>
+
               </div>
 
-              <div class="cartItemQty">
-                ${formatNumber(item.quantity)} ×
-                ${formatPrice(item.product.price)}
+
+              <div class="cartItemPrice">
+                ${formatPrice(
+                  item.subtotal
+                )}
               </div>
 
             </div>
 
-            <div class="cartItemPrice">
-              ${formatPrice(item.subtotal)}
-            </div>
 
-          </div>
-
-          <div class="cartItemBottom">
-
-            <div>
+            <div class="cartItemBottom">
 
               <button
                 class="removeButton"
-                data-remove="${escapeHTML(item.product.id)}"
+                data-remove="${escapeHTML(
+                  item.product.id
+                )}"
               >
                 🗑️ Supprimer
               </button>
 
-            </div>
 
-            <div style="display:flex;gap:6px;">
+              <div style="display:flex;gap:6px;">
 
-              <button
-                class="closeButton"
-                style="width:34px;height:34px;"
-                data-minus="${escapeHTML(item.product.id)}"
-              >
-                −
-              </button>
+                <button
+                  class="closeButton"
+                  style="width:34px;height:34px;"
+                  data-minus="${escapeHTML(
+                    item.product.id
+                  )}"
+                >
+                  −
+                </button>
 
-              <button
-                class="closeButton"
-                style="width:34px;height:34px;"
-                data-plus="${escapeHTML(item.product.id)}"
-              >
-                +
-              </button>
+                <button
+                  class="closeButton"
+                  style="width:34px;height:34px;"
+                  data-plus="${escapeHTML(
+                    item.product.id
+                  )}"
+                >
+                  +
+                </button>
+
+              </div>
 
             </div>
 
           </div>
 
-        </div>
+        `;
 
-      `;
+      }
+    );
 
-    });
 
-
-    html += "</div>";
+    html +=
+      "</div>";
 
 
     html += `
 
       <div class="cartTotal">
 
-        <span>Total</span>
+        <span>
+          Total
+        </span>
 
         <span>
-          ${formatPrice(getCartTotal())}
+          ${formatPrice(
+            getCartTotal()
+          )}
         </span>
 
       </div>
+
 
       <input
         class="emailInput"
@@ -745,6 +880,7 @@
         placeholder="Ton adresse email"
         autocomplete="email"
       >
+
 
       <button
         class="paypalButton"
@@ -756,63 +892,70 @@
     `;
 
 
-    cartContent.innerHTML = html;
+    cartContent.innerHTML =
+      html;
 
 
     document
       .querySelectorAll("[data-remove]")
-      .forEach(function(button){
+      .forEach(
+        function(button){
 
-        button.addEventListener(
-          "click",
-          function(){
+          button.addEventListener(
+            "click",
+            function(){
 
-            removeFromCart(
-              button.dataset.remove
-            );
+              removeFromCart(
+                button.dataset.remove
+              );
 
-          }
-        );
+            }
+          );
 
-      });
+        }
+      );
 
 
     document
       .querySelectorAll("[data-minus]")
-      .forEach(function(button){
+      .forEach(
+        function(button){
 
-        button.addEventListener(
-          "click",
-          function(){
+          button.addEventListener(
+            "click",
+            function(){
 
-            changeCartQuantity(
-              button.dataset.minus,
-              -1
-            );
+              changeCartQuantity(
+                button.dataset.minus,
+                -1
+              );
 
-          }
-        );
+            }
+          );
 
-      });
+        }
+      );
 
 
     document
       .querySelectorAll("[data-plus]")
-      .forEach(function(button){
+      .forEach(
+        function(button){
 
-        button.addEventListener(
-          "click",
-          function(){
+          button.addEventListener(
+            "click",
+            function(){
 
-            changeCartQuantity(
-              button.dataset.plus,
-              1
-            );
+              changeCartQuantity(
+                button.dataset.plus,
+                1
+              );
 
-          }
-        );
+            }
+          );
 
-      });
+        }
+      );
 
 
     const paypalButton =
@@ -832,46 +975,58 @@
 
 
   // ============================================================
-  // PANIER DRAWER
+  // OUVERTURE / FERMETURE
   // ============================================================
 
   function openCart(){
 
     renderCart();
 
-    cartDrawer.classList.add("active");
+    cartDrawer.classList.add(
+      "active"
+    );
 
-    overlay.classList.add("active");
+    overlay.classList.add(
+      "active"
+    );
 
   }
 
 
   function closeDrawers(){
 
-    quantityDrawer.classList.remove("active");
+    quantityDrawer.classList.remove(
+      "active"
+    );
 
-    cartDrawer.classList.remove("active");
+    cartDrawer.classList.remove(
+      "active"
+    );
 
-    overlay.classList.remove("active");
+    overlay.classList.remove(
+      "active"
+    );
 
   }
 
 
   // ============================================================
-  // DISCORD
+  // DISCORD WEBHOOK
   // ============================================================
 
   async function sendDiscordOrder(){
 
     if(
+      typeof WEBHOOK_URL === "undefined" ||
       !WEBHOOK_URL ||
       WEBHOOK_URL === "TON_WEBHOOK_ICI"
     ){
 
-      return {
-        success:false,
-        skipped:true
-      };
+      console.warn(
+        "WEBHOOK_URL n'est pas configuré."
+      );
+
+      return false;
 
     }
 
@@ -893,18 +1048,24 @@
 
     const productsText =
       detailed
-        .map(function(item){
+        .map(
+          function(item){
 
-          return (
-            "• " +
-            item.product.name +
-            " × " +
-            formatNumber(item.quantity) +
-            " = " +
-            formatPrice(item.subtotal)
-          );
+            return (
+              "• " +
+              item.product.name +
+              " × " +
+              formatNumber(
+                item.quantity
+              ) +
+              " = " +
+              formatPrice(
+                item.subtotal
+              )
+            );
 
-        })
+          }
+        )
         .join("\n");
 
 
@@ -923,61 +1084,76 @@
 
     const payload = {
 
-      username:"MEMBERS SHOP",
+      username:
+        "MEMBERS SHOP",
 
       embeds:[
 
         {
 
-          title:"🛒 NOUVELLE COMMANDE • MEMBERS SHOP",
+          title:
+            "🛒 NOUVELLE COMMANDE • MEMBERS SHOP",
 
           description:
             "Une nouvelle commande vient d'être initiée.",
 
-          color:9463807,
+          color:
+            9463807,
 
           fields:[
 
             {
               name:"📦 Produits",
-              value:productsText || "Aucun",
+              value:
+                productsText ||
+                "Aucun",
               inline:false
             },
 
             {
               name:"👥 MEMBERS",
-              value:formatNumber(totalMembers),
+              value:
+                formatNumber(
+                  totalMembers
+                ),
               inline:true
             },
 
             {
               name:"💰 Total",
-              value:formatPrice(getCartTotal()),
+              value:
+                formatPrice(
+                  getCartTotal()
+                ),
               inline:true
             },
 
             {
               name:"📧 Email",
-              value:email,
+              value:
+                email,
               inline:false
             },
 
             {
               name:"💳 Paiement",
-              value:"PayPal",
+              value:
+                "PayPal",
               inline:true
             },
 
             {
               name:"📊 Statut",
-              value:"Paiement à finaliser",
+              value:
+                "Paiement à finaliser",
               inline:true
             }
 
           ],
 
           footer:{
-            text:"MEMBERS SHOP • Notification automatique"
+            text:
+              "MEMBERS SHOP • Notification automatique"
           },
 
           timestamp:
@@ -999,20 +1175,31 @@
             method:"POST",
 
             headers:{
-              "Content-Type":"application/json"
+              "Content-Type":
+                "application/json"
             },
 
             body:
-              JSON.stringify(payload)
+              JSON.stringify(
+                payload
+              )
           }
         );
 
 
-      return {
-        success:response.ok,
-        skipped:false
-      };
+      if(!response.ok){
 
+        console.error(
+          "Discord webhook HTTP:",
+          response.status
+        );
+
+        return false;
+
+      }
+
+
+      return true;
 
     }catch(error){
 
@@ -1021,10 +1208,7 @@
         error
       );
 
-      return {
-        success:false,
-        skipped:false
-      };
+      return false;
 
     }
 
@@ -1032,7 +1216,7 @@
 
 
   // ============================================================
-  // PAYPAL
+  // CHECKOUT PAYPAL
   // ============================================================
 
   async function checkoutPayPal(){
@@ -1043,7 +1227,9 @@
 
     if(detailed.length === 0){
 
-      toast("Ton panier est vide.");
+      toast(
+        "Ton panier est vide."
+      );
 
       return;
 
@@ -1055,7 +1241,9 @@
 
 
     const rounded =
-      Number(total.toFixed(2));
+      Number(
+        total.toFixed(2)
+      );
 
 
     if(
@@ -1063,7 +1251,9 @@
       rounded <= 0
     ){
 
-      toast("Montant de commande invalide.");
+      toast(
+        "Montant invalide."
+      );
 
       return;
 
@@ -1082,10 +1272,14 @@
 
       if(
         email &&
-        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+          email
+        )
       ){
 
-        toast("Adresse email invalide.");
+        toast(
+          "Adresse email invalide."
+        );
 
         emailInput.focus();
 
@@ -1096,7 +1290,9 @@
     }
 
 
-    toast("Commande préparée. Redirection vers PayPal...");
+    toast(
+      "Commande préparée..."
+    );
 
 
     await sendDiscordOrder();
@@ -1108,40 +1304,48 @@
       rounded.toFixed(2);
 
 
-    setTimeout(function(){
+    setTimeout(
+      function(){
 
-      window.location.href =
-        paypalUrl;
+        window.location.href =
+          paypalUrl;
 
-    },350);
+      },
+      350
+    );
 
   }
 
 
   // ============================================================
-  // ESCAPE HTML
+  // SECURITE AFFICHAGE
   // ============================================================
 
   function escapeHTML(value){
 
     return String(value)
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;")
-      .replaceAll("'","&#039;");
+      .replaceAll(
+        "&",
+        "&amp;"
+      )
+      .replaceAll(
+        "<",
+        "&lt;"
+      )
+      .replaceAll(
+        ">",
+        "&gt;"
+      )
+      .replaceAll(
+        '"',
+        "&quot;"
+      )
+      .replaceAll(
+        "'",
+        "&#039;"
+      );
 
   }
-
-
-  // ============================================================
-  // PARTICULES AUCUNE INTRO / AUCUN CHARGEMENT
-  // ============================================================
-
-  // Aucun écran de chargement.
-  // Aucun projectile.
-  // Aucun effet d'introduction.
-  // Le site est directement disponible.
 
 
   // ============================================================
@@ -1190,7 +1394,9 @@
 
       if(!selectedProduct){
 
-        toast("Aucun produit sélectionné.");
+        toast(
+          "Aucun produit sélectionné."
+        );
 
         return;
 
