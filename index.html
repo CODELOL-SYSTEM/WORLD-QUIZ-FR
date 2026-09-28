@@ -973,4 +973,666 @@
       color:#948c9e;
 
       font-size:13px;
+
+      line-height:1.6;
+
+    }
+
+
+    .cart-item-right{
+
+      display:flex;
+
+      flex-direction:column;
+
+      align-items:flex-end;
+
+      gap:9px;
+
+      flex-shrink:0;
+
+    }
+
+
+    .cart-item-right strong{
+
+      font-size:15px;
+
+    }
+
+
+    .remove-item{
+
+      border:
+        1px solid
+        rgba(255,255,255,.08);
+
+      background:
+        rgba(255,255,255,.035);
+
+      color:#fff;
+
+      border-radius:8px;
+
+      padding:
+        5px 9px;
+
+    }
+
+
+    .remove-item:hover{
+
+      background:
+        rgba(255,255,255,.08);
+
+    }
+
+
+    .cart-total{
+
+      display:flex;
+
+      justify-content:space-between;
+
+      margin-top:25px;
+
+      padding-top:20px;
+
+      border-top:
+        1px solid
+        rgba(255,255,255,.10);
+
+      font-size:19px;
+
+      font-weight:900;
+
+    }
+
+
+    .discord-form{
+
+      margin-top:28px;
+
+      padding:20px;
+
+      border:
+        1px solid
+        rgba(168,85,247,.20);
+
+      border-radius:17px;
+
+      background:
+        rgba(168,85,247,.06);
+
+    }
+
+
+    .discord-form h3{
+
+      margin-bottom:17px;
+
+      font-size:17px;
+
+    }
+
+
+    .field{
+
+      margin-bottom:15px;
+
+    }
+
+
+    .field label{
+
+      display:block;
+
+      margin-bottom:7px;
+
+      color:#c5bdce;
+
+      font-size:13px;
+
+      font-weight:700;
+
+    }
+
+
+    .field input{
+
+      width:100%;
+
+      padding:
+        12px 13px;
+
+      border:
+        1px solid
+        rgba(255,255,255,.10);
+
+      border-radius:10px;
+
+      outline:none;
+
+      background:
+        rgba(0,0,0,.25);
+
+      color:#fff;
+
+    }
+
+
+    .field input::placeholder{
+
+      color:#706878;
+
+    }
+
+
+    .field input:focus{
+
+      border-color:
+        rgba(168,85,247,.65);
+
+      box-shadow:
+        0 0 0 3px
+        rgba(168,85,247,.10);
+
+    }
+
+
+    .empty{
+
+      text-align:center;
+
+      padding:
+        70px 20px;
+
+      color:#a39aaa;
+
+    }
+
+
+    /* ==========================================================
+       TOAST
+       ========================================================== */
+
+    #toast{
+
+      position:fixed;
+
+      left:50%;
+
+      bottom:25px;
+
+      transform:
+        translate(
+          -50%,
+          25px
+        );
+
+      opacity:0;
+
+      visibility:hidden;
+
+      z-index:200;
+
+      padding:
+        13px 18px;
+
+      border:
+        1px solid
+        rgba(168,85,247,.3);
+
+      border-radius:12px;
+
+      background:
+        #160d25;
+
+      color:#fff;
+
+      box-shadow:
+        0 15px 40px
+        rgba(0,0,0,.4);
+
+      transition:
+        .25s ease;
+
+      font-size:14px;
+
+      text-align:center;
+
+    }
+
+
+    #toast.active{
+
+      opacity:1;
+
+      visibility:visible;
+
+      transform:
+        translate(
+          -50%,
+          0
+        );
+
+    }
+
+
+    /* ==========================================================
+       FOOTER
+       ========================================================== */
+
+    footer{
+
+      padding:
+        35px 20px;
+
+      text-align:center;
+
+      color:#655e6c;
+
+      font-size:13px;
+
+      border-top:
+        1px solid
+        rgba(255,255,255,.05);
+
+    }
+
+
+    /* ==========================================================
+       MOBILE
+       ========================================================== */
+
+    @media(max-width:600px){
+
+      header{
+
+        padding:
+          0 18px;
+
+      }
+
+
+      .hero{
+
+        min-height:
+          470px;
+
+        padding:
+          80px 20px 50px;
+
+      }
+
+
+      .hero h1{
+
+        letter-spacing:
+          -2.5px;
+
+      }
+
+
+      .hero p{
+
+        font-size:15px;
+
+      }
+
+
+      .products-section{
+
+        padding:
+          30px 18px 70px;
+
+      }
+
+
+      #productsGrid{
+
+        grid-template-columns:
+          1fr;
+
+      }
+
+
+      .drawer{
+
+        width:100%;
+
+        padding:
+          20px;
+
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+  <!-- ==========================================================
+       HEADER
+       ========================================================== -->
+
+  <header>
+
+    <div class="logo">
+      MEMBERS<span>SHOP</span>
+    </div>
+
+
+    <button
+      id="openCart"
+      class="cart-button"
+      type="button"
+    >
+
+      🛒
+
+      <span>
+        Panier
+      </span>
+
+      <span id="cartCount">
+        0
+      </span>
+
+    </button>
+
+  </header>
+
+
+  <!-- ==========================================================
+       HERO
+       ========================================================== -->
+
+  <main>
+
+    <section class="hero">
+
+      <div class="hero-badge">
+        ⚡ MEMBERS SHOP
+      </div>
+
+
+      <h1>
+        Tes <span>MEMBERS</span>
+        en quelques clics.
+      </h1>
+
+
+      <p>
+        Choisis ton pack, ajoute-le au panier,
+        indique ton pseudo Discord et ton serveur,
+        puis passe ta commande.
+      </p>
+
+
+      <button
+        id="scrollProducts"
+        class="hero-button"
+        type="button"
+      >
+        Voir les packs
+      </button>
+
+    </section>
+
+
+    <!-- ========================================================
+         PRODUITS
+         ======================================================== -->
+
+    <section
+      id="productsSection"
+      class="products-section"
+    >
+
+      <div class="section-heading">
+
+        <div class="small">
+          MEMBERS SHOP
+        </div>
+
+
+        <h2>
+          Choisis ton pack
+        </h2>
+
+
+        <p>
+          Des packs adaptés à différents besoins.
+        </p>
+
+      </div>
+
+
+      <div id="productsGrid"></div>
+
+    </section>
+
+  </main>
+
+
+  <!-- ==========================================================
+       OVERLAY
+       ========================================================== -->
+
+  <div id="overlay"></div>
+
+
+  <!-- ==========================================================
+       DRAWER QUANTITÉ
+       ========================================================== -->
+
+  <aside
+    id="quantityDrawer"
+    class="drawer"
+  >
+
+    <div class="drawer-header">
+
+      <h2>
+        Choisir la quantité
+      </h2>
+
+
+      <button
+        id="closeQuantity"
+        class="close-button"
+        type="button"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <div class="quantity-product">
+
+      <h3 id="quantityProductName">
+        MEMBERS
+      </h3>
+
+
+      <p id="quantityProductPrice">
+        5,49 € / unité
+      </p>
+
+    </div>
+
+
+    <div class="quantity-selector">
+
+      <button
+        id="minusButton"
+        class="quantity-button"
+        type="button"
+      >
+        −
+      </button>
+
+
+      <span id="quantityValue">
+        1
+      </span>
+
+
+      <button
+        id="plusButton"
+        class="quantity-button"
+        type="button"
+      >
+        +
+      </button>
+
+    </div>
+
+
+    <div class="summary">
+
+      <div class="summary-row">
+
+        <span>
+          Quantité
+        </span>
+
+        <strong id="summaryQuantity">
+          1
+        </strong>
+
+      </div>
+
+
+      <div class="summary-row">
+
+        <span>
+          MEMBERS
+        </span>
+
+        <strong id="summaryMembers">
+          1 000
+        </strong>
+
+      </div>
+
+
+      <div class="summary-row">
+
+        <span>
+          Total
+        </span>
+
+        <strong id="summaryPrice">
+          5,49 €
+        </strong>
+
+      </div>
+
+    </div>
+
+
+    <button
+      id="addCartButton"
+      class="primary-btn"
+      type="button"
+    >
+      🛒 Ajouter au panier
+    </button>
+
+  </aside>
+
+
+  <!-- ==========================================================
+       DRAWER PANIER
+       ========================================================== -->
+
+  <aside
+    id="cartDrawer"
+    class="drawer"
+  >
+
+    <div class="drawer-header">
+
+      <h2>
+        Ton panier
+      </h2>
+
+
+      <button
+        id="closeCart"
+        class="close-button"
+        type="button"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <div id="cartContent"></div>
+
+  </aside>
+
+
+  <!-- ==========================================================
+       TOAST
+       ========================================================== -->
+
+  <div id="toast"></div>
+
+
+  <!-- ==========================================================
+       FOOTER
+       ========================================================== -->
+
+  <footer>
+
+    © 2026 MEMBERS SHOP
+    • Tous droits réservés.
+
+  </footer>
+
+
+  <!-- ==========================================================
+       CONFIGURATION WEBHOOK
+       ==========================================================
+
+       IMPORTANT :
+       - Mets ici UNIQUEMENT ton nouveau webhook régénéré.
+       - Ne mets PAS de mot de passe.
+       - APP.JS utilise directement cette variable.
+       - Ne crée PAS une deuxième WEBHOOK_URL dans APP.JS.
+       -->
+
+  <script>
+
+    const WEBHOOK_URL =
+      "TON_NOUVEAU_WEBHOOK_ICI";
+
+
+    const WEBHOOK_BOT_MESSAGE =
+      "🛒 Nouvelle commande reçue sur MEMBERS SHOP !";
+
+  </script>
+
+
+  <!-- ==========================================================
+       APP.JS
+       ========================================================== -->
+
+  <script
+    src="./APP.JS"
+  ></script>
+
+
+</body>
+
+</html>
 ```
