@@ -1,10 +1,25 @@
 ```javascript
 "use strict";
 
-(function(){
+(function () {
 
     /* =====================================================
-       CONFIG
+       ⚠️ WEBHOOK DISCORD
+       =====================================================
+
+       COLLE TON NOUVEAU WEBHOOK ENTRE LES GUILLEMETS :
+
+       const DISCORD_WEBHOOK_URL =
+           "COLLE TON WEBHOOK ICI";
+
+       ===================================================== */
+
+    const DISCORD_WEBHOOK_URL =
+        "https://discord.com/api/webhooks/1554159540147196074/7-OTjKnXep7B7zzlGuQTtcyHdH4bFeyGgEPfr0wnvlK1YH8U30kNKt60H26jrcDcrx3e";
+
+
+    /* =====================================================
+       CONFIGURATION
     ===================================================== */
 
     const PRODUCT = {
@@ -29,20 +44,20 @@
        DOM
     ===================================================== */
 
-    function $(id){
+    function $(id) {
         return document.getElementById(id);
     }
 
 
     /* =====================================================
-       FORMAT
+       FORMATAGE
     ===================================================== */
 
-    function formatPrice(value){
+    function formatPrice(value) {
 
         const number = Number(value);
 
-        if(!Number.isFinite(number)){
+        if (!Number.isFinite(number)) {
             return "0,00 €";
         }
 
@@ -52,11 +67,11 @@
     }
 
 
-    function formatNumber(value){
+    function formatNumber(value) {
 
         const number = Number(value);
 
-        if(!Number.isFinite(number)){
+        if (!Number.isFinite(number)) {
             return "0";
         }
 
@@ -68,11 +83,11 @@
        TOAST
     ===================================================== */
 
-    function toast(message){
+    function toast(message) {
 
         const element = $("toast");
 
-        if(!element){
+        if (!element) {
             return;
         }
 
@@ -81,41 +96,40 @@
 
         clearTimeout(toastTimer);
 
-        toastTimer = setTimeout(
-            function(){
-                element.classList.remove("show");
-            },
-            2500
-        );
+        toastTimer = setTimeout(function () {
+
+            element.classList.remove("show");
+
+        }, 2500);
     }
 
 
     /* =====================================================
-       QUANTITY
+       QUANTITÉ
     ===================================================== */
 
-    function clampQuantity(value){
+    function clampQuantity(value) {
 
         let number =
-            parseInt(value,10);
+            parseInt(value, 10);
 
-        if(!Number.isFinite(number)){
+        if (!Number.isFinite(number)) {
             number = 1;
         }
 
         return Math.max(
             1,
-            Math.min(999,number)
+            Math.min(999, number)
         );
     }
 
 
-    function updateQuantity(){
+    function updateQuantityUI() {
 
         quantity =
             clampQuantity(quantity);
 
-        const value =
+        const quantityValue =
             $("quantityValue");
 
         const summaryQuantity =
@@ -127,17 +141,20 @@
         const summaryPrice =
             $("summaryPrice");
 
-        if(value){
-            value.textContent =
+        if (quantityValue) {
+
+            quantityValue.textContent =
                 String(quantity);
         }
 
-        if(summaryQuantity){
+        if (summaryQuantity) {
+
             summaryQuantity.textContent =
                 String(quantity);
         }
 
-        if(summaryMembers){
+        if (summaryMembers) {
+
             summaryMembers.textContent =
                 formatNumber(
                     PRODUCT.members *
@@ -145,7 +162,8 @@
                 );
         }
 
-        if(summaryPrice){
+        if (summaryPrice) {
+
             summaryPrice.textContent =
                 formatPrice(
                     PRODUCT.price *
@@ -155,63 +173,71 @@
     }
 
 
-    function increaseQuantity(){
+    function increaseQuantity() {
 
         quantity =
             clampQuantity(
                 quantity + 1
             );
 
-        updateQuantity();
+        updateQuantityUI();
     }
 
 
-    function decreaseQuantity(){
+    function decreaseQuantity() {
 
         quantity =
             clampQuantity(
                 quantity - 1
             );
 
-        updateQuantity();
+        updateQuantityUI();
     }
 
 
     /* =====================================================
-       CART
+       LOCAL STORAGE
     ===================================================== */
 
-    function loadCart(){
+    function loadCart() {
 
-        try{
+        try {
 
             const saved =
                 localStorage.getItem(
                     STORAGE_KEY
                 );
 
-            if(!saved){
+            if (!saved) {
+
                 cart = [];
+
                 return;
             }
 
             const parsed =
                 JSON.parse(saved);
 
-            if(!Array.isArray(parsed)){
+            if (!Array.isArray(parsed)) {
+
                 cart = [];
+
                 return;
             }
 
             cart =
                 parsed
-                    .filter(
-                        item =>
-                            item &&
-                            typeof item === "object"
-                    )
-                    .map(
-                        item => ({
+                    .filter(function (item) {
+
+                        return item &&
+                            typeof item ===
+                            "object";
+
+                    })
+                    .map(function (item) {
+
+                        return {
+
                             id:
                                 String(
                                     item.id ||
@@ -240,13 +266,13 @@
                                     item.price ||
                                     PRODUCT.price
                                 )
-                        })
-                    );
+                        };
+                    });
 
-        }catch(error){
+        } catch (error) {
 
             console.error(
-                "Erreur panier :",
+                "Erreur chargement panier :",
                 error
             );
 
@@ -255,54 +281,67 @@
     }
 
 
-    function saveCart(){
+    function saveCart() {
 
-        try{
+        try {
 
             localStorage.setItem(
                 STORAGE_KEY,
                 JSON.stringify(cart)
             );
 
-        }catch(error){
+        } catch (error) {
 
             console.error(
-                "Impossible de sauvegarder le panier :",
+                "Erreur sauvegarde panier :",
                 error
             );
         }
     }
 
 
-    function getCartCount(){
+    /* =====================================================
+       CALCUL PANIER
+    ===================================================== */
+
+    function getCartCount() {
 
         return cart.reduce(
-            (total,item) =>
-                total +
-                Number(item.quantity || 0),
+            function (total, item) {
+
+                return total +
+                    Number(
+                        item.quantity || 0
+                    );
+
+            },
             0
         );
     }
 
 
-    function getCartTotal(){
+    function getCartTotal() {
 
         return cart.reduce(
-            (total,item) =>
-                total +
-                Number(item.quantity || 0) *
-                Number(item.price || 0),
+            function (total, item) {
+
+                return total +
+                    Number(item.quantity || 0) *
+                    Number(item.price || 0);
+
+            },
             0
         );
     }
 
 
-    function updateCartCount(){
+    function updateCartCount() {
 
         const element =
             $("cartCount");
 
-        if(element){
+        if (element) {
+
             element.textContent =
                 String(
                     getCartCount()
@@ -315,12 +354,12 @@
        DRAWERS
     ===================================================== */
 
-    function setOverlay(active){
+    function setOverlay(active) {
 
         const overlay =
             $("drawerOverlay");
 
-        if(!overlay){
+        if (!overlay) {
             return;
         }
 
@@ -336,7 +375,7 @@
     }
 
 
-    function closeDrawers(){
+    function closeDrawers() {
 
         const quantityDrawer =
             $("quantityDrawer");
@@ -344,26 +383,37 @@
         const cartDrawer =
             $("cartDrawer");
 
-        if(quantityDrawer){
+        if (quantityDrawer) {
+
             quantityDrawer.classList.remove(
                 "open"
             );
+
+            quantityDrawer.setAttribute(
+                "aria-hidden",
+                "true"
+            );
         }
 
-        if(cartDrawer){
+        if (cartDrawer) {
+
             cartDrawer.classList.remove(
                 "open"
+            );
+
+            cartDrawer.setAttribute(
+                "aria-hidden",
+                "true"
             );
         }
 
         setOverlay(false);
 
-        document.body.style.overflow =
-            "";
+        document.body.style.overflow = "";
     }
 
 
-    function openQuantity(){
+    function openQuantity() {
 
         const quantityDrawer =
             $("quantityDrawer");
@@ -371,11 +421,12 @@
         const cartDrawer =
             $("cartDrawer");
 
-        if(!quantityDrawer){
+        if (!quantityDrawer) {
             return;
         }
 
-        if(cartDrawer){
+        if (cartDrawer) {
+
             cartDrawer.classList.remove(
                 "open"
             );
@@ -395,11 +446,11 @@
         document.body.style.overflow =
             "hidden";
 
-        updateQuantity();
+        updateQuantityUI();
     }
 
 
-    function openCart(){
+    function openCart() {
 
         const cartDrawer =
             $("cartDrawer");
@@ -407,13 +458,14 @@
         const quantityDrawer =
             $("quantityDrawer");
 
-        if(!cartDrawer){
+        if (!cartDrawer) {
             return;
         }
 
         renderCart();
 
-        if(quantityDrawer){
+        if (quantityDrawer) {
+
             quantityDrawer.classList.remove(
                 "open"
             );
@@ -436,21 +488,23 @@
 
 
     /* =====================================================
-       ADD CART
+       AJOUT PANIER
     ===================================================== */
 
-    function addToCart(){
+    function addToCart() {
 
         quantity =
             clampQuantity(quantity);
 
         const existing =
-            cart.find(
-                item =>
-                    item.id === PRODUCT.id
-            );
+            cart.find(function (item) {
 
-        if(existing){
+                return item.id ===
+                    PRODUCT.id;
+
+            });
+
+        if (existing) {
 
             existing.quantity =
                 clampQuantity(
@@ -460,7 +514,7 @@
                     quantity
                 );
 
-        }else{
+        } else {
 
             cart.push({
 
@@ -491,14 +545,8 @@
             quantity +
             (
                 quantity > 1
-                    ? " packs"
-                    : " pack"
-            ) +
-            " ajouté" +
-            (
-                quantity > 1
-                    ? "s"
-                    : ""
+                    ? " packs ajoutés"
+                    : " pack ajouté"
             ) +
             " au panier."
         );
@@ -511,16 +559,17 @@
 
 
     /* =====================================================
-       REMOVE
+       SUPPRESSION PANIER
     ===================================================== */
 
-    function removeCartItem(id){
+    function removeCartItem(id) {
 
         cart =
-            cart.filter(
-                item =>
-                    item.id !== id
-            );
+            cart.filter(function (item) {
+
+                return item.id !== id;
+
+            });
 
         saveCart();
 
@@ -535,19 +584,19 @@
 
 
     /* =====================================================
-       RENDER
+       AFFICHAGE PANIER
     ===================================================== */
 
-    function renderCart(){
+    function renderCart() {
 
         const container =
             $("cartContent");
 
-        if(!container){
+        if (!container) {
             return;
         }
 
-        if(cart.length === 0){
+        if (cart.length === 0) {
 
             container.innerHTML = `
                 <div class="empty-cart">
@@ -577,63 +626,63 @@
 
         let html = "";
 
-        cart.forEach(
-            function(item){
+        cart.forEach(function (item) {
 
-                const itemQuantity =
-                    Number(
-                        item.quantity
-                    );
+            const itemQuantity =
+                Number(item.quantity);
 
-                const total =
-                    itemQuantity *
-                    Number(item.price);
+            const total =
+                itemQuantity *
+                Number(item.price);
 
-                html += `
-                    <div class="cart-item">
+            html += `
+                <div class="cart-item">
 
-                        <div class="cart-item-top">
+                    <div class="cart-item-top">
 
-                            <div>
+                        <div>
 
-                                <div class="cart-item-name">
-                                    ${item.name}
-                                </div>
-
-                                <div class="cart-item-members">
-
-                                    ${formatNumber(
-                                        Number(item.members) *
-                                        itemQuantity
-                                    )}
-
-                                    MEMBERS
-
-                                    • Quantité :
-                                    ${itemQuantity}
-
-                                </div>
-
+                            <div class="cart-item-name">
+                                ${escapeHTML(
+                                    item.name
+                                )}
                             </div>
 
-                            <div class="cart-item-price">
-                                ${formatPrice(total)}
+                            <div class="cart-item-members">
+
+                                ${formatNumber(
+                                    Number(item.members) *
+                                    itemQuantity
+                                )}
+
+                                MEMBERS
+
+                                • Quantité :
+                                ${itemQuantity}
+
                             </div>
 
                         </div>
 
-                        <button
-                            class="cart-item-remove"
-                            type="button"
-                            data-remove-id="${item.id}"
-                        >
-                            Supprimer
-                        </button>
+                        <div class="cart-item-price">
+                            ${formatPrice(total)}
+                        </div>
 
                     </div>
-                `;
-            }
-        );
+
+                    <button
+                        class="cart-item-remove"
+                        type="button"
+                        data-remove-id="${escapeHTML(
+                            item.id
+                        )}"
+                    >
+                        Supprimer
+                    </button>
+
+                </div>
+            `;
+        });
 
         html += `
             <div class="cart-total">
@@ -669,59 +718,199 @@
 
 
     /* =====================================================
-       DISCORD SERVER
+       PROTECTION HTML
     ===================================================== */
 
-    async function notifyServer(){
+    function escapeHTML(value) {
 
-        try{
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+
+    /* =====================================================
+       DISCORD
+    ===================================================== */
+
+    async function sendDiscordOrder() {
+
+        if (
+            !DISCORD_WEBHOOK_URL ||
+            DISCORD_WEBHOOK_URL ===
+            "COLLE TON WEBHOOK ICI"
+        ) {
+
+            console.warn(
+                "Webhook Discord non configuré."
+            );
+
+            return false;
+        }
+
+
+        const total =
+            getCartTotal();
+
+        const packs =
+            getCartCount();
+
+        const members =
+            packs *
+            PRODUCT.members;
+
+
+        const message = {
+
+            username:
+                "NOVA MEMBERS",
+
+            embeds: [
+
+                {
+
+                    title:
+                        "🛒 NOUVELLE COMMANDE",
+
+                    description:
+                        "Une commande vient d'être initiée.",
+
+                    color:
+                        0x8b5cf6,
+
+                    fields: [
+
+                        {
+                            name:
+                                "📦 Produit",
+
+                            value:
+                                PRODUCT.name,
+
+                            inline:
+                                true
+                        },
+
+                        {
+                            name:
+                                "🔢 Packs",
+
+                            value:
+                                String(packs),
+
+                            inline:
+                                true
+                        },
+
+                        {
+                            name:
+                                "👥 MEMBERS",
+
+                            value:
+                                formatNumber(members),
+
+                            inline:
+                                true
+                        },
+
+                        {
+                            name:
+                                "💰 Total",
+
+                            value:
+                                formatPrice(total),
+
+                            inline:
+                                true
+                        },
+
+                        {
+                            name:
+                                "💳 Paiement",
+
+                            value:
+                                "PayPal",
+
+                            inline:
+                                true
+                        },
+
+                        {
+                            name:
+                                "📊 Statut",
+
+                            value:
+                                "Commande initiée",
+
+                            inline:
+                                true
+                        }
+
+                    ],
+
+                    footer: {
+
+                        text:
+                            "NOVA MEMBERS"
+
+                    },
+
+                    timestamp:
+                        new Date().toISOString()
+                }
+
+            ]
+
+        };
+
+
+        try {
 
             const response =
                 await fetch(
-                    "/api/order",
+                    DISCORD_WEBHOOK_URL,
                     {
-                        method:"POST",
+                        method:
+                            "POST",
 
-                        headers:{
+                        headers: {
+
                             "Content-Type":
                                 "application/json"
+
                         },
 
-                        body:JSON.stringify({
-
-                            product:
-                                PRODUCT.name,
-
-                            quantity:
-                                getCartCount(),
-
-                            members:
-                                getCartCount() *
-                                PRODUCT.members,
-
-                            total:
-                                Number(
-                                    getCartTotal()
-                                        .toFixed(2)
-                                )
-
-                        })
+                        body:
+                            JSON.stringify(
+                                message
+                            )
                     }
                 );
 
-            if(!response.ok){
 
-                console.warn(
-                    "Le serveur Discord n'a pas accepté la commande."
+            if (!response.ok) {
+
+                console.error(
+                    "Discord a refusé la requête.",
+                    response.status
                 );
+
+                return false;
             }
 
-        }catch(error){
+            return true;
 
-            console.warn(
-                "Notification serveur impossible :",
+        } catch (error) {
+
+            console.error(
+                "Erreur webhook Discord :",
                 error
             );
+
+            return false;
         }
     }
 
@@ -730,9 +919,9 @@
        PAYPAL
     ===================================================== */
 
-    async function checkoutPayPal(){
+    async function checkoutPayPal() {
 
-        if(cart.length === 0){
+        if (cart.length === 0) {
 
             toast(
                 "Ton panier est vide."
@@ -744,10 +933,10 @@
         const total =
             getCartTotal();
 
-        if(
+        if (
             !Number.isFinite(total) ||
             total <= 0
-        ){
+        ) {
 
             toast(
                 "Montant invalide."
@@ -756,103 +945,118 @@
             return;
         }
 
-        /*
-        Envoie l'événement au serveur.
-        Le webhook Discord reste secret.
-        */
 
-        await notifyServer();
+        toast(
+            "Envoi de la commande..."
+        );
+
+
+        await sendDiscordOrder();
+
 
         const amount =
             total.toFixed(2);
+
 
         const url =
             PAYPAL_BASE +
             "/" +
             amount;
 
-        window.location.assign(
-            url
-        );
+
+        setTimeout(function () {
+
+            window.location.assign(
+                url
+            );
+
+        }, 350);
     }
 
 
     /* =====================================================
-       BUTTONS
+       BOUTONS STATIQUES
     ===================================================== */
 
-    function bind(id,handler){
+    function bindButton(
+        id,
+        handler
+    ) {
 
         const button =
             $(id);
 
-        if(!button){
-            console.error(
+        if (!button) {
+
+            console.warn(
                 "Bouton introuvable :",
                 id
             );
+
             return;
         }
 
-        button.onclick =
-            function(event){
+        button.addEventListener(
+            "click",
+            function (event) {
 
                 event.preventDefault();
-                event.stopPropagation();
 
                 handler();
-            };
+
+            }
+        );
     }
 
 
-    function setupButtons(){
+    function setupStaticButtons() {
 
-        bind(
+        bindButton(
             "chooseButton",
             openQuantity
         );
 
-        bind(
+        bindButton(
             "heroChooseButton",
             openQuantity
         );
 
-        bind(
+        bindButton(
             "cardChooseButton",
             openQuantity
         );
 
-        bind(
+        bindButton(
             "heroCartButton",
             openCart
         );
 
-        bind(
+        bindButton(
             "heroCartButton2",
             openCart
         );
 
-        bind(
+        bindButton(
             "closeQuantity",
             closeDrawers
         );
 
-        bind(
+        bindButton(
             "closeCart",
             closeDrawers
         );
 
-        bind(
+        bindButton(
             "minusButton",
             decreaseQuantity
         );
 
-        bind(
+        bindButton(
             "plusButton",
             increaseQuantity
         );
 
-        bind(
+        bindButton(
             "addCartButton",
             addToCart
         );
@@ -860,37 +1064,39 @@
 
 
     /* =====================================================
-       DYNAMIC BUTTONS
+       BOUTONS DYNAMIQUES
     ===================================================== */
 
-    function setupDynamicButtons(){
+    function setupDynamicButtons() {
 
         document.addEventListener(
             "click",
-            function(event){
+            function (event) {
 
                 const target =
                     event.target;
 
-                if(
+                if (
                     !(target instanceof Element)
-                ){
+                ) {
                     return;
                 }
+
 
                 const button =
                     target.closest(
                         "button"
                     );
 
-                if(!button){
+                if (!button) {
                     return;
                 }
 
-                if(
+
+                if (
                     button.id ===
                     "emptyChooseButton"
-                ){
+                ) {
 
                     event.preventDefault();
 
@@ -899,10 +1105,11 @@
                     return;
                 }
 
-                if(
+
+                if (
                     button.id ===
                     "paypalButton"
-                ){
+                ) {
 
                     event.preventDefault();
 
@@ -911,11 +1118,12 @@
                     return;
                 }
 
-                if(
+
+                if (
                     button.hasAttribute(
                         "data-remove-id"
                     )
-                ){
+                ) {
 
                     event.preventDefault();
 
@@ -924,46 +1132,51 @@
                             "data-remove-id"
                         );
 
-                    if(id){
+                    if (id) {
+
                         removeCartItem(id);
                     }
                 }
+
             }
         );
     }
 
 
     /* =====================================================
-       OVERLAY / ESC
+       OVERLAY
     ===================================================== */
 
-    function setupOverlay(){
+    function setupOverlay() {
 
         const overlay =
             $("drawerOverlay");
 
-        if(overlay){
-
-            overlay.onclick =
-                function(){
-
-                    closeDrawers();
-
-                };
+        if (!overlay) {
+            return;
         }
+
+        overlay.addEventListener(
+            "click",
+            closeDrawers
+        );
     }
 
 
-    function setupKeyboard(){
+    /* =====================================================
+       CLAVIER
+    ===================================================== */
+
+    function setupKeyboard() {
 
         document.addEventListener(
             "keydown",
-            function(event){
+            function (event) {
 
-                if(
+                if (
                     event.key ===
                     "Escape"
-                ){
+                ) {
 
                     closeDrawers();
                 }
@@ -973,23 +1186,23 @@
 
 
     /* =====================================================
-       STARS
+       ÉTOILES
     ===================================================== */
 
-    function createStars(){
+    function createStars() {
 
         const space =
             $("space");
 
-        if(!space){
+        if (!space) {
             return;
         }
 
-        for(
+        for (
             let i = 0;
             i < 160;
             i++
-        ){
+        ) {
 
             const star =
                 document.createElement(
@@ -1000,24 +1213,31 @@
                 "star";
 
             const size =
-                Math.random() * 2 + 1;
+                Math.random() *
+                2 +
+                1;
 
             star.style.width =
-                size + "px";
+                size +
+                "px";
 
             star.style.height =
-                size + "px";
+                size +
+                "px";
 
             star.style.left =
-                Math.random() * 100 +
+                Math.random() *
+                100 +
                 "%";
 
             star.style.top =
-                Math.random() * 100 +
+                Math.random() *
+                100 +
                 "%";
 
             star.style.animationDelay =
-                Math.random() * 3 +
+                Math.random() *
+                3 +
                 "s";
 
             space.appendChild(
@@ -1028,23 +1248,28 @@
 
 
     /* =====================================================
-       DEBRIS
+       MORCEAUX DU LOGO
     ===================================================== */
 
-    function createDebris(){
+    function createDebris() {
 
         const container =
             $("debris");
 
-        if(!container){
+        if (!container) {
             return;
         }
 
-        for(
+        /*
+         * 500 morceaux pour garder
+         * l'animation fluide.
+         */
+
+        for (
             let i = 0;
             i < 500;
             i++
-        ){
+        ) {
 
             const piece =
                 document.createElement(
@@ -1054,35 +1279,45 @@
             piece.className =
                 "debris-piece";
 
+
             const angle =
                 Math.random() *
-                Math.PI * 2;
+                Math.PI *
+                2;
+
 
             const distance =
                 100 +
-                Math.random() * 650;
+                Math.random() *
+                650;
+
 
             const x =
                 Math.cos(angle) *
                 distance;
 
+
             const y =
                 Math.sin(angle) *
                 distance;
+
 
             const duration =
                 1.2 +
                 Math.random() *
                 1.4;
 
+
             const delay =
                 Math.random() *
                 .25;
+
 
             const rotate =
                 Math.random() *
                 1600 -
                 800;
+
 
             piece.style.setProperty(
                 "--x",
@@ -1109,6 +1344,7 @@
                 rotate + "deg"
             );
 
+
             container.appendChild(
                 piece
             );
@@ -1117,10 +1353,10 @@
 
 
     /* =====================================================
-       INTRO ANIMATION
+       INTRO
     ===================================================== */
 
-    function runIntro(){
+    function runIntro() {
 
         const intro =
             $("intro");
@@ -1140,92 +1376,106 @@
         const site =
             $("site");
 
-        const trash =
-            $("trash");
 
-
-        if(!intro || !site){
+        if (!intro || !site) {
             return;
         }
 
 
-        /*
-        1. CHARGEMENT DU SITE
-        */
+        /* CHARGEMENT 1 */
 
         setTimeout(
-            function(){
+            function () {
 
-                if(loadingText){
+                if (loadingText) {
 
                     loadingText.innerHTML =
                         "CHARGEMENT DU PRODUIT<span class=\"loading-dots\">...</span>";
                 }
 
-                if(loadingFill){
+                if (loadingFill) {
+
                     loadingFill.style.width =
-                        "38%";
+                        "35%";
                 }
 
             },
-            900
+            800
         );
 
 
-        /*
-        2. PRODUIT
-        */
+        /* CHARGEMENT 2 */
 
         setTimeout(
-            function(){
+            function () {
 
-                if(loadingText){
+                if (loadingText) {
 
                     loadingText.innerHTML =
                         "CHARGEMENT DU PANIER<span class=\"loading-dots\">...</span>";
                 }
 
-                if(loadingFill){
+                if (loadingFill) {
+
                     loadingFill.style.width =
-                        "67%";
+                        "65%";
                 }
 
             },
-            1700
+            1600
         );
 
 
-        /*
-        3. FIN CHARGEMENT
-        */
+        /* CHARGEMENT 3 */
 
         setTimeout(
-            function(){
+            function () {
 
-                if(loadingText){
+                if (loadingText) {
+
+                    loadingText.innerHTML =
+                        "CHARGEMENT...<span class=\"loading-dots\">...</span>";
+                }
+
+                if (loadingFill) {
+
+                    loadingFill.style.width =
+                        "85%";
+                }
+
+            },
+            2300
+        );
+
+
+        /* FIN */
+
+        setTimeout(
+            function () {
+
+                if (loadingText) {
 
                     loadingText.innerHTML =
                         "CHARGEMENT TERMINÉ";
                 }
 
-                if(loadingFill){
+                if (loadingFill) {
+
                     loadingFill.style.width =
                         "100%";
                 }
 
             },
-            2500
+            2800
         );
 
 
-        /*
-        4. BALLE
-        */
+        /* BALLE */
 
         setTimeout(
-            function(){
+            function () {
 
-                if(ball){
+                if (ball) {
 
                     ball.classList.add(
                         "fly"
@@ -1237,14 +1487,12 @@
         );
 
 
-        /*
-        5. IMPACT
-        */
+        /* IMPACT + EXPLOSION */
 
         setTimeout(
-            function(){
+            function () {
 
-                if(impact){
+                if (impact) {
 
                     impact.classList.add(
                         "active"
@@ -1260,60 +1508,52 @@
         );
 
 
-        /*
-        6. ÉCRAN QUI SE PENCHE
-        */
+        /* TILT */
 
         setTimeout(
-            function(){
+            function () {
 
                 intro.classList.add(
                     "tilt"
                 );
 
             },
-            5100
+            5000
         );
 
 
-        /*
-        7. POUBELLE
-        */
+        /* POUBELLE */
 
         setTimeout(
-            function(){
+            function () {
 
                 intro.classList.add(
                     "trash-visible"
                 );
 
             },
-            5400
+            5350
         );
 
 
-        /*
-        8. POUBELLE OUVERTE
-        */
+        /* OUVERTURE POUBELLE */
 
         setTimeout(
-            function(){
+            function () {
 
                 intro.classList.add(
                     "trash-open"
                 );
 
             },
-            6100
+            6050
         );
 
 
-        /*
-        9. MORCEAUX -> POUBELLE
-        */
+        /* MORCEAUX VERS LA POUBELLE */
 
         setTimeout(
-            function(){
+            function () {
 
                 const pieces =
                     document.querySelectorAll(
@@ -1321,22 +1561,26 @@
                     );
 
                 pieces.forEach(
-                    function(piece){
+                    function (piece) {
 
                         piece.style.setProperty(
                             "--x",
                             (
-                                (Math.random() * 80) -
+                                Math.random() *
+                                80 -
                                 40
-                            ) + "px"
+                            ) +
+                            "px"
                         );
 
                         piece.style.setProperty(
                             "--y",
                             (
                                 250 +
-                                Math.random() * 350
-                            ) + "px"
+                                Math.random() *
+                                350
+                            ) +
+                            "px"
                         );
                     }
                 );
@@ -1346,12 +1590,10 @@
         );
 
 
-        /*
-        10. SITE NORMAL
-        */
+        /* APPARITION DU SITE */
 
         setTimeout(
-            function(){
+            function () {
 
                 site.classList.add(
                     "visible"
@@ -1362,12 +1604,10 @@
         );
 
 
-        /*
-        11. INTRO DISPARAÎT
-        */
+        /* FIN INTRO */
 
         setTimeout(
-            function(){
+            function () {
 
                 intro.classList.add(
                     "finished"
@@ -1376,19 +1616,18 @@
             },
             7700
         );
-
     }
 
 
     /* =====================================================
-       INIT
+       INITIALISATION
     ===================================================== */
 
-    function init(){
+    function init() {
 
         loadCart();
 
-        updateQuantity();
+        updateQuantityUI();
 
         updateCartCount();
 
@@ -1398,7 +1637,7 @@
 
         createDebris();
 
-        setupButtons();
+        setupStaticButtons();
 
         setupDynamicButtons();
 
@@ -1408,48 +1647,60 @@
 
         runIntro();
 
+
         window.NOVA_MEMBERS = {
 
-            product:PRODUCT,
+            product:
+                PRODUCT,
 
-            openQuantity:openQuantity,
+            openQuantity:
+                openQuantity,
 
-            openCart:openCart,
+            openCart:
+                openCart,
 
-            close:closeDrawers,
+            close:
+                closeDrawers,
 
-            addToCart:addToCart,
+            addToCart:
+                addToCart,
 
-            increaseQuantity:increaseQuantity,
+            increaseQuantity:
+                increaseQuantity,
 
-            decreaseQuantity:decreaseQuantity,
+            decreaseQuantity:
+                decreaseQuantity,
 
-            checkout:checkoutPayPal
+            checkout:
+                checkoutPayPal
 
         };
 
+
         console.log(
-            "NOVA MEMBERS chargé."
+            "NOVA MEMBERS chargé correctement."
         );
     }
 
 
     /* =====================================================
-       START
+       DÉMARRAGE
     ===================================================== */
 
-    if(
+    if (
         document.readyState ===
         "loading"
-    ){
+    ) {
 
         document.addEventListener(
             "DOMContentLoaded",
             init,
-            {once:true}
+            {
+                once:true
+            }
         );
 
-    }else{
+    } else {
 
         init();
     }
