@@ -76,8 +76,9 @@
   // DOM
   // ============================================================
 
-  const $ = id =>
-    document.getElementById(id);
+  const $ = function(id){
+    return document.getElementById(id);
+  };
 
 
   const productsGrid =
@@ -118,6 +119,46 @@
 
   const toastElement =
     $("toast");
+
+
+  // ============================================================
+  // VERIFICATION DOM
+  // ============================================================
+
+  const requiredElements = [
+
+    productsGrid,
+    cartCount,
+    overlay,
+    quantityDrawer,
+    cartDrawer,
+    quantityProductName,
+    quantityProductPrice,
+    quantityValue,
+    summaryQuantity,
+    summaryMembers,
+    summaryPrice,
+    cartContent,
+    toastElement
+
+  ];
+
+
+  if(
+    requiredElements.some(
+      function(element){
+        return !element;
+      }
+    )
+  ){
+
+    console.error(
+      "MEMBERS SHOP : élément HTML manquant."
+    );
+
+    return;
+
+  }
 
 
   // ============================================================
@@ -162,13 +203,16 @@
     );
 
     toastTimer =
-      setTimeout(function(){
+      setTimeout(
+        function(){
 
-        toastElement.classList.remove(
-          "show"
-        );
+          toastElement.classList.remove(
+            "show"
+          );
 
-      },2500);
+        },
+        2500
+      );
 
   }
 
@@ -231,16 +275,35 @@
 
 
       cart =
-        parsed.filter(function(item){
+        parsed
+          .filter(
+            function(item){
 
-          return (
-            item &&
-            typeof item.id === "string" &&
-            Number.isFinite(item.quantity) &&
-            item.quantity > 0
+              return (
+                item &&
+                typeof item.id === "string" &&
+                Number.isFinite(item.quantity) &&
+                item.quantity > 0
+              );
+
+            }
+          )
+          .map(
+            function(item){
+
+              return {
+
+                id:item.id,
+
+                quantity:Math.min(
+                  9999,
+                  Math.floor(item.quantity)
+                )
+
+              };
+
+            }
           );
-
-        });
 
     }catch(error){
 
@@ -333,6 +396,7 @@
 
             <button
               class="chooseButton"
+              type="button"
               data-product="${escapeHTML(product.id)}"
             >
               Choisir
@@ -340,8 +404,9 @@
 
             <button
               class="addDirect"
-              data-direct="${escapeHTML(product.id)}"
+              type="button"
               title="Ajouter au panier"
+              data-direct="${escapeHTML(product.id)}"
             >
               +
             </button>
@@ -456,7 +521,9 @@
   function updateQuantityUI(){
 
     if(!selectedProduct){
+
       return;
+
     }
 
 
@@ -501,7 +568,9 @@
 
   function increaseQuantity(){
 
-    if(selectedQuantity >= 9999){
+    if(
+      selectedQuantity >= 9999
+    ){
 
       toast(
         "Quantité maximale atteinte."
@@ -521,7 +590,9 @@
 
   function decreaseQuantity(){
 
-    if(selectedQuantity <= 1){
+    if(
+      selectedQuantity <= 1
+    ){
 
       return;
 
@@ -556,8 +627,11 @@
 
     if(existing){
 
-      existing.quantity +=
-        quantity;
+      existing.quantity =
+        Math.min(
+          9999,
+          existing.quantity + quantity
+        );
 
     }else{
 
@@ -565,7 +639,10 @@
 
         id:product.id,
 
-        quantity:quantity
+        quantity:Math.min(
+          9999,
+          quantity
+        )
 
       });
 
@@ -622,7 +699,9 @@
 
 
     if(!item){
+
       return;
+
     }
 
 
@@ -630,7 +709,9 @@
       amount;
 
 
-    if(item.quantity <= 0){
+    if(
+      item.quantity <= 0
+    ){
 
       removeFromCart(id);
 
@@ -639,12 +720,11 @@
     }
 
 
-    if(item.quantity > 9999){
-
-      item.quantity =
-        9999;
-
-    }
+    item.quantity =
+      Math.min(
+        9999,
+        item.quantity
+      );
 
 
     saveCart();
@@ -744,13 +824,17 @@
       getCartDetailed();
 
 
-    if(items.length === 0){
+    if(
+      items.length === 0
+    ){
 
       cartContent.innerHTML = `
 
         <div class="empty">
 
-          🛒<br><br>
+          🛒
+
+          <br><br>
 
           Ton panier est vide.
 
@@ -810,6 +894,7 @@
 
               <button
                 class="removeButton"
+                type="button"
                 data-remove="${escapeHTML(
                   item.product.id
                 )}"
@@ -822,6 +907,7 @@
 
                 <button
                   class="closeButton"
+                  type="button"
                   style="width:34px;height:34px;"
                   data-minus="${escapeHTML(
                     item.product.id
@@ -832,6 +918,7 @@
 
                 <button
                   class="closeButton"
+                  type="button"
                   style="width:34px;height:34px;"
                   data-plus="${escapeHTML(
                     item.product.id
@@ -885,6 +972,7 @@
       <button
         class="paypalButton"
         id="paypalCheckout"
+        type="button"
       >
         💳 Payer avec PayPal
       </button>
@@ -1023,7 +1111,7 @@
     ){
 
       console.warn(
-        "WEBHOOK_URL n'est pas configuré."
+        "WEBHOOK_URL non configuré."
       );
 
       return false;
@@ -1190,7 +1278,7 @@
       if(!response.ok){
 
         console.error(
-          "Discord webhook HTTP:",
+          "Discord HTTP:",
           response.status
         );
 
@@ -1225,7 +1313,9 @@
       getCartDetailed();
 
 
-    if(detailed.length === 0){
+    if(
+      detailed.length === 0
+    ){
 
       toast(
         "Ton panier est vide."
@@ -1240,15 +1330,15 @@
       getCartTotal();
 
 
-    const rounded =
+    const amount =
       Number(
         total.toFixed(2)
       );
 
 
     if(
-      !Number.isFinite(rounded) ||
-      rounded <= 0
+      !Number.isFinite(amount) ||
+      amount <= 0
     ){
 
       toast(
@@ -1301,7 +1391,7 @@
     const paypalUrl =
       PAYPAL_BASE +
       "/" +
-      rounded.toFixed(2);
+      amount.toFixed(2);
 
 
     setTimeout(
@@ -1352,22 +1442,59 @@
   // EVENTS
   // ============================================================
 
-  $("openCart").addEventListener(
-    "click",
-    openCart
-  );
+  const openCartButton =
+    $("openCart");
+
+  const closeCartButton =
+    $("closeCart");
+
+  const closeQuantityButton =
+    $("closeQuantity");
+
+  const minusButton =
+    $("minusButton");
+
+  const plusButton =
+    $("plusButton");
+
+  const addCartButton =
+    $("addCartButton");
+
+  const scrollProductsButton =
+    $("scrollProducts");
+
+  const productsSection =
+    $("productsSection");
 
 
-  $("closeCart").addEventListener(
-    "click",
-    closeDrawers
-  );
+  if(openCartButton){
+
+    openCartButton.addEventListener(
+      "click",
+      openCart
+    );
+
+  }
 
 
-  $("closeQuantity").addEventListener(
-    "click",
-    closeDrawers
-  );
+  if(closeCartButton){
+
+    closeCartButton.addEventListener(
+      "click",
+      closeDrawers
+    );
+
+  }
+
+
+  if(closeQuantityButton){
+
+    closeQuantityButton.addEventListener(
+      "click",
+      closeDrawers
+    );
+
+  }
 
 
   overlay.addEventListener(
@@ -1376,61 +1503,80 @@
   );
 
 
-  $("minusButton").addEventListener(
-    "click",
-    decreaseQuantity
-  );
+  if(minusButton){
+
+    minusButton.addEventListener(
+      "click",
+      decreaseQuantity
+    );
+
+  }
 
 
-  $("plusButton").addEventListener(
-    "click",
-    increaseQuantity
-  );
+  if(plusButton){
+
+    plusButton.addEventListener(
+      "click",
+      increaseQuantity
+    );
+
+  }
 
 
-  $("addCartButton").addEventListener(
-    "click",
-    function(){
+  if(addCartButton){
 
-      if(!selectedProduct){
+    addCartButton.addEventListener(
+      "click",
+      function(){
 
-        toast(
-          "Aucun produit sélectionné."
+        if(!selectedProduct){
+
+          toast(
+            "Aucun produit sélectionné."
+          );
+
+          return;
+
+        }
+
+
+        addToCart(
+          selectedProduct,
+          selectedQuantity
         );
 
-        return;
+
+        toast(
+          selectedProduct.name +
+          " ajouté au panier."
+        );
+
+
+        closeDrawers();
 
       }
+    );
+
+  }
 
 
-      addToCart(
-        selectedProduct,
-        selectedQuantity
-      );
+  if(
+    scrollProductsButton &&
+    productsSection
+  ){
 
+    scrollProductsButton.addEventListener(
+      "click",
+      function(){
 
-      toast(
-        selectedProduct.name +
-        " ajouté au panier."
-      );
+        productsSection.scrollIntoView({
+          behavior:"smooth"
+        });
 
+      }
+    );
 
-      closeDrawers();
-
-    }
-  );
-
-
-  $("scrollProducts").addEventListener(
-    "click",
-    function(){
-
-      $("productsSection").scrollIntoView({
-        behavior:"smooth"
-      });
-
-    }
-  );
+  }
 
 
   document.addEventListener(
