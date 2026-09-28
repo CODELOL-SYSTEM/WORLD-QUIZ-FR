@@ -2,869 +2,720 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#06040d">
-<title>MEMBERS SHOP</title>
-
-<style>
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
-
-html{
-  scroll-behavior:smooth;
-}
-
-body{
-  min-height:100vh;
-  overflow-x:hidden;
-  font-family:Arial,Helvetica,sans-serif;
-  color:#fff;
-  background:
-    radial-gradient(circle at 50% -10%,rgba(126,74,255,.28),transparent 38%),
-    radial-gradient(circle at 0% 100%,rgba(90,35,220,.18),transparent 35%),
-    #06040d;
-}
-
-body::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  z-index:-2;
-  background-image:
-    linear-gradient(rgba(155,100,255,.035) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(155,100,255,.035) 1px,transparent 1px);
-  background-size:55px 55px;
-}
-
-button,
-input{
-  font:inherit;
-}
-
-button{
-  cursor:pointer;
-}
-
-header{
-  position:relative;
-  padding:30px 20px 80px;
-  text-align:center;
-}
-
-.topbar{
-  width:min(1100px,100%);
-  margin:auto;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:20px;
-}
-
-.logo{
-  color:#fff;
-  font-size:22px;
-  font-weight:1000;
-  letter-spacing:3px;
-}
-
-.logo span{
-  color:#a970ff;
-}
-
-.cartButton{
-  display:flex;
-  align-items:center;
-  gap:9px;
-  border:1px solid rgba(175,110,255,.35);
-  border-radius:13px;
-  padding:12px 16px;
-  color:#fff;
-  background:rgba(17,10,31,.85);
-  transition:.25s;
-}
-
-.cartButton:hover{
-  transform:translateY(-2px);
-  border-color:#a970ff;
-  box-shadow:0 10px 35px rgba(133,73,255,.2);
-}
-
-.cartCount{
-  min-width:23px;
-  height:23px;
-  padding:0 6px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border-radius:50px;
-  background:#8c4cff;
-  font-size:11px;
-  font-weight:1000;
-}
-
-.hero{
-  width:min(900px,100%);
-  margin:95px auto 0;
-}
-
-.heroBadge{
-  display:inline-block;
-  padding:9px 16px;
-  border:1px solid rgba(166,102,255,.35);
-  border-radius:50px;
-  color:#b985ff;
-  background:rgba(130,70,255,.08);
-  font-size:10px;
-  font-weight:1000;
-  letter-spacing:3px;
-}
-
-.hero h1{
-  margin-top:25px;
-  font-size:clamp(50px,10vw,100px);
-  line-height:.95;
-  font-weight:1000;
-  letter-spacing:4px;
-  background:linear-gradient(90deg,#fff,#c496ff,#8d4dff,#fff);
-  background-size:250%;
-  -webkit-background-clip:text;
-  background-clip:text;
-  -webkit-text-fill-color:transparent;
-  animation:shine 5s linear infinite;
-}
-
-@keyframes shine{
-  to{
-    background-position:-250%;
-  }
-}
-
-.hero p{
-  max-width:650px;
-  margin:24px auto 0;
-  color:#8e879d;
-  font-size:15px;
-  line-height:1.7;
-}
-
-.heroButton{
-  margin-top:32px;
-  border:0;
-  border-radius:13px;
-  padding:15px 26px;
-  background:linear-gradient(135deg,#9b5cff,#6e35e8);
-  color:#fff;
-  font-weight:1000;
-  box-shadow:0 12px 40px rgba(125,63,255,.28);
-  transition:.25s;
-}
-
-.heroButton:hover{
-  transform:translateY(-3px);
-  box-shadow:0 18px 50px rgba(125,63,255,.4);
-}
-
-main{
-  width:min(1100px,calc(100% - 30px));
-  margin:auto;
-  padding-bottom:100px;
-}
-
-.sectionTitle{
-  margin:0 0 25px;
-  color:#8c829d;
-  font-size:11px;
-  font-weight:1000;
-  letter-spacing:3px;
-}
-
-.products{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:20px;
-}
-
-.product{
-  position:relative;
-  overflow:hidden;
-  padding:27px;
-  border:1px solid rgba(165,103,255,.17);
-  border-radius:23px;
-  background:
-    linear-gradient(145deg,rgba(25,15,44,.96),rgba(9,6,18,.98));
-  box-shadow:0 25px 70px rgba(0,0,0,.35);
-  transition:.3s;
-}
-
-.product::before{
-  content:"";
-  position:absolute;
-  width:180px;
-  height:180px;
-  top:-100px;
-  right:-80px;
-  border-radius:50%;
-  background:rgba(135,73,255,.14);
-  filter:blur(5px);
-}
-
-.product:hover{
-  transform:translateY(-5px);
-  border-color:rgba(165,103,255,.45);
-  box-shadow:
-    0 30px 80px rgba(0,0,0,.5),
-    0 0 35px rgba(128,68,255,.1);
-}
-
-.productTop{
-  position:relative;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:15px;
-}
-
-.productIcon{
-  width:62px;
-  height:62px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border-radius:18px;
-  border:1px solid rgba(175,110,255,.4);
-  background:rgba(126,66,255,.1);
-  font-size:28px;
-}
-
-.productNumber{
-  color:#62566f;
-  font-size:11px;
-  font-weight:1000;
-}
-
-.product h2{
-  position:relative;
-  margin-top:22px;
-  font-size:25px;
-}
-
-.productDescription{
-  position:relative;
-  min-height:50px;
-  margin-top:10px;
-  color:#847b91;
-  font-size:13px;
-  line-height:1.6;
-}
-
-.priceRow{
-  position:relative;
-  display:flex;
-  align-items:baseline;
-  gap:8px;
-  margin-top:23px;
-}
-
-.price{
-  font-size:34px;
-  font-weight:1000;
-}
-
-.priceSuffix{
-  color:#746b82;
-  font-size:12px;
-}
-
-.productActions{
-  position:relative;
-  display:flex;
-  gap:10px;
-  margin-top:23px;
-}
-
-.chooseButton{
-  flex:1;
-  border:0;
-  border-radius:11px;
-  padding:14px;
-  color:#fff;
-  background:linear-gradient(135deg,#9255ff,#6d35e7);
-  font-size:13px;
-  font-weight:1000;
-  transition:.25s;
-}
-
-.chooseButton:hover{
-  transform:translateY(-2px);
-  box-shadow:0 12px 35px rgba(125,63,255,.3);
-}
-
-.addDirect{
-  width:48px;
-  border:1px solid rgba(165,103,255,.25);
-  border-radius:11px;
-  color:#fff;
-  background:#120b20;
-  font-size:20px;
-  transition:.25s;
-}
-
-.addDirect:hover{
-  border-color:#a970ff;
-}
-
-.empty{
-  padding:30px;
-  border:1px dashed rgba(165,103,255,.2);
-  border-radius:18px;
-  text-align:center;
-  color:#756c82;
-}
-
-.overlay{
-  position:fixed;
-  inset:0;
-  z-index:100;
-  background:rgba(0,0,0,.68);
-  backdrop-filter:blur(6px);
-  opacity:0;
-  pointer-events:none;
-  transition:.25s;
-}
-
-.overlay.active{
-  opacity:1;
-  pointer-events:auto;
-}
-
-.drawer{
-  position:fixed;
-  right:0;
-  top:0;
-  bottom:0;
-  z-index:110;
-  width:min(480px,100%);
-  padding:25px;
-  overflow-y:auto;
-  background:
-    linear-gradient(180deg,#100a1c,#07050d);
-  border-left:1px solid rgba(165,103,255,.2);
-  box-shadow:-25px 0 80px rgba(0,0,0,.55);
-  transform:translateX(105%);
-  transition:.3s;
-}
-
-.drawer.active{
-  transform:translateX(0);
-}
-
-.drawerHeader{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:15px;
-  margin-bottom:25px;
-}
-
-.drawerHeader h3{
-  font-size:20px;
-}
-
-.closeButton{
-  width:38px;
-  height:38px;
-  border:1px solid rgba(165,103,255,.2);
-  border-radius:10px;
-  color:#fff;
-  background:#120b1c;
-  font-size:18px;
-}
-
-.quantityProduct{
-  padding:20px;
-  border:1px solid rgba(165,103,255,.16);
-  border-radius:17px;
-  background:rgba(18,10,31,.8);
-}
-
-.quantityProductName{
-  font-size:19px;
-  font-weight:1000;
-}
-
-.quantityProductPrice{
-  margin-top:7px;
-  color:#9d6cff;
-  font-size:13px;
-  font-weight:900;
-}
-
-.quantityControls{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:22px;
-  margin:28px 0;
-}
-
-.quantityButton{
-  width:45px;
-  height:45px;
-  border:1px solid rgba(165,103,255,.25);
-  border-radius:12px;
-  color:#fff;
-  background:#120b20;
-  font-size:22px;
-}
-
-.quantityValue{
-  min-width:55px;
-  text-align:center;
-  font-size:25px;
-  font-weight:1000;
-}
-
-.summary{
-  display:grid;
-  gap:10px;
-  margin-top:20px;
-}
-
-.summaryLine{
-  display:flex;
-  justify-content:space-between;
-  gap:15px;
-  color:#8b8198;
-  font-size:13px;
-}
-
-.summaryLine strong{
-  color:#fff;
-}
-
-.primaryButton{
-  width:100%;
-  margin-top:22px;
-  border:0;
-  border-radius:12px;
-  padding:16px;
-  background:#8e50ff;
-  color:#fff;
-  font-weight:1000;
-  transition:.25s;
-}
-
-.primaryButton:hover{
-  background:#a168ff;
-  transform:translateY(-2px);
-}
-
-.cartItems{
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-}
-
-.cartItem{
-  padding:17px;
-  border:1px solid rgba(165,103,255,.15);
-  border-radius:15px;
-  background:rgba(17,9,29,.8);
-}
-
-.cartItemTop{
-  display:flex;
-  justify-content:space-between;
-  gap:15px;
-}
-
-.cartItemName{
-  font-weight:1000;
-}
-
-.cartItemQty{
-  margin-top:6px;
-  color:#81778e;
-  font-size:12px;
-}
-
-.cartItemBottom{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  margin-top:14px;
-}
-
-.cartItemPrice{
-  color:#b27dff;
-  font-weight:1000;
-}
-
-.removeButton{
-  border:1px solid rgba(255,80,100,.2);
-  border-radius:9px;
-  padding:8px 11px;
-  color:#ff8291;
-  background:rgba(255,60,80,.06);
-  font-size:11px;
-  font-weight:900;
-}
-
-.cartTotal{
-  display:flex;
-  justify-content:space-between;
-  gap:15px;
-  margin-top:25px;
-  padding-top:20px;
-  border-top:1px solid rgba(165,103,255,.15);
-  font-size:18px;
-  font-weight:1000;
-}
-
-.cartTotal span:last-child{
-  color:#b47fff;
-}
-
-.emailInput{
-  width:100%;
-  margin-top:20px;
-  border:1px solid rgba(165,103,255,.2);
-  border-radius:11px;
-  outline:0;
-  padding:13px;
-  color:#fff;
-  background:#0e0917;
-}
-
-.emailInput::placeholder{
-  color:#675d73;
-}
-
-.paypalButton{
-  width:100%;
-  margin-top:15px;
-  border:0;
-  border-radius:12px;
-  padding:16px;
-  background:#ffc439;
-  color:#111;
-  font-weight:1000;
-  transition:.25s;
-}
-
-.paypalButton:hover{
-  transform:translateY(-2px);
-  box-shadow:0 12px 35px rgba(255,196,57,.2);
-}
-
-.toast{
-  position:fixed;
-  left:50%;
-  bottom:25px;
-  z-index:300;
-  max-width:calc(100% - 30px);
-  padding:13px 18px;
-  border:1px solid rgba(165,103,255,.3);
-  border-radius:12px;
-  color:#fff;
-  background:#130c20;
-  box-shadow:0 15px 45px rgba(0,0,0,.5);
-  transform:translate(-50%,30px);
-  opacity:0;
-  pointer-events:none;
-  transition:.25s;
-  font-size:13px;
-  font-weight:800;
-}
-
-.toast.show{
-  transform:translate(-50%,0);
-  opacity:1;
-}
-
-footer{
-  padding:30px 20px;
-  border-top:1px solid rgba(165,103,255,.1);
-  text-align:center;
-  color:#62596d;
-  font-size:10px;
-  letter-spacing:2px;
-}
-
-@media(max-width:750px){
-
-  .products{
-    grid-template-columns:1fr;
-  }
-
-  .hero{
-    margin-top:70px;
-  }
-
-}
-
-@media(max-width:500px){
-
-  header{
-    padding-left:14px;
-    padding-right:14px;
-  }
-
-  main{
-    width:calc(100% - 20px);
-  }
-
-  .product{
-    padding:23px;
-  }
-
-  .productActions{
-    flex-direction:column;
-  }
-
-  .addDirect{
-    width:100%;
-    height:45px;
-  }
-
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>MEMBERS SHOP</title>
+
+  <style>
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+    body{
+      min-height:100vh;
+      font-family:Arial,Helvetica,sans-serif;
+      color:#fff;
+      background:
+        radial-gradient(circle at 15% 15%,rgba(139,92,246,.22),transparent 28%),
+        radial-gradient(circle at 85% 80%,rgba(99,102,241,.18),transparent 30%),
+        #08060f;
+      overflow-x:hidden;
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.18;
+      background-image:
+        linear-gradient(rgba(139,92,246,.25) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(139,92,246,.25) 1px,transparent 1px);
+      background-size:45px 45px;
+      mask-image:linear-gradient(to bottom,black,transparent);
+    }
+
+    button,
+    input{
+      font:inherit;
+    }
+
+    button{
+      cursor:pointer;
+    }
+
+    .container{
+      width:min(1180px,92%);
+      margin:auto;
+    }
+
+    header{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:blur(18px);
+      background:rgba(8,6,15,.82);
+      border-bottom:1px solid rgba(255,255,255,.07);
+    }
+
+    .nav{
+      height:76px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+    }
+
+    .logo{
+      font-size:22px;
+      font-weight:900;
+      letter-spacing:1px;
+      color:#fff;
+    }
+
+    .logo span{
+      color:#9b6cff;
+    }
+
+    .cart-top{
+      border:1px solid rgba(155,108,255,.35);
+      background:rgba(155,108,255,.1);
+      color:#fff;
+      padding:11px 16px;
+      border-radius:12px;
+      transition:.2s;
+    }
+
+    .cart-top:hover{
+      background:rgba(155,108,255,.2);
+      transform:translateY(-1px);
+    }
+
+    #cartCount{
+      display:inline-flex;
+      min-width:23px;
+      height:23px;
+      align-items:center;
+      justify-content:center;
+      margin-left:6px;
+      border-radius:50%;
+      background:#9b6cff;
+      font-size:12px;
+      font-weight:800;
+    }
+
+    .hero{
+      padding:85px 0 55px;
+      text-align:center;
+    }
+
+    .hero-badge{
+      display:inline-block;
+      padding:8px 13px;
+      border:1px solid rgba(155,108,255,.35);
+      border-radius:999px;
+      background:rgba(155,108,255,.08);
+      color:#c8b2ff;
+      font-size:13px;
+      margin-bottom:20px;
+    }
+
+    .hero h1{
+      font-size:clamp(42px,7vw,78px);
+      line-height:.95;
+      letter-spacing:-3px;
+    }
+
+    .hero h1 span{
+      color:#9b6cff;
+    }
+
+    .hero p{
+      max-width:650px;
+      margin:22px auto 28px;
+      color:#aaa4b8;
+      line-height:1.6;
+      font-size:16px;
+    }
+
+    .hero-btn{
+      border:0;
+      background:linear-gradient(135deg,#9b6cff,#6940c9);
+      color:#fff;
+      padding:14px 22px;
+      border-radius:13px;
+      font-weight:800;
+      box-shadow:0 10px 35px rgba(116,74,220,.25);
+      transition:.2s;
+    }
+
+    .hero-btn:hover{
+      transform:translateY(-2px);
+      box-shadow:0 14px 40px rgba(116,74,220,.4);
+    }
+
+    .products-section{
+      padding:30px 0 100px;
+    }
+
+    .section-head{
+      display:flex;
+      align-items:end;
+      justify-content:space-between;
+      gap:20px;
+      margin-bottom:25px;
+    }
+
+    .section-head h2{
+      font-size:30px;
+    }
+
+    .section-head p{
+      color:#8f899c;
+      font-size:14px;
+    }
+
+    .products-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:18px;
+    }
+
+    .product-card{
+      position:relative;
+      overflow:hidden;
+      padding:22px;
+      min-height:300px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:20px;
+      background:linear-gradient(
+        145deg,
+        rgba(255,255,255,.07),
+        rgba(255,255,255,.025)
+      );
+      backdrop-filter:blur(12px);
+      transition:.25s;
+    }
+
+    .product-card::before{
+      content:"";
+      position:absolute;
+      width:130px;
+      height:130px;
+      right:-55px;
+      top:-55px;
+      border-radius:50%;
+      background:rgba(155,108,255,.16);
+      filter:blur(15px);
+    }
+
+    .product-card:hover{
+      transform:translateY(-5px);
+      border-color:rgba(155,108,255,.38);
+      box-shadow:0 18px 45px rgba(0,0,0,.25);
+    }
+
+    .product-icon{
+      width:52px;
+      height:52px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:15px;
+      background:rgba(155,108,255,.12);
+      border:1px solid rgba(155,108,255,.22);
+      font-size:25px;
+      margin-bottom:20px;
+    }
+
+    .product-card h3{
+      font-size:20px;
+      margin-bottom:8px;
+    }
+
+    .product-card p{
+      color:#9891a5;
+      font-size:14px;
+      line-height:1.5;
+    }
+
+    .product-bottom{
+      margin-top:24px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    .price{
+      font-size:22px;
+      font-weight:900;
+    }
+
+    .choose-btn{
+      border:0;
+      background:#fff;
+      color:#0b0812;
+      padding:10px 14px;
+      border-radius:10px;
+      font-weight:800;
+      transition:.2s;
+    }
+
+    .choose-btn:hover{
+      background:#d9c8ff;
+      transform:translateY(-1px);
+    }
+
+    .overlay{
+      position:fixed;
+      inset:0;
+      z-index:90;
+      background:rgba(0,0,0,.68);
+      backdrop-filter:blur(5px);
+      opacity:0;
+      visibility:hidden;
+      transition:.2s;
+    }
+
+    .overlay.active{
+      opacity:1;
+      visibility:visible;
+    }
+
+    .drawer{
+      position:fixed;
+      right:0;
+      top:0;
+      height:100vh;
+      width:min(450px,94vw);
+      z-index:100;
+      background:#100c19;
+      border-left:1px solid rgba(255,255,255,.08);
+      transform:translateX(105%);
+      transition:.25s ease;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .drawer.active{
+      transform:translateX(0);
+    }
+
+    .drawer-header{
+      padding:22px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+
+    .drawer-header h2{
+      font-size:21px;
+    }
+
+    .close-btn{
+      width:36px;
+      height:36px;
+      border:0;
+      border-radius:10px;
+      background:rgba(255,255,255,.07);
+      color:#fff;
+      font-size:20px;
+    }
+
+    .drawer-body{
+      flex:1;
+      overflow:auto;
+      padding:22px;
+    }
+
+    .quantity-info{
+      padding:18px;
+      border-radius:16px;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.07);
+    }
+
+    .quantity-info h3{
+      margin-bottom:8px;
+    }
+
+    .quantity-info p{
+      color:#a39bab;
+    }
+
+    .quantity-control{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:22px;
+      margin:25px 0;
+    }
+
+    .quantity-control button{
+      width:42px;
+      height:42px;
+      border:0;
+      border-radius:12px;
+      background:rgba(155,108,255,.15);
+      color:#fff;
+      font-size:22px;
+    }
+
+    #quantityValue{
+      min-width:45px;
+      text-align:center;
+      font-size:22px;
+      font-weight:900;
+    }
+
+    .summary{
+      display:grid;
+      gap:12px;
+      margin-top:20px;
+    }
+
+    .summary-row{
+      display:flex;
+      justify-content:space-between;
+      gap:15px;
+      color:#aaa3b2;
+    }
+
+    .summary-row strong{
+      color:#fff;
+    }
+
+    .discord-form{
+      margin-top:20px;
+      padding:17px;
+      border-radius:16px;
+      background:rgba(155,108,255,.06);
+      border:1px solid rgba(155,108,255,.14);
+    }
+
+    .discord-form h3{
+      font-size:15px;
+      margin-bottom:12px;
+    }
+
+    .field{
+      margin-top:10px;
+    }
+
+    .field label{
+      display:block;
+      margin-bottom:6px;
+      color:#aaa3b2;
+      font-size:13px;
+    }
+
+    .field input{
+      width:100%;
+      border:1px solid rgba(255,255,255,.1);
+      outline:none;
+      background:#0b0810;
+      color:#fff;
+      padding:12px 13px;
+      border-radius:10px;
+    }
+
+    .field input:focus{
+      border-color:rgba(155,108,255,.6);
+    }
+
+    .primary-btn{
+      width:100%;
+      border:0;
+      padding:14px;
+      margin-top:20px;
+      border-radius:12px;
+      background:linear-gradient(135deg,#9b6cff,#6940c9);
+      color:#fff;
+      font-weight:900;
+      transition:.2s;
+    }
+
+    .primary-btn:hover{
+      filter:brightness(1.1);
+      transform:translateY(-1px);
+    }
+
+    .cart-item{
+      display:flex;
+      justify-content:space-between;
+      gap:15px;
+      padding:16px;
+      margin-bottom:12px;
+      border:1px solid rgba(255,255,255,.07);
+      border-radius:15px;
+      background:rgba(255,255,255,.035);
+    }
+
+    .cart-item h3{
+      font-size:15px;
+      margin-bottom:5px;
+    }
+
+    .cart-item p{
+      color:#9992a4;
+      font-size:13px;
+    }
+
+    .cart-item-right{
+      text-align:right;
+    }
+
+    .remove-item{
+      border:0;
+      background:transparent;
+      color:#ff6f91;
+      margin-top:7px;
+      font-size:12px;
+    }
+
+    .empty{
+      text-align:center;
+      padding:60px 15px;
+      color:#8e8799;
+    }
+
+    .cart-total{
+      margin-top:20px;
+      padding-top:18px;
+      border-top:1px solid rgba(255,255,255,.08);
+      display:flex;
+      justify-content:space-between;
+      font-size:20px;
+      font-weight:900;
+    }
+
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:25px;
+      z-index:200;
+      transform:translate(-50%,30px);
+      opacity:0;
+      visibility:hidden;
+      background:#fff;
+      color:#0c0812;
+      padding:12px 18px;
+      border-radius:12px;
+      font-weight:800;
+      box-shadow:0 15px 40px rgba(0,0,0,.35);
+      transition:.25s;
+    }
+
+    .toast.active{
+      opacity:1;
+      visibility:visible;
+      transform:translate(-50%,0);
+    }
+
+    footer{
+      border-top:1px solid rgba(255,255,255,.07);
+      padding:25px 0;
+      text-align:center;
+      color:#777081;
+      font-size:13px;
+    }
+
+    @media(max-width:950px){
+      .products-grid{
+        grid-template-columns:repeat(2,1fr);
+      }
+    }
+
+    @media(max-width:600px){
+      .hero{
+        padding-top:60px;
+      }
+
+      .hero h1{
+        letter-spacing:-2px;
+      }
+
+      .products-grid{
+        grid-template-columns:1fr;
+      }
+
+      .section-head{
+        display:block;
+      }
+
+      .section-head p{
+        margin-top:7px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<header>
+  <header>
+    <div class="container nav">
+      <div class="logo">MEMBERS<span>SHOP</span></div>
 
-  <div class="topbar">
-
-    <div class="logo">
-      MEMBERS <span>SHOP</span>
-    </div>
-
-    <button class="cartButton" id="openCart">
-      🛒 Panier
-      <span class="cartCount" id="cartCount">0</span>
-    </button>
-
-  </div>
-
-  <div class="hero">
-
-    <div class="heroBadge">
-      MEMBERS SHOP
-    </div>
-
-    <h1>MEMBERS</h1>
-
-    <p>
-      Choisis ton produit, sélectionne la quantité
-      et ajoute-le directement à ton panier.
-    </p>
-
-    <button class="heroButton" id="scrollProducts">
-      Voir les produits
-    </button>
-
-  </div>
-
-</header>
-
-<main id="productsSection">
-
-  <div class="sectionTitle">
-    PRODUITS DISPONIBLES
-  </div>
-
-  <div
-    class="products"
-    id="productsGrid"
-  ></div>
-
-</main>
-
-<footer>
-  MEMBERS SHOP • BOUTIQUE
-</footer>
-
-
-<!-- ============================================================
-     PANIER / QUANTITE
-     ============================================================ -->
-
-<div
-  class="overlay"
-  id="overlay"
-></div>
-
-
-<div
-  class="drawer"
-  id="quantityDrawer"
->
-
-  <div class="drawerHeader">
-
-    <h3>
-      Choisir la quantité
-    </h3>
-
-    <button
-      class="closeButton"
-      id="closeQuantity"
-    >
-      ×
-    </button>
-
-  </div>
-
-
-  <div class="quantityProduct">
-
-    <div
-      class="quantityProductName"
-      id="quantityProductName"
-    >
-      MEMBERS
-    </div>
-
-    <div
-      class="quantityProductPrice"
-      id="quantityProductPrice"
-    >
-      5,49 € / pack
-    </div>
-
-
-    <div class="quantityControls">
-
-      <button
-        class="quantityButton"
-        id="minusButton"
-      >
-        −
+      <button id="openCart" class="cart-top">
+        🛒 Panier
+        <span id="cartCount">0</span>
       </button>
+    </div>
+  </header>
 
-      <div
-        class="quantityValue"
-        id="quantityValue"
-      >
-        1
+  <main>
+
+    <section class="hero">
+      <div class="container">
+        <div class="hero-badge">⚡ MEMBERS SHOP</div>
+
+        <h1>
+          Tes <span>MEMBERS</span> en quelques clics.
+        </h1>
+
+        <p>
+          Choisis ton pack, indique ton pseudo Discord et ton serveur,
+          puis passe au paiement PayPal.
+        </p>
+
+        <button id="scrollProducts" class="hero-btn">
+          Voir les produits
+        </button>
+      </div>
+    </section>
+
+    <section id="productsSection" class="products-section">
+      <div class="container">
+
+        <div class="section-head">
+          <div>
+            <h2>Nos produits</h2>
+            <p>Choisis ton pack MEMBERS.</p>
+          </div>
+        </div>
+
+        <div id="productsGrid" class="products-grid"></div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    © 2026 MEMBERS SHOP
+  </footer>
+
+  <div id="overlay" class="overlay"></div>
+
+  <!-- ============================================================
+       CHOIX QUANTITÉ
+       ============================================================ -->
+
+  <aside id="quantityDrawer" class="drawer">
+
+    <div class="drawer-header">
+      <h2>Ajouter au panier</h2>
+
+      <button id="closeQuantity" class="close-btn">
+        ×
+      </button>
+    </div>
+
+    <div class="drawer-body">
+
+      <div class="quantity-info">
+        <h3 id="quantityProductName">Produit</h3>
+        <p id="quantityProductPrice">0,00 € / unité</p>
       </div>
 
-      <button
-        class="quantityButton"
-        id="plusButton"
-      >
-        +
-      </button>
+      <div class="quantity-control">
 
-    </div>
+        <button id="minusButton">
+          −
+        </button>
 
-
-    <div class="summary">
-
-      <div class="summaryLine">
-
-        <span>
-          Quantité
-        </span>
-
-        <strong id="summaryQuantity">
+        <span id="quantityValue">
           1
-        </strong>
-
-      </div>
-
-
-      <div class="summaryLine">
-
-        <span>
-          MEMBERS
         </span>
 
-        <strong id="summaryMembers">
-          1 000
-        </strong>
+        <button id="plusButton">
+          +
+        </button>
 
       </div>
 
+      <div class="summary">
 
-      <div class="summaryLine">
+        <div class="summary-row">
+          <span>Quantité</span>
+          <strong id="summaryQuantity">1</strong>
+        </div>
 
-        <span>
-          Total
-        </span>
+        <div class="summary-row">
+          <span>MEMBERS</span>
+          <strong id="summaryMembers">1 000</strong>
+        </div>
 
-        <strong id="summaryPrice">
-          5,49 €
-        </strong>
+        <div class="summary-row">
+          <span>Total</span>
+          <strong id="summaryPrice">5,49 €</strong>
+        </div>
 
       </div>
+
+      <button id="addCartButton" class="primary-btn">
+        Ajouter au panier
+      </button>
 
     </div>
 
+  </aside>
 
-    <button
-      class="primaryButton"
-      id="addCartButton"
-    >
-      🛒 Ajouter au panier
-    </button>
+  <!-- ============================================================
+       PANIER
+       ============================================================ -->
 
-  </div>
+  <aside id="cartDrawer" class="drawer">
 
-</div>
+    <div class="drawer-header">
+      <h2>🛒 Ton panier</h2>
 
+      <button id="closeCart" class="close-btn">
+        ×
+      </button>
+    </div>
 
-<div
-  class="drawer"
-  id="cartDrawer"
->
+    <div id="cartContent" class="drawer-body"></div>
 
-  <div class="drawerHeader">
+  </aside>
 
-    <h3>
-      🛒 Ton panier
-    </h3>
+  <div id="toast" class="toast"></div>
 
-    <button
-      class="closeButton"
-      id="closeCart"
-    >
-      ×
-    </button>
+  <!-- ============================================================
+       WEBHOOK DISCORD
+       MODIFIE UNIQUEMENT WEBHOOK_URL
+       ============================================================ -->
 
-  </div>
+  <script>
+    const WEBHOOK_URL = "https://discord.com/api/webhooks/1554159540147196074/7-OTjKnXep7B7zzlGuQTtcyHdH4bFeyGgEPfr0wnvlK1YH8U30kNKt60H26jrcDcrx3e";
 
+    const WEBHOOK_BOT_MESSAGE =
+      "🛒 Nouvelle commande reçue sur MEMBERS SHOP !";
+  </script>
 
-  <div id="cartContent"></div>
-
-</div>
-
-
-<div
-  class="toast"
-  id="toast"
-></div>
-
-
-<!-- ============================================================
-     TON WEBHOOK DISCORD
-     REMPLACE UNIQUEMENT TON_WEBHOOK_ICI
-     ============================================================ -->
-
-<script>
-const WEBHOOK_URL = "https://discord.com/api/webhooks/1554159540147196074/7-OTjKnXep7B7zzlGuQTtcyHdH4bFeyGgEPfr0wnvlK1YH8U30kNKt60H26jrcDcrx3e";
-</script>
-
-
-<script src="./APP.JS"></script>
+  <script src="./APP.JS"></script>
 
 </body>
 </html>
