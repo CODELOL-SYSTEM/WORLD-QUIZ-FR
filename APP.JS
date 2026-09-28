@@ -1,1846 +1,1257 @@
+```javascript
 "use strict";
 
-(function () {
+(function(){
 
-```
-/* =====================================================
-   🔴 WEBHOOK DISCORD
-   =====================================================
+  // ============================================================
+  // WEBHOOK DISCORD
+  // ============================================================
 
-   REMPLACE UNIQUEMENT TON_WEBHOOK_ICI
-
-   ===================================================== */
-
-const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1554159540147196074/7-OTjKnXep7B7zzlGuQTtcyHdH4bFeyGgEPfr0wnvlK1YH8U30kNKt60H26jrcDcrx3e";
+  const WEBHOOK_URL = "https://discord.com/api/webhooks/1554159540147196074/7-OTjKnXep7B7zzlGuQTtcyHdH4bFeyGgEPfr0wnvlK1YH8U30kNKt60H26jrcDcrx3e";
 
 
-/* =====================================================
-   CONFIGURATION
-   ===================================================== */
+  // ============================================================
+  // CONFIGURATION
+  // ============================================================
 
-const PRODUCT = {
-    id: "members-1k",
-    name: "MEMBERS",
-    members: 1000,
-    price: 5.49
-};
+  const PAYPAL_BASE = "https://paypal.me/SH0PNOVA";
 
-const STORAGE_KEY = "novashop_members_cart";
+  const STORAGE_KEY = "members_shop_cart";
 
-const PAYPAL_BASE = "https://paypal.me/SH0PNOVA";
+  const PRODUCTS = [
 
-let quantity = 1;
-let cart = [];
-let toastTimer = null;
+    {
+      id:"members-1k",
+      name:"MEMBERS",
+      description:"Pack de 1 000 MEMBERS.",
+      members:1000,
+      price:5.49,
+      icon:"👥"
+    },
 
+    {
+      id:"members-5k",
+      name:"MEMBERS PLUS",
+      description:"Pack de 5 000 MEMBERS.",
+      members:5000,
+      price:24.99,
+      icon:"⚡"
+    },
 
-/* =====================================================
-   DOM
-   ===================================================== */
+    {
+      id:"members-10k",
+      name:"MEMBERS PRO",
+      description:"Pack de 10 000 MEMBERS.",
+      members:10000,
+      price:44.99,
+      icon:"🔥"
+    },
 
-function $(id) {
-    return document.getElementById(id);
-}
-
-
-/* =====================================================
-   FORMATAGE
-   ===================================================== */
-
-function formatPrice(value) {
-
-    const number = Number(value);
-
-    if (!Number.isFinite(number)) {
-        return "0,00 €";
+    {
+      id:"members-25k",
+      name:"MEMBERS ULTRA",
+      description:"Pack de 25 000 MEMBERS.",
+      members:25000,
+      price:99.99,
+      icon:"💎"
     }
 
-    return number.toFixed(2).replace(".", ",") + " €";
-}
+  ];
 
 
-function formatNumber(value) {
+  // ============================================================
+  // VARIABLES
+  // ============================================================
 
-    const number = Number(value);
+  let cart = [];
 
-    if (!Number.isFinite(number)) {
-        return "0";
+  let selectedProduct = null;
+
+  let selectedQuantity = 1;
+
+  let toastTimer = null;
+
+
+  // ============================================================
+  // DOM
+  // ============================================================
+
+  const $ = id => document.getElementById(id);
+
+  const productsGrid = $("productsGrid");
+
+  const cartCount = $("cartCount");
+
+  const overlay = $("overlay");
+
+  const quantityDrawer = $("quantityDrawer");
+
+  const cartDrawer = $("cartDrawer");
+
+  const quantityProductName = $("quantityProductName");
+
+  const quantityProductPrice = $("quantityProductPrice");
+
+  const quantityValue = $("quantityValue");
+
+  const summaryQuantity = $("summaryQuantity");
+
+  const summaryMembers = $("summaryMembers");
+
+  const summaryPrice = $("summaryPrice");
+
+  const cartContent = $("cartContent");
+
+  const toastElement = $("toast");
+
+
+  // ============================================================
+  // FORMAT
+  // ============================================================
+
+  function formatPrice(value){
+
+    return value.toLocaleString("fr-FR",{
+      minimumFractionDigits:2,
+      maximumFractionDigits:2
+    }) + " €";
+
+  }
+
+
+  function formatNumber(value){
+
+    return value.toLocaleString("fr-FR");
+
+  }
+
+
+  // ============================================================
+  // TOAST
+  // ============================================================
+
+  function toast(message){
+
+    if(!toastElement){
+      return;
     }
-
-    return number.toLocaleString("fr-FR");
-}
-
-
-/* =====================================================
-   TOAST
-   ===================================================== */
-
-function toast(message) {
-
-    const element = $("toast");
-
-    if (!element) {
-        return;
-    }
-
-    element.textContent = message;
-    element.classList.add("show");
 
     clearTimeout(toastTimer);
 
-    toastTimer = setTimeout(function () {
+    toastElement.textContent = message;
 
-        element.classList.remove("show");
+    toastElement.classList.add("show");
 
-    }, 2500);
-}
+    toastTimer = setTimeout(function(){
+
+      toastElement.classList.remove("show");
+
+    },2500);
+
+  }
 
 
-/* =====================================================
-   QUANTITÉ
-   ===================================================== */
+  // ============================================================
+  // STORAGE
+  // ============================================================
 
-function clampQuantity(value) {
+  function saveCart(){
 
-    let number = parseInt(value, 10);
+    try{
 
-    if (!Number.isFinite(number)) {
-        number = 1;
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(cart)
+      );
+
+    }catch(error){
+
+      console.error(
+        "Impossible de sauvegarder le panier.",
+        error
+      );
+
     }
 
-    return Math.max(
-        1,
-        Math.min(999, number)
-    );
-}
+  }
 
 
-function updateQuantityUI() {
+  function loadCart(){
 
-    quantity = clampQuantity(quantity);
+    try{
 
-    const quantityValue =
-        $("quantityValue");
+      const saved =
+        localStorage.getItem(STORAGE_KEY);
 
-    const summaryQuantity =
-        $("summaryQuantity");
-
-    const summaryMembers =
-        $("summaryMembers");
-
-    const summaryPrice =
-        $("summaryPrice");
-
-
-    if (quantityValue) {
-
-        quantityValue.textContent =
-            String(quantity);
-    }
-
-
-    if (summaryQuantity) {
-
-        summaryQuantity.textContent =
-            String(quantity);
-    }
-
-
-    if (summaryMembers) {
-
-        summaryMembers.textContent =
-            formatNumber(
-                PRODUCT.members *
-                quantity
-            );
-    }
-
-
-    if (summaryPrice) {
-
-        summaryPrice.textContent =
-            formatPrice(
-                PRODUCT.price *
-                quantity
-            );
-    }
-}
-
-
-function increaseQuantity() {
-
-    quantity =
-        clampQuantity(
-            quantity + 1
-        );
-
-    updateQuantityUI();
-}
-
-
-function decreaseQuantity() {
-
-    quantity =
-        clampQuantity(
-            quantity - 1
-        );
-
-    updateQuantityUI();
-}
-
-
-/* =====================================================
-   PANIER : CHARGEMENT
-   ===================================================== */
-
-function loadCart() {
-
-    try {
-
-        const saved =
-            localStorage.getItem(
-                STORAGE_KEY
-            );
-
-
-        if (!saved) {
-
-            cart = [];
-
-            return;
-        }
-
-
-        const parsed =
-            JSON.parse(saved);
-
-
-        if (!Array.isArray(parsed)) {
-
-            cart = [];
-
-            return;
-        }
-
-
-        cart =
-            parsed
-                .filter(function (item) {
-
-                    return item &&
-                        typeof item === "object";
-
-                })
-                .map(function (item) {
-
-                    return {
-
-                        id:
-                            String(
-                                item.id ||
-                                PRODUCT.id
-                            ),
-
-                        name:
-                            String(
-                                item.name ||
-                                PRODUCT.name
-                            ),
-
-                        quantity:
-                            clampQuantity(
-                                item.quantity
-                            ),
-
-                        members:
-                            Number(
-                                item.members ||
-                                PRODUCT.members
-                            ),
-
-                        price:
-                            Number(
-                                item.price ||
-                                PRODUCT.price
-                            )
-                    };
-                });
-
-
-    } catch (error) {
-
-        console.error(
-            "Erreur de chargement du panier :",
-            error
-        );
-
+      if(!saved){
         cart = [];
-    }
-}
-
-
-/* =====================================================
-   PANIER : SAUVEGARDE
-   ===================================================== */
-
-function saveCart() {
-
-    try {
-
-        localStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify(cart)
-        );
-
-    } catch (error) {
-
-        console.error(
-            "Erreur de sauvegarde du panier :",
-            error
-        );
-    }
-}
-
-
-/* =====================================================
-   CALCULS
-   ===================================================== */
-
-function getCartCount() {
-
-    return cart.reduce(
-        function (total, item) {
-
-            return total +
-                Number(
-                    item.quantity || 0
-                );
-
-        },
-        0
-    );
-}
-
-
-function getCartTotal() {
-
-    return cart.reduce(
-        function (total, item) {
-
-            return total +
-                Number(item.quantity || 0) *
-                Number(item.price || 0);
-
-        },
-        0
-    );
-}
-
-
-function updateCartCount() {
-
-    const element =
-        $("cartCount");
-
-
-    if (element) {
-
-        element.textContent =
-            String(
-                getCartCount()
-            );
-    }
-}
-
-
-/* =====================================================
-   DRAWERS
-   ===================================================== */
-
-function setOverlay(active) {
-
-    const overlay =
-        $("drawerOverlay");
-
-
-    if (!overlay) {
         return;
-    }
+      }
 
+      const parsed = JSON.parse(saved);
 
-    overlay.classList.toggle(
-        "active",
-        active
-    );
-
-
-    overlay.setAttribute(
-        "aria-hidden",
-        active ? "false" : "true"
-    );
-}
-
-
-function closeDrawers() {
-
-    const quantityDrawer =
-        $("quantityDrawer");
-
-    const cartDrawer =
-        $("cartDrawer");
-
-
-    if (quantityDrawer) {
-
-        quantityDrawer.classList.remove(
-            "open"
-        );
-
-        quantityDrawer.setAttribute(
-            "aria-hidden",
-            "true"
-        );
-    }
-
-
-    if (cartDrawer) {
-
-        cartDrawer.classList.remove(
-            "open"
-        );
-
-        cartDrawer.setAttribute(
-            "aria-hidden",
-            "true"
-        );
-    }
-
-
-    setOverlay(false);
-
-    document.body.style.overflow = "";
-}
-
-
-function openQuantity() {
-
-    const quantityDrawer =
-        $("quantityDrawer");
-
-    const cartDrawer =
-        $("cartDrawer");
-
-
-    if (!quantityDrawer) {
+      if(!Array.isArray(parsed)){
+        cart = [];
         return;
-    }
+      }
 
+      cart = parsed.filter(function(item){
 
-    if (cartDrawer) {
-
-        cartDrawer.classList.remove(
-            "open"
+        return (
+          item &&
+          typeof item.id === "string" &&
+          typeof item.quantity === "number" &&
+          item.quantity > 0
         );
 
-        cartDrawer.setAttribute(
-            "aria-hidden",
-            "true"
-        );
+      });
+
+    }catch(error){
+
+      cart = [];
+
+      console.error(
+        "Impossible de charger le panier.",
+        error
+      );
+
     }
 
-
-    quantityDrawer.classList.add(
-        "open"
-    );
+  }
 
 
-    quantityDrawer.setAttribute(
-        "aria-hidden",
-        "false"
-    );
+  // ============================================================
+  // PRODUITS
+  // ============================================================
 
+  function renderProducts(){
 
-    setOverlay(true);
-
-    document.body.style.overflow =
-        "hidden";
-
-
-    updateQuantityUI();
-}
-
-
-function openCart() {
-
-    const cartDrawer =
-        $("cartDrawer");
-
-    const quantityDrawer =
-        $("quantityDrawer");
-
-
-    if (!cartDrawer) {
-        return;
+    if(!productsGrid){
+      return;
     }
 
+    productsGrid.innerHTML = "";
 
-    renderCart();
+    PRODUCTS.forEach(function(product,index){
 
+      const article =
+        document.createElement("article");
 
-    if (quantityDrawer) {
+      article.className = "product";
 
-        quantityDrawer.classList.remove(
-            "open"
-        );
+      article.innerHTML = `
 
-        quantityDrawer.setAttribute(
-            "aria-hidden",
-            "true"
-        );
-    }
+        <div class="productTop">
 
+          <div class="productIcon">
+            ${product.icon}
+          </div>
 
-    cartDrawer.classList.add(
-        "open"
-    );
+          <div class="productNumber">
+            #${String(index + 1).padStart(2,"0")}
+          </div>
 
+        </div>
 
-    cartDrawer.setAttribute(
-        "aria-hidden",
-        "false"
-    );
+        <h2>${escapeHTML(product.name)}</h2>
 
+        <div class="productDescription">
+          ${escapeHTML(product.description)}
+        </div>
 
-    setOverlay(true);
+        <div class="priceRow">
 
-    document.body.style.overflow =
-        "hidden";
-}
+          <div class="price">
+            ${formatPrice(product.price)}
+          </div>
 
+          <div class="priceSuffix">
+            / pack
+          </div>
 
-/* =====================================================
-   AJOUT AU PANIER
-   ===================================================== */
+        </div>
 
-function addToCart() {
+        <div class="productActions">
 
-    quantity =
-        clampQuantity(quantity);
+          <button
+            class="chooseButton"
+            data-product="${escapeHTML(product.id)}"
+          >
+            Choisir
+          </button>
 
+          <button
+            class="addDirect"
+            title="Ajouter directement"
+            data-direct="${escapeHTML(product.id)}"
+          >
+            +
+          </button>
 
-    const existing =
-        cart.find(function (item) {
+        </div>
 
-            return item.id ===
-                PRODUCT.id;
+      `;
 
-        });
+      productsGrid.appendChild(article);
 
-
-    if (existing) {
-
-        existing.quantity =
-            clampQuantity(
-                Number(
-                    existing.quantity
-                ) +
-                quantity
-            );
-
-
-    } else {
-
-        cart.push({
-
-            id:
-                PRODUCT.id,
-
-            name:
-                PRODUCT.name,
-
-            quantity:
-                quantity,
-
-            members:
-                PRODUCT.members,
-
-            price:
-                PRODUCT.price
-
-        });
-    }
-
-
-    saveCart();
-
-    updateCartCount();
-
-    renderCart();
-
-
-    toast(
-        quantity +
-        (
-            quantity > 1
-                ? " packs ajoutés"
-                : " pack ajouté"
-        ) +
-        " au panier."
-    );
-
-
-    setTimeout(
-        function () {
-
-            openCart();
-
-        },
-        150
-    );
-}
-
-
-/* =====================================================
-   SUPPRESSION
-   ===================================================== */
-
-function removeCartItem(id) {
-
-    cart =
-        cart.filter(function (item) {
-
-            return item.id !== id;
-
-        });
-
-
-    saveCart();
-
-    updateCartCount();
-
-    renderCart();
-
-
-    toast(
-        "Produit retiré du panier."
-    );
-}
-
-
-/* =====================================================
-   PROTECTION HTML
-   ===================================================== */
-
-function escapeHTML(value) {
-
-    return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
-
-
-/* =====================================================
-   AFFICHAGE DU PANIER
-   ===================================================== */
-
-function renderCart() {
-
-    const container =
-        $("cartContent");
-
-
-    if (!container) {
-        return;
-    }
-
-
-    if (cart.length === 0) {
-
-        container.innerHTML = `
-            <div class="empty-cart">
-
-                <div class="empty-cart-icon">
-                    🛒
-                </div>
-
-                <p>
-                    Ton panier est vide.
-                </p>
-
-                <button
-                    class="btn btn-purple"
-                    id="emptyChooseButton"
-                    type="button"
-                    style="margin-top:20px;"
-                >
-                    Choisir un pack
-                </button>
-
-            </div>
-        `;
-
-        return;
-    }
-
-
-    let html = "";
-
-
-    cart.forEach(function (item) {
-
-        const itemQuantity =
-            Number(item.quantity);
-
-
-        const total =
-            itemQuantity *
-            Number(item.price);
-
-
-        html += `
-            <div class="cart-item">
-
-                <div class="cart-item-top">
-
-                    <div>
-
-                        <div class="cart-item-name">
-                            ${escapeHTML(item.name)}
-                        </div>
-
-                        <div class="cart-item-members">
-
-                            ${formatNumber(
-                                Number(item.members) *
-                                itemQuantity
-                            )}
-
-                            MEMBERS
-
-                            • Quantité :
-                            ${itemQuantity}
-
-                        </div>
-
-                    </div>
-
-                    <div class="cart-item-price">
-                        ${formatPrice(total)}
-                    </div>
-
-                </div>
-
-
-                <button
-                    class="cart-item-remove"
-                    type="button"
-                    data-remove-id="${escapeHTML(item.id)}"
-                >
-                    Supprimer
-                </button>
-
-            </div>
-        `;
     });
 
 
-    html += `
-        <div class="cart-total">
-
-            <div class="cart-total-row">
-
-                <span>
-                    Total
-                </span>
-
-                <strong class="cart-total-price">
-                    ${formatPrice(
-                        getCartTotal()
-                    )}
-                </strong>
-
-            </div>
-
-
-            <button
-                class="paypal-button"
-                id="paypalButton"
-                type="button"
-            >
-                💳 Continuer avec PayPal
-            </button>
-
-        </div>
-    `;
-
-
-    container.innerHTML =
-        html;
-}
-
-
-/* =====================================================
-   DISCORD
-   ===================================================== */
-
-async function sendDiscordOrder() {
-
-    const webhook =
-        String(
-            DISCORD_WEBHOOK_URL || ""
-        ).trim();
-
-
-    if (
-        !webhook ||
-        webhook === "TON_WEBHOOK_ICI"
-    ) {
-
-        console.warn(
-            "Webhook Discord non configuré."
-        );
-
-        return false;
-    }
-
-
-    if (cart.length === 0) {
-
-        return false;
-    }
-
-
-    const packs =
-        getCartCount();
-
-
-    const members =
-        packs *
-        PRODUCT.members;
-
-
-    const total =
-        getCartTotal();
-
-
-    const commande =
-        cart.map(function (item) {
-
-            return (
-                "• " +
-                item.name +
-                " × " +
-                item.quantity +
-                " = " +
-                formatPrice(
-                    Number(item.quantity) *
-                    Number(item.price)
-                )
-            );
-
-        }).join("\n");
-
-
-    const message = {
-
-        username:
-            "NOVA MEMBERS",
-
-        embeds: [
-
-            {
-
-                title:
-                    "🛒 NOUVELLE COMMANDE",
-
-                description:
-                    "Une nouvelle commande vient d'être lancée depuis NOVA MEMBERS.",
-
-                color:
-                    0x8b5cf6,
-
-                fields: [
-
-                    {
-
-                        name:
-                            "📦 Commande",
-
-                        value:
-                            commande ||
-                            "Aucun produit",
-
-                        inline:
-                            false
-                    },
-
-                    {
-
-                        name:
-                            "🔢 Quantité",
-
-                        value:
-                            packs +
-                            (
-                                packs > 1
-                                    ? " packs"
-                                    : " pack"
-                            ),
-
-                        inline:
-                            true
-                    },
-
-                    {
-
-                        name:
-                            "👥 MEMBERS",
-
-                        value:
-                            formatNumber(
-                                members
-                            ),
-
-                        inline:
-                            true
-                    },
-
-                    {
-
-                        name:
-                            "💰 Montant",
-
-                        value:
-                            formatPrice(
-                                total
-                            ),
-
-                        inline:
-                            true
-                    },
-
-                    {
-
-                        name:
-                            "💳 Paiement",
-
-                        value:
-                            "PayPal",
-
-                        inline:
-                            true
-                    },
-
-                    {
-
-                        name:
-                            "📊 Statut",
-
-                        value:
-                            "Paiement lancé",
-
-                        inline:
-                            true
-                    }
-
-                ],
-
-                footer: {
-
-                    text:
-                        "NOVA MEMBERS • Système de commandes"
-
-                },
-
-                timestamp:
-                    new Date().toISOString()
+    document
+      .querySelectorAll("[data-product]")
+      .forEach(function(button){
+
+        button.addEventListener(
+          "click",
+          function(){
+
+            const product =
+              getProduct(button.dataset.product);
+
+            if(product){
+              openQuantity(product);
             }
 
-        ]
-    };
-
-
-    try {
-
-        const response =
-            await fetch(
-                webhook,
-                {
-
-                    method:
-                        "POST",
-
-                    headers: {
-
-                        "Content-Type":
-                            "application/json"
-
-                    },
-
-                    body:
-                        JSON.stringify(
-                            message
-                        )
-                }
-            );
-
-
-        if (!response.ok) {
-
-            console.error(
-                "Discord a retourné le statut :",
-                response.status
-            );
-
-            return false;
-        }
-
-
-        return true;
-
-
-    } catch (error) {
-
-        console.error(
-            "Erreur lors de l'envoi Discord :",
-            error
+          }
         );
 
-        return false;
-    }
-}
+      });
 
 
-/* =====================================================
-   PAYPAL
-   ===================================================== */
+    document
+      .querySelectorAll("[data-direct]")
+      .forEach(function(button){
 
-async function checkoutPayPal() {
+        button.addEventListener(
+          "click",
+          function(){
 
-    if (cart.length === 0) {
+            const product =
+              getProduct(button.dataset.direct);
 
-        toast(
-            "Ton panier est vide."
-        );
+            if(product){
 
-        return;
-    }
+              addToCart(
+                product,
+                1
+              );
 
+              toast(
+                product.name +
+                " ajouté au panier."
+              );
 
-    const total =
-        getCartTotal();
-
-
-    if (
-        !Number.isFinite(total) ||
-        total <= 0
-    ) {
-
-        toast(
-            "Montant invalide."
-        );
-
-        return;
-    }
-
-
-    toast(
-        "Préparation de la commande..."
-    );
-
-
-    /*
-     * Discord est appelé uniquement ici.
-     * Une erreur Discord ne bloque PAS PayPal.
-     */
-
-    try {
-
-        await sendDiscordOrder();
-
-    } catch (error) {
-
-        console.error(
-            "Notification Discord impossible :",
-            error
-        );
-    }
-
-
-    const amount =
-        total.toFixed(2);
-
-
-    const url =
-        PAYPAL_BASE +
-        "/" +
-        amount;
-
-
-    setTimeout(function () {
-
-        window.location.assign(
-            url
-        );
-
-    }, 350);
-}
-
-
-/* =====================================================
-   BOUTONS STATIQUES
-   ===================================================== */
-
-function bindButton(id, handler) {
-
-    const button =
-        $(id);
-
-
-    if (!button) {
-        return;
-    }
-
-
-    button.addEventListener(
-        "click",
-        function (event) {
-
-            event.preventDefault();
-
-            handler();
-
-        }
-    );
-}
-
-
-function setupStaticButtons() {
-
-    bindButton(
-        "chooseButton",
-        openQuantity
-    );
-
-
-    bindButton(
-        "heroChooseButton",
-        openQuantity
-    );
-
-
-    bindButton(
-        "cardChooseButton",
-        openQuantity
-    );
-
-
-    bindButton(
-        "heroCartButton",
-        openCart
-    );
-
-
-    bindButton(
-        "heroCartButton2",
-        openCart
-    );
-
-
-    bindButton(
-        "closeQuantity",
-        closeDrawers
-    );
-
-
-    bindButton(
-        "closeCart",
-        closeDrawers
-    );
-
-
-    bindButton(
-        "minusButton",
-        decreaseQuantity
-    );
-
-
-    bindButton(
-        "plusButton",
-        increaseQuantity
-    );
-
-
-    bindButton(
-        "addCartButton",
-        addToCart
-    );
-}
-
-
-/* =====================================================
-   BOUTONS DYNAMIQUES
-   ===================================================== */
-
-function setupDynamicButtons() {
-
-    document.addEventListener(
-        "click",
-        function (event) {
-
-            const target =
-                event.target;
-
-
-            if (
-                !(target instanceof Element)
-            ) {
-
-                return;
             }
 
-
-            const button =
-                target.closest(
-                    "button"
-                );
-
-
-            if (!button) {
-                return;
-            }
-
-
-            if (
-                button.id ===
-                "emptyChooseButton"
-            ) {
-
-                event.preventDefault();
-
-                openQuantity();
-
-                return;
-            }
-
-
-            if (
-                button.id ===
-                "paypalButton"
-            ) {
-
-                event.preventDefault();
-
-                checkoutPayPal();
-
-                return;
-            }
-
-
-            if (
-                button.hasAttribute(
-                    "data-remove-id"
-                )
-            ) {
-
-                event.preventDefault();
-
-
-                const id =
-                    button.getAttribute(
-                        "data-remove-id"
-                    );
-
-
-                if (id) {
-
-                    removeCartItem(id);
-
-                }
-            }
-        }
-    );
-}
-
-
-/* =====================================================
-   OVERLAY
-   ===================================================== */
-
-function setupOverlay() {
-
-    const overlay =
-        $("drawerOverlay");
-
-
-    if (!overlay) {
-        return;
-    }
-
-
-    overlay.addEventListener(
-        "click",
-        closeDrawers
-    );
-}
-
-
-/* =====================================================
-   CLAVIER
-   ===================================================== */
-
-function setupKeyboard() {
-
-    document.addEventListener(
-        "keydown",
-        function (event) {
-
-            if (
-                event.key ===
-                "Escape"
-            ) {
-
-                closeDrawers();
-
-            }
-        }
-    );
-}
-
-
-/* =====================================================
-   ÉTOILES
-   ===================================================== */
-
-function createStars() {
-
-    const space =
-        $("space");
-
-
-    if (!space) {
-        return;
-    }
-
-
-    space.innerHTML = "";
-
-
-    for (
-        let i = 0;
-        i < 160;
-        i++
-    ) {
-
-        const star =
-            document.createElement(
-                "div"
-            );
-
-
-        star.className =
-            "star";
-
-
-        const size =
-            Math.random() * 2 + 1;
-
-
-        star.style.width =
-            size + "px";
-
-
-        star.style.height =
-            size + "px";
-
-
-        star.style.left =
-            Math.random() * 100 + "%";
-
-
-        star.style.top =
-            Math.random() * 100 + "%";
-
-
-        star.style.animationDelay =
-            Math.random() * 3 + "s";
-
-
-        space.appendChild(
-            star
-        );
-    }
-}
-
-
-/* =====================================================
-   MORCEAUX DU LOGO
-   ===================================================== */
-
-function createDebris() {
-
-    const container =
-        $("debris");
-
-
-    if (!container) {
-        return;
-    }
-
-
-    container.innerHTML = "";
-
-
-    for (
-        let i = 0;
-        i < 500;
-        i++
-    ) {
-
-        const piece =
-            document.createElement(
-                "div"
-            );
-
-
-        piece.className =
-            "debris-piece";
-
-
-        const angle =
-            Math.random() *
-            Math.PI *
-            2;
-
-
-        const distance =
-            100 +
-            Math.random() *
-            650;
-
-
-        const x =
-            Math.cos(angle) *
-            distance;
-
-
-        const y =
-            Math.sin(angle) *
-            distance;
-
-
-        const duration =
-            1.2 +
-            Math.random() *
-            1.4;
-
-
-        const delay =
-            Math.random() *
-            0.25;
-
-
-        const rotate =
-            Math.random() *
-            1600 -
-            800;
-
-
-        piece.style.setProperty(
-            "--x",
-            x + "px"
+          }
         );
 
+      });
 
-        piece.style.setProperty(
-            "--y",
-            y + "px"
-        );
+  }
 
 
-        piece.style.setProperty(
-            "--duration",
-            duration + "s"
-        );
+  function getProduct(id){
 
+    return PRODUCTS.find(function(product){
 
-        piece.style.setProperty(
-            "--delay",
-            delay + "s"
-        );
+      return product.id === id;
 
+    }) || null;
 
-        piece.style.setProperty(
-            "--rotate",
-            rotate + "deg"
-        );
+  }
 
 
-        container.appendChild(
-            piece
-        );
-    }
-}
+  // ============================================================
+  // QUANTITÉ
+  // ============================================================
 
+  function openQuantity(product){
 
-/* =====================================================
-   INTRO
-   ===================================================== */
+    selectedProduct = product;
 
-function runIntro() {
-
-    const intro =
-        $("intro");
-
-    const loadingText =
-        $("loadingText");
-
-    const loadingFill =
-        $("loadingFill");
-
-    const ball =
-        $("ball");
-
-    const impact =
-        $("impact");
-
-    const site =
-        $("site");
-
-    const debris =
-        $("debris");
-
-
-    if (!intro || !site) {
-        return;
-    }
-
-
-    /* CHARGEMENT DU PRODUIT */
-
-    setTimeout(function () {
-
-        if (loadingText) {
-
-            loadingText.innerHTML =
-                "CHARGEMENT DU PRODUIT<span class=\"loading-dots\">...</span>";
-
-        }
-
-
-        if (loadingFill) {
-
-            loadingFill.style.width =
-                "35%";
-
-        }
-
-    }, 800);
-
-
-    /* CHARGEMENT DU PANIER */
-
-    setTimeout(function () {
-
-        if (loadingText) {
-
-            loadingText.innerHTML =
-                "CHARGEMENT DU PANIER<span class=\"loading-dots\">...</span>";
-
-        }
-
-
-        if (loadingFill) {
-
-            loadingFill.style.width =
-                "65%";
-
-        }
-
-    }, 1600);
-
-
-    /* DERNIER CHARGEMENT */
-
-    setTimeout(function () {
-
-        if (loadingText) {
-
-            loadingText.innerHTML =
-                "CHARGEMENT<span class=\"loading-dots\">...</span>";
-
-        }
-
-
-        if (loadingFill) {
-
-            loadingFill.style.width =
-                "85%";
-
-        }
-
-    }, 2300);
-
-
-    /* TERMINÉ */
-
-    setTimeout(function () {
-
-        if (loadingText) {
-
-            loadingText.textContent =
-                "CHARGEMENT TERMINÉ";
-
-        }
-
-
-        if (loadingFill) {
-
-            loadingFill.style.width =
-                "100%";
-
-        }
-
-    }, 2800);
-
-
-    /* PROJECTILE VISUEL */
-
-    setTimeout(function () {
-
-        if (ball) {
-
-            ball.classList.add(
-                "fly"
-            );
-
-        }
-
-    }, 3200);
-
-
-    /* IMPACT */
-
-    setTimeout(function () {
-
-        if (impact) {
-
-            impact.classList.add(
-                "active"
-            );
-
-        }
-
-
-        intro.classList.add(
-            "explode"
-        );
-
-    }, 4300);
-
-
-    /* TILT */
-
-    setTimeout(function () {
-
-        intro.classList.add(
-            "tilt"
-        );
-
-    }, 5000);
-
-
-    /* POUBELLE */
-
-    setTimeout(function () {
-
-        intro.classList.add(
-            "trash-visible"
-        );
-
-    }, 5350);
-
-
-    /* OUVERTURE */
-
-    setTimeout(function () {
-
-        intro.classList.add(
-            "trash-open"
-        );
-
-    }, 6050);
-
-
-    /* MORCEAUX QUI TOMBENT */
-
-    setTimeout(function () {
-
-        if (!debris) {
-            return;
-        }
-
-
-        const pieces =
-            debris.querySelectorAll(
-                ".debris-piece"
-            );
-
-
-        pieces.forEach(
-            function (piece) {
-
-                piece.style.setProperty(
-                    "--x",
-                    (
-                        Math.random() *
-                        80 -
-                        40
-                    ) + "px"
-                );
-
-
-                piece.style.setProperty(
-                    "--y",
-                    (
-                        250 +
-                        Math.random() *
-                        350
-                    ) + "px"
-                );
-
-
-                piece.style.setProperty(
-                    "--rotate",
-                    (
-                        Math.random() *
-                        1000 -
-                        500
-                    ) + "deg"
-                );
-            }
-        );
-
-    }, 6250);
-
-
-    /* APPARITION DU VRAI SITE */
-
-    setTimeout(function () {
-
-        site.classList.add(
-            "visible"
-        );
-
-    }, 7000);
-
-
-    /* FIN */
-
-    setTimeout(function () {
-
-        intro.classList.add(
-            "finished"
-        );
-
-
-        document.body.classList.add(
-            "intro-complete"
-        );
-
-    }, 7700);
-}
-
-
-/* =====================================================
-   INITIALISATION
-   ===================================================== */
-
-function init() {
-
-    loadCart();
+    selectedQuantity = 1;
 
     updateQuantityUI();
+
+    quantityDrawer.classList.add("active");
+
+    overlay.classList.add("active");
+
+  }
+
+
+  function updateQuantityUI(){
+
+    if(!selectedProduct){
+      return;
+    }
+
+    quantityValue.textContent =
+      formatNumber(selectedQuantity);
+
+    quantityProductName.textContent =
+      selectedProduct.name;
+
+    quantityProductPrice.textContent =
+      formatPrice(selectedProduct.price) +
+      " / pack";
+
+    summaryQuantity.textContent =
+      formatNumber(selectedQuantity);
+
+    summaryMembers.textContent =
+      formatNumber(
+        selectedProduct.members *
+        selectedQuantity
+      );
+
+    summaryPrice.textContent =
+      formatPrice(
+        selectedProduct.price *
+        selectedQuantity
+      );
+
+  }
+
+
+  function increaseQuantity(){
+
+    if(selectedQuantity >= 9999){
+
+      toast("Quantité maximale atteinte.");
+
+      return;
+
+    }
+
+    selectedQuantity++;
+
+    updateQuantityUI();
+
+  }
+
+
+  function decreaseQuantity(){
+
+    if(selectedQuantity <= 1){
+
+      return;
+
+    }
+
+    selectedQuantity--;
+
+    updateQuantityUI();
+
+  }
+
+
+  // ============================================================
+  // PANIER
+  // ============================================================
+
+  function addToCart(product,quantity){
+
+    const existing =
+      cart.find(function(item){
+
+        return item.id === product.id;
+
+      });
+
+
+    if(existing){
+
+      existing.quantity += quantity;
+
+    }else{
+
+      cart.push({
+
+        id:product.id,
+
+        quantity:quantity
+
+      });
+
+    }
+
+
+    saveCart();
 
     updateCartCount();
 
     renderCart();
 
-    createStars();
-
-    createDebris();
-
-    setupStaticButtons();
-
-    setupDynamicButtons();
-
-    setupOverlay();
-
-    setupKeyboard();
-
-    runIntro();
+  }
 
 
-    window.NOVA_MEMBERS = {
+  function removeFromCart(id){
 
-        product:
-            PRODUCT,
+    cart =
+      cart.filter(function(item){
 
-        openQuantity:
-            openQuantity,
+        return item.id !== id;
 
-        openCart:
-            openCart,
+      });
 
-        close:
-            closeDrawers,
 
-        addToCart:
-            addToCart,
+    saveCart();
 
-        increaseQuantity:
-            increaseQuantity,
+    updateCartCount();
 
-        decreaseQuantity:
-            decreaseQuantity,
+    renderCart();
 
-        checkout:
-            checkoutPayPal
+    toast("Produit retiré du panier.");
+
+  }
+
+
+  function changeCartQuantity(id,amount){
+
+    const item =
+      cart.find(function(entry){
+
+        return entry.id === id;
+
+      });
+
+
+    if(!item){
+      return;
+    }
+
+
+    item.quantity += amount;
+
+
+    if(item.quantity <= 0){
+
+      removeFromCart(id);
+
+      return;
+
+    }
+
+
+    if(item.quantity > 9999){
+
+      item.quantity = 9999;
+
+    }
+
+
+    saveCart();
+
+    updateCartCount();
+
+    renderCart();
+
+  }
+
+
+  function getCartDetailed(){
+
+    return cart
+      .map(function(item){
+
+        const product =
+          getProduct(item.id);
+
+        if(!product){
+          return null;
+        }
+
+        return {
+
+          product:product,
+
+          quantity:item.quantity,
+
+          subtotal:
+            product.price *
+            item.quantity
+
+        };
+
+      })
+      .filter(Boolean);
+
+  }
+
+
+  function getCartTotal(){
+
+    return getCartDetailed()
+      .reduce(
+        function(total,item){
+
+          return total + item.subtotal;
+
+        },
+        0
+      );
+
+  }
+
+
+  function getCartQuantity(){
+
+    return cart
+      .reduce(
+        function(total,item){
+
+          return total + item.quantity;
+
+        },
+        0
+      );
+
+  }
+
+
+  function updateCartCount(){
+
+    cartCount.textContent =
+      formatNumber(
+        getCartQuantity()
+      );
+
+  }
+
+
+  // ============================================================
+  // AFFICHAGE DU PANIER
+  // ============================================================
+
+  function renderCart(){
+
+    const items =
+      getCartDetailed();
+
+
+    if(items.length === 0){
+
+      cartContent.innerHTML = `
+
+        <div class="empty">
+
+          🛒<br><br>
+
+          Ton panier est vide.
+
+        </div>
+
+      `;
+
+      return;
+
+    }
+
+
+    let html =
+      '<div class="cartItems">';
+
+
+    items.forEach(function(item){
+
+      html += `
+
+        <div class="cartItem">
+
+          <div class="cartItemTop">
+
+            <div>
+
+              <div class="cartItemName">
+                ${escapeHTML(item.product.name)}
+              </div>
+
+              <div class="cartItemQty">
+                ${formatNumber(item.quantity)} ×
+                ${formatPrice(item.product.price)}
+              </div>
+
+            </div>
+
+            <div class="cartItemPrice">
+              ${formatPrice(item.subtotal)}
+            </div>
+
+          </div>
+
+          <div class="cartItemBottom">
+
+            <div>
+
+              <button
+                class="removeButton"
+                data-remove="${escapeHTML(item.product.id)}"
+              >
+                🗑️ Supprimer
+              </button>
+
+            </div>
+
+            <div style="display:flex;gap:6px;">
+
+              <button
+                class="closeButton"
+                style="width:34px;height:34px;"
+                data-minus="${escapeHTML(item.product.id)}"
+              >
+                −
+              </button>
+
+              <button
+                class="closeButton"
+                style="width:34px;height:34px;"
+                data-plus="${escapeHTML(item.product.id)}"
+              >
+                +
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      `;
+
+    });
+
+
+    html += "</div>";
+
+
+    html += `
+
+      <div class="cartTotal">
+
+        <span>Total</span>
+
+        <span>
+          ${formatPrice(getCartTotal())}
+        </span>
+
+      </div>
+
+      <input
+        class="emailInput"
+        id="customerEmail"
+        type="email"
+        placeholder="Ton adresse email"
+        autocomplete="email"
+      >
+
+      <button
+        class="paypalButton"
+        id="paypalCheckout"
+      >
+        💳 Payer avec PayPal
+      </button>
+
+    `;
+
+
+    cartContent.innerHTML = html;
+
+
+    document
+      .querySelectorAll("[data-remove]")
+      .forEach(function(button){
+
+        button.addEventListener(
+          "click",
+          function(){
+
+            removeFromCart(
+              button.dataset.remove
+            );
+
+          }
+        );
+
+      });
+
+
+    document
+      .querySelectorAll("[data-minus]")
+      .forEach(function(button){
+
+        button.addEventListener(
+          "click",
+          function(){
+
+            changeCartQuantity(
+              button.dataset.minus,
+              -1
+            );
+
+          }
+        );
+
+      });
+
+
+    document
+      .querySelectorAll("[data-plus]")
+      .forEach(function(button){
+
+        button.addEventListener(
+          "click",
+          function(){
+
+            changeCartQuantity(
+              button.dataset.plus,
+              1
+            );
+
+          }
+        );
+
+      });
+
+
+    const paypalButton =
+      $("paypalCheckout");
+
+
+    if(paypalButton){
+
+      paypalButton.addEventListener(
+        "click",
+        checkoutPayPal
+      );
+
+    }
+
+  }
+
+
+  // ============================================================
+  // PANIER DRAWER
+  // ============================================================
+
+  function openCart(){
+
+    renderCart();
+
+    cartDrawer.classList.add("active");
+
+    overlay.classList.add("active");
+
+  }
+
+
+  function closeDrawers(){
+
+    quantityDrawer.classList.remove("active");
+
+    cartDrawer.classList.remove("active");
+
+    overlay.classList.remove("active");
+
+  }
+
+
+  // ============================================================
+  // DISCORD
+  // ============================================================
+
+  async function sendDiscordOrder(){
+
+    if(
+      !WEBHOOK_URL ||
+      WEBHOOK_URL === "TON_WEBHOOK_ICI"
+    ){
+
+      return {
+        success:false,
+        skipped:true
+      };
+
+    }
+
+
+    const detailed =
+      getCartDetailed();
+
+
+    const emailInput =
+      $("customerEmail");
+
+
+    const email =
+      emailInput &&
+      emailInput.value.trim()
+        ? emailInput.value.trim()
+        : "Non renseigné";
+
+
+    const productsText =
+      detailed
+        .map(function(item){
+
+          return (
+            "• " +
+            item.product.name +
+            " × " +
+            formatNumber(item.quantity) +
+            " = " +
+            formatPrice(item.subtotal)
+          );
+
+        })
+        .join("\n");
+
+
+    const totalMembers =
+      detailed.reduce(
+        function(total,item){
+
+          return total +
+            item.product.members *
+            item.quantity;
+
+        },
+        0
+      );
+
+
+    const payload = {
+
+      username:"MEMBERS SHOP",
+
+      embeds:[
+
+        {
+
+          title:"🛒 NOUVELLE COMMANDE • MEMBERS SHOP",
+
+          description:
+            "Une nouvelle commande vient d'être initiée.",
+
+          color:9463807,
+
+          fields:[
+
+            {
+              name:"📦 Produits",
+              value:productsText || "Aucun",
+              inline:false
+            },
+
+            {
+              name:"👥 MEMBERS",
+              value:formatNumber(totalMembers),
+              inline:true
+            },
+
+            {
+              name:"💰 Total",
+              value:formatPrice(getCartTotal()),
+              inline:true
+            },
+
+            {
+              name:"📧 Email",
+              value:email,
+              inline:false
+            },
+
+            {
+              name:"💳 Paiement",
+              value:"PayPal",
+              inline:true
+            },
+
+            {
+              name:"📊 Statut",
+              value:"Paiement à finaliser",
+              inline:true
+            }
+
+          ],
+
+          footer:{
+            text:"MEMBERS SHOP • Notification automatique"
+          },
+
+          timestamp:
+            new Date().toISOString()
+
+        }
+
+      ]
 
     };
 
 
-    console.log(
-        "NOVA MEMBERS chargé correctement."
-    );
-}
+    try{
+
+      const response =
+        await fetch(
+          WEBHOOK_URL,
+          {
+            method:"POST",
+
+            headers:{
+              "Content-Type":"application/json"
+            },
+
+            body:
+              JSON.stringify(payload)
+          }
+        );
 
 
-/* =====================================================
-   DÉMARRAGE
-   ===================================================== */
+      return {
+        success:response.ok,
+        skipped:false
+      };
 
-if (
-    document.readyState ===
-    "loading"
-) {
 
-    document.addEventListener(
-        "DOMContentLoaded",
-        init,
-        {
-            once: true
-        }
-    );
+    }catch(error){
 
-} else {
+      console.error(
+        "Erreur webhook Discord:",
+        error
+      );
 
-    init();
+      return {
+        success:false,
+        skipped:false
+      };
 
-}
-```
+    }
+
+  }
+
+
+  // ============================================================
+  // PAYPAL
+  // ============================================================
+
+  async function checkoutPayPal(){
+
+    const detailed =
+      getCartDetailed();
+
+
+    if(detailed.length === 0){
+
+      toast("Ton panier est vide.");
+
+      return;
+
+    }
+
+
+    const total =
+      getCartTotal();
+
+
+    const rounded =
+      Number(total.toFixed(2));
+
+
+    if(
+      !Number.isFinite(rounded) ||
+      rounded <= 0
+    ){
+
+      toast("Montant de commande invalide.");
+
+      return;
+
+    }
+
+
+    const emailInput =
+      $("customerEmail");
+
+
+    if(emailInput){
+
+      const email =
+        emailInput.value.trim();
+
+
+      if(
+        email &&
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+      ){
+
+        toast("Adresse email invalide.");
+
+        emailInput.focus();
+
+        return;
+
+      }
+
+    }
+
+
+    toast("Commande préparée. Redirection vers PayPal...");
+
+
+    await sendDiscordOrder();
+
+
+    const paypalUrl =
+      PAYPAL_BASE +
+      "/" +
+      rounded.toFixed(2);
+
+
+    setTimeout(function(){
+
+      window.location.href =
+        paypalUrl;
+
+    },350);
+
+  }
+
+
+  // ============================================================
+  // ESCAPE HTML
+  // ============================================================
+
+  function escapeHTML(value){
+
+    return String(value)
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+
+  }
+
+
+  // ============================================================
+  // PARTICULES AUCUNE INTRO / AUCUN CHARGEMENT
+  // ============================================================
+
+  // Aucun écran de chargement.
+  // Aucun projectile.
+  // Aucun effet d'introduction.
+  // Le site est directement disponible.
+
+
+  // ============================================================
+  // EVENTS
+  // ============================================================
+
+  $("openCart").addEventListener(
+    "click",
+    openCart
+  );
+
+
+  $("closeCart").addEventListener(
+    "click",
+    closeDrawers
+  );
+
+
+  $("closeQuantity").addEventListener(
+    "click",
+    closeDrawers
+  );
+
+
+  overlay.addEventListener(
+    "click",
+    closeDrawers
+  );
+
+
+  $("minusButton").addEventListener(
+    "click",
+    decreaseQuantity
+  );
+
+
+  $("plusButton").addEventListener(
+    "click",
+    increaseQuantity
+  );
+
+
+  $("addCartButton").addEventListener(
+    "click",
+    function(){
+
+      if(!selectedProduct){
+
+        toast("Aucun produit sélectionné.");
+
+        return;
+
+      }
+
+
+      addToCart(
+        selectedProduct,
+        selectedQuantity
+      );
+
+
+      toast(
+        selectedProduct.name +
+        " ajouté au panier."
+      );
+
+
+      closeDrawers();
+
+    }
+  );
+
+
+  $("scrollProducts").addEventListener(
+    "click",
+    function(){
+
+      $("productsSection").scrollIntoView({
+        behavior:"smooth"
+      });
+
+    }
+  );
+
+
+  document.addEventListener(
+    "keydown",
+    function(event){
+
+      if(event.key === "Escape"){
+
+        closeDrawers();
+
+      }
+
+    }
+  );
+
+
+  // ============================================================
+  // INITIALISATION
+  // ============================================================
+
+  loadCart();
+
+  renderProducts();
+
+  renderCart();
+
+  updateCartCount();
 
 })();
+```
