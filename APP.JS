@@ -11,11 +11,13 @@
 
   const STORAGE_KEY = "members_shop_cart";
 
+
   // ============================================================
   // PRODUITS
   // ============================================================
 
   const PRODUCTS = [
+
     {
       id:"members-1000",
       name:"MEMBERS",
@@ -24,6 +26,7 @@
       icon:"👥",
       description:"Pack de 1 000 MEMBERS."
     },
+
     {
       id:"members-5000",
       name:"MEMBERS PLUS",
@@ -32,6 +35,7 @@
       icon:"🔥",
       description:"Pack de 5 000 MEMBERS."
     },
+
     {
       id:"members-10000",
       name:"MEMBERS PRO",
@@ -40,6 +44,7 @@
       icon:"💎",
       description:"Pack de 10 000 MEMBERS."
     },
+
     {
       id:"members-25000",
       name:"MEMBERS ULTRA",
@@ -48,7 +53,9 @@
       icon:"👑",
       description:"Pack de 25 000 MEMBERS."
     }
+
   ];
+
 
   // ============================================================
   // ÉTAT
@@ -62,23 +69,33 @@
 
   let toastTimer = null;
 
+
   // ============================================================
   // DOM
   // ============================================================
 
   function $(id){
+
     return document.getElementById(id);
+
   }
+
 
   // ============================================================
   // FORMATAGE
   // ============================================================
 
   function formatNumber(number){
-    return new Intl.NumberFormat("fr-FR").format(number);
+
+    return new Intl.NumberFormat(
+      "fr-FR"
+    ).format(number);
+
   }
 
+
   function formatPrice(number){
+
     return new Intl.NumberFormat(
       "fr-FR",
       {
@@ -86,7 +103,9 @@
         currency:"EUR"
       }
     ).format(number);
+
   }
+
 
   // ============================================================
   // STORAGE
@@ -112,12 +131,15 @@
 
   }
 
+
   function loadCart(){
 
     try{
 
       const saved =
-        localStorage.getItem(STORAGE_KEY);
+        localStorage.getItem(
+          STORAGE_KEY
+        );
 
       if(!saved){
 
@@ -134,10 +156,12 @@
 
         cart = parsed.filter(item => {
 
-          return item &&
-                 typeof item.id === "string" &&
-                 typeof item.quantity === "number" &&
-                 item.quantity > 0;
+          return (
+            item &&
+            typeof item.id === "string" &&
+            typeof item.quantity === "number" &&
+            item.quantity > 0
+          );
 
         });
 
@@ -160,6 +184,7 @@
 
   }
 
+
   // ============================================================
   // PRODUITS
   // ============================================================
@@ -167,14 +192,17 @@
   function getProduct(productId){
 
     return PRODUCTS.find(
-      product => product.id === productId
+      product =>
+        product.id === productId
     );
 
   }
 
+
   function renderProducts(){
 
-    const grid = $("productsGrid");
+    const grid =
+      $("productsGrid");
 
     if(!grid){
 
@@ -188,14 +216,20 @@
 
     grid.innerHTML = "";
 
+
     PRODUCTS.forEach(product => {
 
       const card =
-        document.createElement("article");
+        document.createElement(
+          "article"
+        );
 
-      card.className = "product-card";
+      card.className =
+        "product-card";
+
 
       card.innerHTML = `
+
         <div>
 
           <div class="product-icon">
@@ -212,25 +246,31 @@
 
         </div>
 
+
         <div class="product-bottom">
 
           <div class="price">
             ${formatPrice(product.price)}
           </div>
 
+
           <button
             class="choose-btn"
             data-product-id="${escapeAttribute(product.id)}"
+            type="button"
           >
             Choisir
           </button>
 
         </div>
+
       `;
+
 
       grid.appendChild(card);
 
     });
+
 
     grid
       .querySelectorAll(".choose-btn")
@@ -251,6 +291,7 @@
 
   }
 
+
   // ============================================================
   // SÉCURITÉ AFFICHAGE
   // ============================================================
@@ -258,21 +299,51 @@
   function escapeHTML(value){
 
     return String(value)
-      .replace(/&/g,"&amp;")
-      .replace(/</g,"&lt;")
-      .replace(/>/g,"&gt;")
-      .replace(/"/g,"&quot;")
-      .replace(/'/g,"&#039;");
+
+      .replace(
+        /&/g,
+        "&amp;"
+      )
+
+      .replace(
+        /</g,
+        "&lt;"
+      )
+
+      .replace(
+        />/g,
+        "&gt;"
+      )
+
+      .replace(
+        /"/g,
+        "&quot;"
+      )
+
+      .replace(
+        /'/g,
+        "&#039;"
+      );
 
   }
+
 
   function escapeAttribute(value){
 
     return String(value)
-      .replace(/"/g,"&quot;")
-      .replace(/'/g,"&#039;");
+
+      .replace(
+        /"/g,
+        "&quot;"
+      )
+
+      .replace(
+        /'/g,
+        "&#039;"
+      );
 
   }
+
 
   // ============================================================
   // OVERLAY
@@ -280,27 +351,35 @@
 
   function openOverlay(){
 
-    const overlay = $("overlay");
+    const overlay =
+      $("overlay");
 
     if(overlay){
 
-      overlay.classList.add("active");
+      overlay.classList.add(
+        "active"
+      );
 
     }
 
   }
+
 
   function closeOverlay(){
 
-    const overlay = $("overlay");
+    const overlay =
+      $("overlay");
 
     if(overlay){
 
-      overlay.classList.remove("active");
+      overlay.classList.remove(
+        "active"
+      );
 
     }
 
   }
+
 
   // ============================================================
   // DRAWER QUANTITÉ
@@ -317,9 +396,13 @@
 
     }
 
-    selectedProduct = product;
 
-    selectedQuantity = 1;
+    selectedProduct =
+      product;
+
+    selectedQuantity =
+      1;
+
 
     const name =
       $("quantityProductName");
@@ -330,12 +413,14 @@
     const drawer =
       $("quantityDrawer");
 
+
     if(name){
 
       name.textContent =
         product.name;
 
     }
+
 
     if(price){
 
@@ -344,17 +429,23 @@
 
     }
 
+
     updateQuantityDisplay();
+
 
     if(drawer){
 
-      drawer.classList.add("active");
+      drawer.classList.add(
+        "active"
+      );
 
     }
+
 
     openOverlay();
 
   }
+
 
   function closeQuantity(){
 
@@ -363,17 +454,29 @@
 
     if(drawer){
 
-      drawer.classList.remove("active");
+      drawer.classList.remove(
+        "active"
+      );
 
     }
 
-    if(!$("cartDrawer")?.classList.contains("active")){
+
+    const cartDrawer =
+      $("cartDrawer");
+
+    if(
+      !cartDrawer ||
+      !cartDrawer.classList.contains(
+        "active"
+      )
+    ){
 
       closeOverlay();
 
     }
 
   }
+
 
   function updateQuantityDisplay(){
 
@@ -382,6 +485,7 @@
       return;
 
     }
+
 
     const quantity =
       $("quantityValue");
@@ -395,6 +499,7 @@
     const summaryPrice =
       $("summaryPrice");
 
+
     if(quantity){
 
       quantity.textContent =
@@ -402,12 +507,16 @@
 
     }
 
+
     if(summaryQuantity){
 
       summaryQuantity.textContent =
-        formatNumber(selectedQuantity);
+        formatNumber(
+          selectedQuantity
+        );
 
     }
+
 
     if(summaryMembers){
 
@@ -418,6 +527,7 @@
         );
 
     }
+
 
     if(summaryPrice){
 
@@ -431,6 +541,7 @@
 
   }
 
+
   // ============================================================
   // PANIER
   // ============================================================
@@ -443,11 +554,14 @@
 
     }
 
+
     const existing =
       cart.find(
         item =>
-          item.id === selectedProduct.id
+          item.id ===
+          selectedProduct.id
       );
+
 
     if(existing){
 
@@ -458,13 +572,16 @@
 
       cart.push({
 
-        id:selectedProduct.id,
+        id:
+          selectedProduct.id,
 
-        quantity:selectedQuantity
+        quantity:
+          selectedQuantity
 
       });
 
     }
+
 
     saveCart();
 
@@ -474,11 +591,13 @@
 
     closeQuantity();
 
+
     showToast(
       `${selectedProduct.name} ajouté au panier.`
     );
 
   }
+
 
   function removeFromCart(productId){
 
@@ -488,6 +607,7 @@
           item.id !== productId
       );
 
+
     saveCart();
 
     renderCart();
@@ -495,6 +615,7 @@
     updateCartCount();
 
   }
+
 
   function changeCartQuantity(
     productId,
@@ -507,21 +628,28 @@
           entry.id === productId
       );
 
+
     if(!item){
 
       return;
 
     }
 
-    item.quantity += change;
+
+    item.quantity +=
+      change;
+
 
     if(item.quantity <= 0){
 
-      removeFromCart(productId);
+      removeFromCart(
+        productId
+      );
 
       return;
 
     }
+
 
     saveCart();
 
@@ -530,6 +658,7 @@
     updateCartCount();
 
   }
+
 
   function getCartQuantity(){
 
@@ -541,13 +670,17 @@
 
   }
 
+
   function getCartMembers(){
 
     return cart.reduce(
       (total,item) => {
 
         const product =
-          getProduct(item.id);
+          getProduct(
+            item.id
+          );
+
 
         if(!product){
 
@@ -555,15 +688,19 @@
 
         }
 
-        return total +
+
+        return (
+          total +
           product.members *
-          item.quantity;
+          item.quantity
+        );
 
       },
       0
     );
 
   }
+
 
   function getCartTotal(){
 
@@ -571,7 +708,10 @@
       (total,item) => {
 
         const product =
-          getProduct(item.id);
+          getProduct(
+            item.id
+          );
+
 
         if(!product){
 
@@ -579,9 +719,12 @@
 
         }
 
-        return total +
+
+        return (
+          total +
           product.price *
-          item.quantity;
+          item.quantity
+        );
 
       },
       0
@@ -589,10 +732,12 @@
 
   }
 
+
   function updateCartCount(){
 
     const counter =
       $("cartCount");
+
 
     if(counter){
 
@@ -603,6 +748,7 @@
 
   }
 
+
   // ============================================================
   // AFFICHAGE PANIER
   // ============================================================
@@ -612,36 +758,52 @@
     const content =
       $("cartContent");
 
+
     if(!content){
 
       return;
 
     }
 
+
     if(cart.length === 0){
 
       content.innerHTML = `
+
         <div class="empty">
-          <div style="font-size:42px;margin-bottom:15px;">
+
+          <div
+            style="
+              font-size:42px;
+              margin-bottom:15px;
+            "
+          >
             🛒
           </div>
 
           <div>
             Ton panier est vide.
           </div>
+
         </div>
+
       `;
 
       return;
 
     }
 
+
     let html = "";
+
 
     cart.forEach(item => {
 
       const product =
-        getProduct(item.id);
+        getProduct(
+          item.id
+        );
+
 
       if(!product){
 
@@ -649,92 +811,156 @@
 
       }
 
+
       const total =
         product.price *
         item.quantity;
 
+
       html += `
+
         <div class="cart-item">
 
           <div>
 
             <h3>
-              ${escapeHTML(product.name)}
+              ${escapeHTML(
+                product.name
+              )}
             </h3>
 
-            <p>
-              ${formatNumber(product.members)}
-              MEMBERS ×
-              ${item.quantity}
-            </p>
 
             <p>
-              ${formatPrice(product.price)}
+
+              ${formatNumber(
+                product.members
+              )}
+
+              MEMBERS ×
+
+              ${item.quantity}
+
+            </p>
+
+
+            <p>
+
+              ${formatPrice(
+                product.price
+              )}
+
               / unité
+
             </p>
 
           </div>
 
+
           <div class="cart-item-right">
 
             <strong>
-              ${formatPrice(total)}
+
+              ${formatPrice(
+                total
+              )}
+
             </strong>
+
 
             <div>
 
               <button
                 class="remove-item"
                 data-action="minus"
-                data-id="${escapeAttribute(product.id)}"
+                data-id="${escapeAttribute(
+                  product.id
+                )}"
+                type="button"
               >
                 −
               </button>
 
-              <span style="margin:0 8px;">
+
+              <span
+                style="
+                  margin:0 8px;
+                "
+              >
                 ${item.quantity}
               </span>
+
 
               <button
                 class="remove-item"
                 data-action="plus"
-                data-id="${escapeAttribute(product.id)}"
+                data-id="${escapeAttribute(
+                  product.id
+                )}"
+                type="button"
               >
                 +
               </button>
 
             </div>
 
+
             <div>
+
               <button
                 class="remove-item"
                 data-action="remove"
-                data-id="${escapeAttribute(product.id)}"
+                data-id="${escapeAttribute(
+                  product.id
+                )}"
+                type="button"
               >
                 Supprimer
               </button>
+
             </div>
 
           </div>
 
         </div>
+
       `;
 
     });
 
+
     html += `
+
       <div class="cart-total">
-        <span>Total</span>
-        <span>${formatPrice(getCartTotal())}</span>
+
+        <span>
+          Total
+        </span>
+
+        <span>
+          ${formatPrice(
+            getCartTotal()
+          )}
+        </span>
+
       </div>
 
-      <div style="
-        margin-top:10px;
-        color:#9b93a5;
-        font-size:13px;
-      ">
-        ${formatNumber(getCartMembers())} MEMBERS au total
+
+      <div
+        style="
+          margin-top:10px;
+          color:#9b93a5;
+          font-size:13px;
+        "
+      >
+
+        ${formatNumber(
+          getCartMembers()
+        )}
+
+        MEMBERS au total
+
       </div>
+
 
       <div class="discord-form">
 
@@ -742,11 +968,15 @@
           🎮 Informations Discord
         </h3>
 
+
         <div class="field">
 
-          <label for="discordUsername">
+          <label
+            for="discordUsername"
+          >
             Pseudo Discord
           </label>
+
 
           <input
             id="discordUsername"
@@ -758,36 +988,52 @@
 
         </div>
 
+
         <div class="field">
 
-          <label for="discordServer">
+          <label
+            for="discordServer"
+          >
             Serveur Discord
           </label>
+
 
           <input
             id="discordServer"
             type="text"
             maxlength="150"
-            placeholder="Nom de ton serveur"
+            placeholder="Nom de ton serveur Discord"
             autocomplete="off"
           >
 
         </div>
 
+
         <button
           id="checkoutButton"
           class="primary-btn"
+          type="button"
         >
           💳 Commander avec PayPal
         </button>
 
       </div>
+
     `;
 
-    content.innerHTML = html;
+
+    content.innerHTML =
+      html;
+
+
+    // ==========================================================
+    // ACTIONS PANIER
+    // ==========================================================
 
     content
-      .querySelectorAll("[data-action]")
+      .querySelectorAll(
+        "[data-action]"
+      )
       .forEach(button => {
 
         button.addEventListener(
@@ -800,7 +1046,10 @@
             const id =
               this.dataset.id;
 
-            if(action === "minus"){
+
+            if(
+              action === "minus"
+            ){
 
               changeCartQuantity(
                 id,
@@ -809,7 +1058,10 @@
 
             }
 
-            if(action === "plus"){
+
+            if(
+              action === "plus"
+            ){
 
               changeCartQuantity(
                 id,
@@ -818,9 +1070,14 @@
 
             }
 
-            if(action === "remove"){
 
-              removeFromCart(id);
+            if(
+              action === "remove"
+            ){
+
+              removeFromCart(
+                id
+              );
 
             }
 
@@ -829,8 +1086,10 @@
 
       });
 
+
     const checkoutButton =
       $("checkoutButton");
+
 
     if(checkoutButton){
 
@@ -843,6 +1102,7 @@
 
   }
 
+
   // ============================================================
   // DRAWER PANIER
   // ============================================================
@@ -852,11 +1112,15 @@
     const drawer =
       $("cartDrawer");
 
+
     if(drawer){
 
-      drawer.classList.add("active");
+      drawer.classList.add(
+        "active"
+      );
 
     }
+
 
     renderCart();
 
@@ -864,24 +1128,39 @@
 
   }
 
+
   function closeCart(){
 
     const drawer =
       $("cartDrawer");
 
+
     if(drawer){
 
-      drawer.classList.remove("active");
+      drawer.classList.remove(
+        "active"
+      );
 
     }
 
-    if(!$("quantityDrawer")?.classList.contains("active")){
+
+    const quantityDrawer =
+      $("quantityDrawer");
+
+
+    if(
+      !quantityDrawer ||
+      !quantityDrawer.classList.contains(
+        "active"
+      )
+    ){
 
       closeOverlay();
 
     }
 
   }
+
 
   // ============================================================
   // DISCORD WEBHOOK
@@ -892,30 +1171,99 @@
     discordServer
   ){
 
+    /*
+      WEBHOOK_URL est défini dans index.html.
+
+      Exemple dans index.html :
+
+      const WEBHOOK_URL =
+        "TON_NOUVEAU_WEBHOOK";
+
+      Le webhook reçoit :
+      - pseudo Discord
+      - serveur Discord
+      - produits
+      - quantité
+      - MEMBERS
+      - prix
+      - total
+    */
+
+
     const webhook =
       typeof WEBHOOK_URL !== "undefined"
-        ? WEBHOOK_URL
+        ? String(
+            WEBHOOK_URL
+          ).trim()
         : "";
+
 
     if(
       !webhook ||
-      webhook === "TON_WEBHOOK_ICI"
+      webhook ===
+        "TON_WEBHOOK_ICI"
     ){
 
-      console.warn(
-        "WEBHOOK_URL n'est pas configuré."
+      console.error(
+        "WEBHOOK_URL n'est pas configuré dans index.html."
       );
 
       return false;
 
     }
 
+
+    // ==========================================================
+    // NETTOYAGE DES INFORMATIONS
+    // ==========================================================
+
+    const username =
+      String(
+        discordUsername || ""
+      ).trim();
+
+
+    const server =
+      String(
+        discordServer || ""
+      ).trim();
+
+
+    if(!username){
+
+      console.error(
+        "Pseudo Discord manquant."
+      );
+
+      return false;
+
+    }
+
+
+    if(!server){
+
+      console.error(
+        "Serveur Discord manquant."
+      );
+
+      return false;
+
+    }
+
+
+    // ==========================================================
+    // PRODUITS
+    // ==========================================================
+
     const productsText =
       cart
         .map(item => {
 
           const product =
-            getProduct(item.id);
+            getProduct(
+              item.id
+            );
+
 
           if(!product){
 
@@ -923,158 +1271,328 @@
 
           }
 
+
           const members =
             product.members *
             item.quantity;
+
 
           const total =
             product.price *
             item.quantity;
 
+
           return [
+
             `**${product.name}**`,
+
             `Quantité : ${item.quantity}`,
-            `MEMBERS : ${formatNumber(members)}`,
-            `Prix : ${formatPrice(total)}`
+
+            `MEMBERS : ${formatNumber(
+              members
+            )}`,
+
+            `Prix : ${formatPrice(
+              total
+            )}`
+
           ].join("\n");
 
         })
         .filter(Boolean)
         .join("\n\n");
 
+
+    // ==========================================================
+    // MESSAGE PRINCIPAL DU WEBHOOK
+    // ==========================================================
+    //
+    // IMPORTANT :
+    // Le pseudo + serveur sont maintenant directement
+    // dans "content", donc visibles même sans ouvrir l'embed.
+    // ==========================================================
+
     const message =
-      typeof WEBHOOK_BOT_MESSAGE !== "undefined"
-        ? WEBHOOK_BOT_MESSAGE
+      typeof WEBHOOK_BOT_MESSAGE !==
+      "undefined"
+
+        ? String(
+            WEBHOOK_BOT_MESSAGE
+          )
+
         : "🛒 Nouvelle commande reçue sur MEMBERS SHOP !";
+
+
+    const contentMessage = [
+
+      message,
+
+      "",
+
+      `👤 **Pseudo Discord :** ${username}`,
+
+      `🏠 **Serveur Discord :** ${server}`,
+
+      "",
+
+      `📦 **Total MEMBERS :** ${formatNumber(
+        getCartMembers()
+      )}`,
+
+      `💰 **Total :** ${formatPrice(
+        getCartTotal()
+      )}`
+
+    ].join("\n");
+
+
+    // ==========================================================
+    // PAYLOAD DISCORD
+    // ==========================================================
 
     const payload = {
 
-      content:message,
+      content:
+        contentMessage,
 
-      embeds:[
+
+      allowed_mentions: {
+
+        parse: []
+
+      },
+
+
+      embeds: [
+
         {
 
           title:
             "🛒 NOUVELLE COMMANDE • MEMBERS SHOP",
 
+
           description:
             "Une nouvelle commande a été initiée.",
 
-          color:10129263,
 
-          fields:[
+          color:
+            10129263,
+
+
+          fields: [
 
             {
-              name:"👤 Pseudo Discord",
+
+              name:
+                "👤 Pseudo Discord",
+
               value:
-                discordUsername ||
-                "Non renseigné",
-              inline:true
+                username,
+
+              inline:
+                true
+
             },
 
-            {
-              name:"🏠 Serveur Discord",
-              value:
-                discordServer ||
-                "Non renseigné",
-              inline:true
-            },
 
             {
-              name:"📦 Produits",
+
+              name:
+                "🏠 Serveur Discord",
+
+              value:
+                server,
+
+              inline:
+                true
+
+            },
+
+
+            {
+
+              name:
+                "📦 Produits",
+
               value:
                 productsText ||
-                "Aucun produit"
+                "Aucun produit",
+
+              inline:
+                false
+
             },
 
+
             {
-              name:"👥 Total MEMBERS",
+
+              name:
+                "👥 Total MEMBERS",
+
               value:
                 formatNumber(
                   getCartMembers()
                 ),
-              inline:true
+
+              inline:
+                true
+
             },
 
+
             {
-              name:"💰 Total",
+
+              name:
+                "💰 Total",
+
               value:
                 formatPrice(
                   getCartTotal()
                 ),
-              inline:true
+
+              inline:
+                true
+
             },
 
-            {
-              name:"💳 Paiement",
-              value:"PayPal",
-              inline:true
-            },
 
             {
-              name:"📌 Statut",
-              value:"Paiement à finaliser",
-              inline:true
+
+              name:
+                "💳 Paiement",
+
+              value:
+                "PayPal",
+
+              inline:
+                true
+
+            },
+
+
+            {
+
+              name:
+                "📌 Statut",
+
+              value:
+                "Paiement à finaliser",
+
+              inline:
+                true
+
             }
 
           ],
 
-          footer:{
+
+          footer: {
+
             text:
               "MEMBERS SHOP • Notification automatique"
+
           },
+
 
           timestamp:
             new Date().toISOString()
 
         }
+
       ]
 
     };
 
+
+    // ==========================================================
+    // ENVOI WEBHOOK
+    // ==========================================================
+
     try{
+
+      console.log(
+        "Envoi de la commande Discord..."
+      );
+
+
+      console.log(
+        "Pseudo Discord :",
+        username
+      );
+
+
+      console.log(
+        "Serveur Discord :",
+        server
+      );
+
 
       const response =
         await fetch(
           webhook,
           {
-            method:"POST",
 
-            headers:{
+            method:
+              "POST",
+
+            headers: {
+
               "Content-Type":
                 "application/json"
+
             },
 
             body:
-              JSON.stringify(payload)
+              JSON.stringify(
+                payload
+              )
+
           }
         );
 
+
       if(!response.ok){
+
+        const errorText =
+          await response.text()
+            .catch(
+              () => ""
+            );
+
 
         console.error(
           "Erreur webhook Discord :",
-          response.status
+          response.status,
+          errorText
         );
+
 
         return false;
 
       }
+
+
+      console.log(
+        "Commande envoyée au webhook Discord."
+      );
+
 
       return true;
 
     }catch(error){
 
       console.error(
-        "Impossible d'envoyer le webhook :",
+        "Impossible d'envoyer le webhook Discord :",
         error
       );
+
 
       return false;
 
     }
 
   }
+
 
   // ============================================================
   // CHECKOUT PAYPAL
@@ -1092,21 +1610,42 @@
 
     }
 
+
+    // ==========================================================
+    // RÉCUPÉRATION PSEUDO
+    // ==========================================================
+
     const usernameInput =
       $("discordUsername");
+
+
+    // ==========================================================
+    // RÉCUPÉRATION SERVEUR
+    // ==========================================================
 
     const serverInput =
       $("discordServer");
 
+
     const discordUsername =
       usernameInput
-        ? usernameInput.value.trim()
+        ? String(
+            usernameInput.value
+          ).trim()
         : "";
+
 
     const discordServer =
       serverInput
-        ? serverInput.value.trim()
+        ? String(
+            serverInput.value
+          ).trim()
         : "";
+
+
+    // ==========================================================
+    // VÉRIFICATION PSEUDO
+    // ==========================================================
 
     if(!discordUsername){
 
@@ -1114,15 +1653,22 @@
         "Entre ton pseudo Discord."
       );
 
+
       if(usernameInput){
 
         usernameInput.focus();
 
       }
 
+
       return;
 
     }
+
+
+    // ==========================================================
+    // VÉRIFICATION SERVEUR
+    // ==========================================================
 
     if(!discordServer){
 
@@ -1130,20 +1676,31 @@
         "Entre ton serveur Discord."
       );
 
+
       if(serverInput){
 
         serverInput.focus();
 
       }
 
+
       return;
 
     }
 
+
+    // ==========================================================
+    // TOTAL
+    // ==========================================================
+
     const total =
       getCartTotal();
 
-    if(!Number.isFinite(total) || total <= 0){
+
+    if(
+      !Number.isFinite(total) ||
+      total <= 0
+    ){
 
       showToast(
         "Montant de commande invalide."
@@ -1153,10 +1710,21 @@
 
     }
 
+
     const rounded =
       Math.round(
         total * 100
       ) / 100;
+
+
+    // ==========================================================
+    // ENVOI DISCORD AVANT PAYPAL
+    // ==========================================================
+
+    showToast(
+      "Envoi de la commande..."
+    );
+
 
     const webhookSent =
       await sendDiscordOrder(
@@ -1164,25 +1732,33 @@
         discordServer
       );
 
+
     if(!webhookSent){
 
       showToast(
-        "Impossible d'envoyer la commande. Vérifie le webhook."
+        "Erreur : la commande n'a pas pu être envoyée."
       );
 
       return;
 
     }
 
+
+    // ==========================================================
+    // PAYPAL
+    // ==========================================================
+
     const paypalUrl =
       PAYPAL_BASE +
       "/" +
       rounded.toFixed(2);
 
+
     window.location.href =
       paypalUrl;
 
   }
+
 
   // ============================================================
   // TOAST
@@ -1193,18 +1769,27 @@
     const toast =
       $("toast");
 
+
     if(!toast){
 
       return;
 
     }
 
+
     toast.textContent =
       message;
 
-    toast.classList.add("active");
 
-    clearTimeout(toastTimer);
+    toast.classList.add(
+      "active"
+    );
+
+
+    clearTimeout(
+      toastTimer
+    );
+
 
     toastTimer =
       setTimeout(
@@ -1220,6 +1805,7 @@
 
   }
 
+
   // ============================================================
   // ÉVÉNEMENTS
   // ============================================================
@@ -1228,6 +1814,7 @@
 
     const openCartButton =
       $("openCart");
+
 
     if(openCartButton){
 
@@ -1238,8 +1825,10 @@
 
     }
 
+
     const closeCartButton =
       $("closeCart");
+
 
     if(closeCartButton){
 
@@ -1250,8 +1839,10 @@
 
     }
 
+
     const closeQuantityButton =
       $("closeQuantity");
+
 
     if(closeQuantityButton){
 
@@ -1262,8 +1853,10 @@
 
     }
 
+
     const overlay =
       $("overlay");
+
 
     if(overlay){
 
@@ -1272,6 +1865,7 @@
         function(){
 
           closeCart();
+
           closeQuantity();
 
         }
@@ -1279,8 +1873,10 @@
 
     }
 
+
     const minusButton =
       $("minusButton");
+
 
     if(minusButton){
 
@@ -1288,7 +1884,9 @@
         "click",
         function(){
 
-          if(selectedQuantity > 1){
+          if(
+            selectedQuantity > 1
+          ){
 
             selectedQuantity--;
 
@@ -1301,8 +1899,10 @@
 
     }
 
+
     const plusButton =
       $("plusButton");
+
 
     if(plusButton){
 
@@ -1310,7 +1910,9 @@
         "click",
         function(){
 
-          if(selectedQuantity < 999){
+          if(
+            selectedQuantity < 999
+          ){
 
             selectedQuantity++;
 
@@ -1323,8 +1925,10 @@
 
     }
 
+
     const addCartButton =
       $("addCartButton");
+
 
     if(addCartButton){
 
@@ -1335,8 +1939,10 @@
 
     }
 
+
     const scrollProducts =
       $("scrollProducts");
+
 
     if(scrollProducts){
 
@@ -1347,10 +1953,12 @@
           const section =
             $("productsSection");
 
+
           if(section){
 
             section.scrollIntoView({
-              behavior:"smooth"
+              behavior:
+                "smooth"
             });
 
           }
@@ -1360,13 +1968,18 @@
 
     }
 
+
     document.addEventListener(
       "keydown",
       function(event){
 
-        if(event.key === "Escape"){
+        if(
+          event.key ===
+          "Escape"
+        ){
 
           closeCart();
+
           closeQuantity();
 
         }
@@ -1375,6 +1988,7 @@
     );
 
   }
+
 
   // ============================================================
   // INITIALISATION
@@ -1392,11 +2006,13 @@
 
     setupEvents();
 
+
     console.log(
       "MEMBERS SHOP chargé correctement."
     );
 
   }
+
 
   if(
     document.readyState ===
