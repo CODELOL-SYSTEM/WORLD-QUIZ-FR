@@ -1,948 +1,926 @@
 ```html
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <meta
-    name="theme-color"
-    content="#08060d"
-  >
-
-  <meta
-    name="description"
-    content="MEMBERS SHOP - Boutique MEMBERS"
-  >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>MEMBERS SHOP</title>
 
+  <meta
+    name="description"
+    content="MEMBERS SHOP - Boutique en ligne de packs MEMBERS."
+  >
 
   <style>
-
-    *{
-      box-sizing:border-box;
-      margin:0;
-      padding:0;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
-    :root{
-      --bg:#08060d;
-      --panel:#100c18;
-      --panel2:#15101f;
-      --purple:#8b5cf6;
-      --purple2:#a855f7;
-      --purple3:#c084fc;
-      --text:#ffffff;
-      --muted:#9b93a8;
-      --border:rgba(255,255,255,.08);
+    html {
+      scroll-behavior: smooth;
     }
 
-    html{
-      scroll-behavior:smooth;
-    }
-
-    body{
-      min-height:100vh;
-      background:
-        radial-gradient(
-          circle at 15% 5%,
-          rgba(139,92,246,.18),
-          transparent 28%
-        ),
-        radial-gradient(
-          circle at 85% 10%,
-          rgba(168,85,247,.14),
-          transparent 28%
-        ),
-        var(--bg);
-      color:var(--text);
+    body {
+      min-height: 100vh;
       font-family:
         Inter,
-        Arial,
-        Helvetica,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
         sans-serif;
-      overflow-x:hidden;
+      color: #f7f5ff;
+      background:
+        radial-gradient(
+          circle at 15% 10%,
+          rgba(124, 58, 237, .25),
+          transparent 30%
+        ),
+        radial-gradient(
+          circle at 85% 20%,
+          rgba(168, 85, 247, .16),
+          transparent 28%
+        ),
+        #07050d;
+      overflow-x: hidden;
     }
 
-    body::before{
-      content:"";
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-      z-index:-1;
-      opacity:.22;
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
       background-image:
         linear-gradient(
-          rgba(139,92,246,.10) 1px,
+          rgba(255,255,255,.025) 1px,
           transparent 1px
         ),
         linear-gradient(
           90deg,
-          rgba(139,92,246,.10) 1px,
+          rgba(255,255,255,.025) 1px,
           transparent 1px
         );
-      background-size:50px 50px;
-      mask-image:
-        linear-gradient(
-          to bottom,
-          #000,
-          transparent 85%
-        );
+      background-size: 40px 40px;
+      mask-image: linear-gradient(
+        to bottom,
+        black,
+        transparent 85%
+      );
     }
 
     button,
-    input{
-      font:inherit;
+    input {
+      font: inherit;
     }
 
-    button{
-      cursor:pointer;
+    button {
+      cursor: pointer;
     }
 
-    /* ==========================================================
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      width: min(1180px, calc(100% - 36px));
+      margin: 0 auto;
+    }
+
+    /* =========================================================
        HEADER
-       ========================================================== */
+       ========================================================= */
 
-    header{
-      position:sticky;
-      top:0;
-      z-index:50;
-      height:76px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:0 6%;
-      background:rgba(8,6,13,.82);
-      border-bottom:1px solid var(--border);
-      backdrop-filter:blur(20px);
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+      background: rgba(7,5,13,.78);
+      backdrop-filter: blur(18px);
     }
 
-    .logo{
-      font-size:22px;
-      font-weight:950;
-      letter-spacing:-1px;
+    .nav {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
     }
 
-    .logo span{
-      color:var(--purple2);
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 900;
+      letter-spacing: -.5px;
     }
 
-    .header-right{
-      display:flex;
-      align-items:center;
-      gap:12px;
-    }
-
-    .status{
-      display:flex;
-      align-items:center;
-      gap:7px;
-      color:#aaa1b7;
-      font-size:12px;
-    }
-
-    .status-dot{
-      width:7px;
-      height:7px;
-      border-radius:50%;
-      background:#22c55e;
-      box-shadow:0 0 12px #22c55e;
-    }
-
-    .cart-button{
-      display:flex;
-      align-items:center;
-      gap:9px;
-      padding:11px 16px;
-      border:1px solid rgba(168,85,247,.35);
-      border-radius:13px;
-      background:rgba(168,85,247,.09);
-      color:#fff;
-      transition:.2s ease;
-    }
-
-    .cart-button:hover{
-      background:rgba(168,85,247,.18);
-      transform:translateY(-1px);
-    }
-
-    #cartCount{
-      min-width:22px;
-      height:22px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      border-radius:50%;
-      background:var(--purple2);
-      font-size:12px;
-      font-weight:900;
-    }
-
-    /* ==========================================================
-       HERO
-       ========================================================== */
-
-    .hero{
-      width:min(1150px,100%);
-      min-height:560px;
-      margin:auto;
-      padding:90px 25px 70px;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      text-align:center;
-    }
-
-    .hero-badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 14px;
-      border:1px solid rgba(168,85,247,.32);
-      border-radius:999px;
-      background:rgba(168,85,247,.08);
-      color:#d8b4fe;
-      font-size:12px;
-      font-weight:850;
-      letter-spacing:.5px;
-      margin-bottom:25px;
-    }
-
-    .hero h1{
-      max-width:900px;
-      font-size:clamp(45px,7vw,82px);
-      line-height:.96;
-      letter-spacing:-5px;
-      margin-bottom:26px;
-    }
-
-    .hero h1 span{
-      color:var(--purple2);
-    }
-
-    .hero p{
-      max-width:680px;
-      color:#a39aaa;
-      font-size:17px;
-      line-height:1.7;
-      margin-bottom:34px;
-    }
-
-    .hero-actions{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:12px;
-      flex-wrap:wrap;
-    }
-
-    .hero-button{
-      border:0;
-      border-radius:13px;
-      padding:14px 23px;
-      color:#fff;
+    .brand-logo {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
       background:
         linear-gradient(
           135deg,
           #7c3aed,
           #a855f7
         );
-      font-weight:900;
       box-shadow:
-        0 15px 40px
-        rgba(168,85,247,.25);
-      transition:.2s ease;
+        0 0 30px rgba(124,58,237,.35);
     }
 
-    .hero-button:hover{
-      transform:translateY(-2px);
-      box-shadow:
-        0 20px 50px
-        rgba(168,85,247,.35);
+    .brand-text {
+      font-size: 18px;
     }
 
-    .hero-secondary{
-      border:1px solid var(--border);
-      border-radius:13px;
-      padding:13px 20px;
-      color:#d5cfdd;
-      background:rgba(255,255,255,.035);
-      font-weight:800;
+    .brand-subtitle {
+      display: block;
+      color: #9690a8;
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 2px;
     }
 
-    /* ==========================================================
-       PRODUCTS
-       ========================================================== */
-
-    .products-section{
-      width:min(1200px,100%);
-      margin:auto;
-      padding:45px 25px 110px;
+    .cart-button {
+      border: 1px solid rgba(168,85,247,.3);
+      color: white;
+      background: rgba(124,58,237,.12);
+      padding: 11px 16px;
+      border-radius: 12px;
+      font-weight: 800;
+      transition: .2s ease;
     }
 
-    .section-heading{
-      text-align:center;
-      margin-bottom:42px;
+    .cart-button:hover {
+      transform: translateY(-2px);
+      background: rgba(124,58,237,.22);
+      border-color: rgba(168,85,247,.6);
     }
 
-    .section-small{
-      color:var(--purple3);
-      text-transform:uppercase;
-      letter-spacing:2px;
-      font-size:11px;
-      font-weight:900;
-      margin-bottom:10px;
+    .cart-count {
+      display: inline-grid;
+      place-items: center;
+      min-width: 23px;
+      height: 23px;
+      margin-left: 5px;
+      padding: 0 6px;
+      border-radius: 999px;
+      background: #a855f7;
+      font-size: 12px;
     }
 
-    .section-heading h2{
-      font-size:clamp(30px,5vw,46px);
-      letter-spacing:-2px;
-      margin-bottom:10px;
+    /* =========================================================
+       HERO
+       ========================================================= */
+
+    .hero {
+      position: relative;
+      padding: 105px 0 90px;
+      text-align: center;
     }
 
-    .section-heading p{
-      color:var(--muted);
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 13px;
+      border-radius: 999px;
+      border: 1px solid rgba(168,85,247,.28);
+      background: rgba(124,58,237,.09);
+      color: #c9b4ff;
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 25px;
     }
 
-    #productsGrid{
-      display:grid;
-      grid-template-columns:
-        repeat(
-          auto-fit,
-          minmax(245px,1fr)
+    .hero h1 {
+      max-width: 850px;
+      margin: 0 auto;
+      font-size: clamp(42px, 7vw, 78px);
+      line-height: .98;
+      letter-spacing: -4px;
+      font-weight: 950;
+    }
+
+    .hero h1 span {
+      color: #a855f7;
+    }
+
+    .hero p {
+      max-width: 690px;
+      margin: 25px auto 0;
+      color: #aaa4b8;
+      font-size: 17px;
+      line-height: 1.7;
+    }
+
+    .hero-actions {
+      margin-top: 34px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .primary-btn,
+    .secondary-btn {
+      border-radius: 13px;
+      padding: 14px 20px;
+      font-weight: 850;
+      border: 1px solid transparent;
+      transition: .2s ease;
+    }
+
+    .primary-btn {
+      color: white;
+      background:
+        linear-gradient(
+          135deg,
+          #7c3aed,
+          #a855f7
         );
-      gap:20px;
+      box-shadow:
+        0 12px 35px rgba(124,58,237,.25);
     }
 
-    .product-card{
-      position:relative;
-      min-height:330px;
-      padding:26px;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
-      border:1px solid var(--border);
-      border-radius:22px;
+    .primary-btn:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 16px 40px rgba(124,58,237,.38);
+    }
+
+    .secondary-btn {
+      color: #ddd5ec;
+      border-color: rgba(255,255,255,.1);
+      background: rgba(255,255,255,.035);
+    }
+
+    .secondary-btn:hover {
+      background: rgba(255,255,255,.07);
+    }
+
+    /* =========================================================
+       TRUST
+       ========================================================= */
+
+    .trust-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 80px;
+    }
+
+    .trust-card {
+      padding: 22px;
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 18px;
+      background: rgba(255,255,255,.025);
+    }
+
+    .trust-icon {
+      font-size: 25px;
+      margin-bottom: 12px;
+    }
+
+    .trust-card h3 {
+      font-size: 15px;
+      margin-bottom: 6px;
+    }
+
+    .trust-card p {
+      color: #898397;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    /* =========================================================
+       PRODUCTS
+       ========================================================= */
+
+    .section-head {
+      margin-bottom: 28px;
+    }
+
+    .section-kicker {
+      color: #a855f7;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1.4px;
+      margin-bottom: 8px;
+    }
+
+    .section-head h2 {
+      font-size: 35px;
+      letter-spacing: -1.5px;
+    }
+
+    .section-head p {
+      margin-top: 8px;
+      color: #8e889b;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .product-card {
+      min-height: 355px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 22px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,.08);
       background:
         linear-gradient(
           145deg,
           rgba(255,255,255,.055),
-          rgba(255,255,255,.015)
+          rgba(255,255,255,.018)
         );
-      box-shadow:
-        0 20px 60px
-        rgba(0,0,0,.25);
-      overflow:hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,.18);
       transition:
-        transform .25s ease,
-        border-color .25s ease,
-        box-shadow .25s ease;
+        transform .22s ease,
+        border-color .22s ease,
+        box-shadow .22s ease;
     }
 
-    .product-card::before{
-      content:"";
-      position:absolute;
-      width:170px;
-      height:170px;
-      top:-90px;
-      right:-70px;
-      background:rgba(168,85,247,.20);
-      filter:blur(45px);
-      pointer-events:none;
-    }
-
-    .product-card:hover{
-      transform:translateY(-7px);
-      border-color:rgba(168,85,247,.45);
+    .product-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(168,85,247,.4);
       box-shadow:
-        0 28px 70px
-        rgba(0,0,0,.35);
+        0 25px 70px rgba(0,0,0,.3),
+        0 0 35px rgba(124,58,237,.08);
     }
 
-    .product-icon{
-      width:65px;
-      height:65px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      border:1px solid rgba(168,85,247,.22);
-      border-radius:18px;
-      background:rgba(168,85,247,.10);
-      font-size:30px;
-      margin-bottom:22px;
+    .product-icon {
+      width: 58px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      border-radius: 17px;
+      background: rgba(124,58,237,.13);
+      border: 1px solid rgba(168,85,247,.2);
+      font-size: 28px;
+      margin-bottom: 22px;
     }
 
-    .product-card h3{
-      font-size:22px;
-      margin-bottom:9px;
+    .product-card h3 {
+      font-size: 20px;
+      margin-bottom: 9px;
     }
 
-    .product-card p{
-      color:#9790a2;
-      font-size:14px;
-      line-height:1.65;
+    .product-card p {
+      color: #8e889b;
+      font-size: 13px;
+      line-height: 1.6;
     }
 
-    .product-members{
-      margin-top:16px;
-      color:#c9b8e7;
-      font-size:13px;
-      font-weight:800;
+    .product-members {
+      margin-top: 18px;
+      color: #c9b4ff;
+      font-size: 13px;
+      font-weight: 800;
     }
 
-    .product-bottom{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:15px;
-      margin-top:30px;
+    .product-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 28px;
     }
 
-    .price{
-      font-size:21px;
-      font-weight:950;
+    .price {
+      font-size: 20px;
+      font-weight: 950;
     }
 
-    .choose-btn{
-      border:0;
-      border-radius:11px;
-      padding:10px 16px;
-      background:
-        linear-gradient(
-          135deg,
-          #7c3aed,
-          #a855f7
-        );
-      color:#fff;
-      font-weight:900;
-      transition:.2s ease;
+    .choose-btn {
+      border: 0;
+      border-radius: 11px;
+      padding: 11px 14px;
+      color: white;
+      background: #7c3aed;
+      font-weight: 850;
+      transition: .2s ease;
     }
 
-    .choose-btn:hover{
-      transform:translateY(-1px);
-      filter:brightness(1.1);
+    .choose-btn:hover {
+      background: #8b5cf6;
+      transform: translateY(-1px);
     }
 
-    /* ==========================================================
-       OVERLAY
-       ========================================================== */
-
-    #overlay{
-      position:fixed;
-      inset:0;
-      z-index:90;
-      background:rgba(0,0,0,.70);
-      backdrop-filter:blur(6px);
-      opacity:0;
-      visibility:hidden;
-      transition:.25s ease;
-    }
-
-    #overlay.active{
-      opacity:1;
-      visibility:visible;
-    }
-
-    /* ==========================================================
-       DRAWERS
-       ========================================================== */
-
-    .drawer{
-      position:fixed;
-      top:0;
-      right:0;
-      z-index:100;
-      width:min(480px,95vw);
-      height:100vh;
-      padding:26px;
-      overflow-y:auto;
-      background:#100b18;
-      border-left:1px solid var(--border);
-      box-shadow:-25px 0 80px rgba(0,0,0,.45);
-      transform:translateX(105%);
-      transition:transform .3s ease;
-    }
-
-    .drawer.active{
-      transform:translateX(0);
-    }
-
-    .drawer-header{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      margin-bottom:26px;
-    }
-
-    .drawer-header h2{
-      font-size:23px;
-    }
-
-    .close-button{
-      width:39px;
-      height:39px;
-      border:1px solid var(--border);
-      border-radius:11px;
-      background:rgba(255,255,255,.04);
-      color:#fff;
-      font-size:20px;
-    }
-
-    .close-button:hover{
-      background:rgba(255,255,255,.08);
-    }
-
-    /* ==========================================================
-       QUANTITY
-       ========================================================== */
-
-    .quantity-product{
-      padding:21px;
-      border:1px solid rgba(168,85,247,.20);
-      border-radius:17px;
-      background:rgba(168,85,247,.07);
-    }
-
-    .quantity-product h3{
-      font-size:22px;
-      margin-bottom:7px;
-    }
-
-    .quantity-product p{
-      color:#9c94a8;
-      font-size:14px;
-    }
-
-    .quantity-selector{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:24px;
-      margin:30px 0;
-    }
-
-    .quantity-button{
-      width:46px;
-      height:46px;
-      border:1px solid rgba(168,85,247,.32);
-      border-radius:13px;
-      background:rgba(168,85,247,.09);
-      color:#fff;
-      font-size:25px;
-    }
-
-    .quantity-button:hover{
-      background:rgba(168,85,247,.18);
-    }
-
-    #quantityValue{
-      min-width:55px;
-      text-align:center;
-      font-size:25px;
-      font-weight:950;
-    }
-
-    .summary{
-      display:grid;
-      gap:0;
-      margin-bottom:22px;
-    }
-
-    .summary-row{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:20px;
-      padding:13px 0;
-      border-bottom:1px solid rgba(255,255,255,.06);
-      color:#9d95a8;
-    }
-
-    .summary-row strong{
-      color:#fff;
-    }
-
-    /* ==========================================================
-       CART
-       ========================================================== */
-
-    .cart-item{
-      display:flex;
-      justify-content:space-between;
-      gap:18px;
-      padding:18px 0;
-      border-bottom:1px solid rgba(255,255,255,.07);
-    }
-
-    .cart-item h3{
-      font-size:16px;
-      margin-bottom:7px;
-    }
-
-    .cart-item p{
-      color:#948c9f;
-      font-size:13px;
-      line-height:1.6;
-    }
-
-    .cart-item-right{
-      display:flex;
-      flex-direction:column;
-      align-items:flex-end;
-      gap:9px;
-      flex-shrink:0;
-    }
-
-    .cart-item-right strong{
-      font-size:15px;
-    }
-
-    .remove-item{
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:8px;
-      padding:5px 9px;
-      background:rgba(255,255,255,.035);
-      color:#fff;
-    }
-
-    .remove-item:hover{
-      background:rgba(255,255,255,.08);
-    }
-
-    .cart-total{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding-top:21px;
-      margin-top:4px;
-      border-top:1px solid rgba(255,255,255,.10);
-      font-size:20px;
-      font-weight:950;
-    }
-
-    .members-total{
-      margin-top:10px;
-      color:#9b93a8;
-      font-size:13px;
-    }
-
-    /* ==========================================================
-       DISCORD FORM
-       ========================================================== */
-
-    .discord-form{
-      margin-top:28px;
-      padding:21px;
-      border:1px solid rgba(168,85,247,.22);
-      border-radius:18px;
-      background:
-        linear-gradient(
-          145deg,
-          rgba(168,85,247,.09),
-          rgba(255,255,255,.025)
-        );
-    }
-
-    .discord-form h3{
-      font-size:18px;
-      margin-bottom:7px;
-    }
-
-    .discord-description{
-      color:#8f8799;
-      font-size:12px;
-      line-height:1.6;
-      margin-bottom:18px;
-    }
-
-    .field{
-      margin-bottom:15px;
-    }
-
-    .field label{
-      display:block;
-      margin-bottom:7px;
-      color:#c8c0d0;
-      font-size:13px;
-      font-weight:800;
-    }
-
-    .field input{
-      width:100%;
-      padding:12px 13px;
-      outline:none;
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:11px;
-      background:rgba(0,0,0,.24);
-      color:#fff;
-    }
-
-    .field input::placeholder{
-      color:#6f6878;
-    }
-
-    .field input:focus{
-      border-color:rgba(168,85,247,.65);
-      box-shadow:
-        0 0 0 3px
-        rgba(168,85,247,.10);
-    }
-
-    .primary-btn{
-      width:100%;
-      border:0;
-      border-radius:13px;
-      padding:14px;
-      background:
-        linear-gradient(
-          135deg,
-          #7c3aed,
-          #a855f7
-        );
-      color:#fff;
-      font-weight:950;
-      transition:.2s ease;
-    }
-
-    .primary-btn:hover{
-      transform:translateY(-1px);
-      filter:brightness(1.08);
-    }
-
-    .primary-btn:disabled{
-      opacity:.55;
-      cursor:not-allowed;
-      transform:none;
-    }
-
-    .empty{
-      padding:80px 20px;
-      text-align:center;
-      color:#9b93a8;
-    }
-
-    /* ==========================================================
-       TOAST
-       ========================================================== */
-
-    #toast{
-      position:fixed;
-      left:50%;
-      bottom:25px;
-      z-index:200;
-      max-width:calc(100vw - 30px);
-      padding:13px 18px;
-      border:1px solid rgba(168,85,247,.30);
-      border-radius:12px;
-      background:#160d25;
-      color:#fff;
-      box-shadow:
-        0 18px 45px
-        rgba(0,0,0,.45);
-      transform:
-        translate(-50%,25px);
-      opacity:0;
-      visibility:hidden;
-      transition:.25s ease;
-      font-size:14px;
-      text-align:center;
-    }
-
-    #toast.active{
-      transform:
-        translate(-50%,0);
-      opacity:1;
-      visibility:visible;
-    }
-
-    /* ==========================================================
+    /* =========================================================
        FOOTER
-       ========================================================== */
+       ========================================================= */
 
-    footer{
-      padding:35px 20px;
-      border-top:1px solid rgba(255,255,255,.05);
-      text-align:center;
-      color:#625b6b;
-      font-size:12px;
+    footer {
+      margin-top: 100px;
+      padding: 35px 0;
+      border-top: 1px solid rgba(255,255,255,.07);
+      color: #777184;
+      font-size: 13px;
+      text-align: center;
     }
 
-    /* ==========================================================
-       MOBILE
-       ========================================================== */
+    /* =========================================================
+       OVERLAY
+       ========================================================= */
 
-    @media(max-width:700px){
-
-      header{
-        padding:0 17px;
-      }
-
-      .status{
-        display:none;
-      }
-
-      .hero{
-        min-height:500px;
-        padding:
-          75px 20px
-          55px;
-      }
-
-      .hero h1{
-        letter-spacing:-3px;
-      }
-
-      .hero p{
-        font-size:15px;
-      }
-
-      .products-section{
-        padding:
-          30px 18px
-          75px;
-      }
-
-      #productsGrid{
-        grid-template-columns:1fr;
-      }
-
-      .drawer{
-        width:100%;
-        padding:21px;
-      }
-
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      background: rgba(0,0,0,.62);
+      backdrop-filter: blur(5px);
+      opacity: 0;
+      visibility: hidden;
+      transition: .2s ease;
     }
 
+    .overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* =========================================================
+       DRAWERS
+       ========================================================= */
+
+    .drawer {
+      position: fixed;
+      z-index: 100;
+      background: #100c18;
+      border: 1px solid rgba(255,255,255,.08);
+      box-shadow: 0 25px 100px rgba(0,0,0,.55);
+    }
+
+    .quantity-drawer {
+      width: min(460px, calc(100% - 28px));
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -46%) scale(.97);
+      border-radius: 24px;
+      padding: 26px;
+      opacity: 0;
+      visibility: hidden;
+      transition: .2s ease;
+    }
+
+    .cart-drawer {
+      top: 0;
+      right: 0;
+      width: min(500px, 100%);
+      height: 100%;
+      padding: 24px;
+      transform: translateX(105%);
+      transition: .25s ease;
+      overflow-y: auto;
+    }
+
+    .quantity-drawer.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .cart-drawer.active {
+      transform: translateX(0);
+    }
+
+    .drawer-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .drawer-head h2 {
+      font-size: 22px;
+    }
+
+    .close-btn {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 11px;
+      border: 1px solid rgba(255,255,255,.08);
+      color: #ddd;
+      background: rgba(255,255,255,.04);
+      font-size: 20px;
+    }
+
+    .quantity-product {
+      padding: 18px;
+      border-radius: 16px;
+      background: rgba(124,58,237,.08);
+      border: 1px solid rgba(168,85,247,.15);
+      margin-bottom: 22px;
+    }
+
+    .quantity-product h3 {
+      font-size: 20px;
+    }
+
+    .quantity-product p {
+      color: #9690a8;
+      margin-top: 6px;
+    }
+
+    .quantity-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 22px;
+      margin: 26px 0;
+    }
+
+    .quantity-controls button {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.1);
+      color: white;
+      background: rgba(255,255,255,.05);
+      font-size: 24px;
+    }
+
+    .quantity-value {
+      min-width: 55px;
+      text-align: center;
+      font-size: 25px;
+      font-weight: 950;
+    }
+
+    .summary {
+      padding: 18px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.035);
+      margin-bottom: 18px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      padding: 7px 0;
+      color: #aaa4b8;
+    }
+
+    .summary-row strong {
+      color: white;
+    }
+
+    /* =========================================================
+       CART
+       ========================================================= */
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      padding: 17px 0;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+    }
+
+    .cart-item h3 {
+      font-size: 15px;
+    }
+
+    .cart-item p {
+      color: #858092;
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    .cart-item-right {
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .cart-item-right strong {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .remove-item {
+      border: 0;
+      color: #cfc6dd;
+      background: transparent;
+      font-size: 12px;
+      margin-top: 7px;
+    }
+
+    .remove-item:hover {
+      color: #c084fc;
+    }
+
+    .cart-total {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      padding: 22px 0 8px;
+      font-size: 20px;
+      font-weight: 950;
+    }
+
+    .members-total {
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: rgba(124,58,237,.1);
+      color: #c9b4ff;
+      text-align: center;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .discord-form {
+      margin-top: 24px;
+      padding-top: 22px;
+      border-top: 1px solid rgba(255,255,255,.07);
+    }
+
+    .discord-form h3 {
+      margin-bottom: 7px;
+    }
+
+    .discord-description {
+      color: #858092;
+      font-size: 12px;
+      line-height: 1.5;
+      margin-bottom: 17px;
+    }
+
+    .field {
+      margin-bottom: 13px;
+    }
+
+    .field label {
+      display: block;
+      color: #c7c0d2;
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 7px;
+    }
+
+    .field input {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,.09);
+      outline: none;
+      border-radius: 12px;
+      padding: 13px 14px;
+      color: white;
+      background: rgba(255,255,255,.045);
+      transition: .2s ease;
+    }
+
+    .field input:focus {
+      border-color: rgba(168,85,247,.65);
+      box-shadow: 0 0 0 3px rgba(168,85,247,.08);
+    }
+
+    .empty {
+      padding: 70px 15px;
+      text-align: center;
+      color: #8d8799;
+    }
+
+    .empty strong {
+      color: white;
+      display: block;
+      font-size: 17px;
+    }
+
+    .checkout-note {
+      color: #777184;
+      font-size: 11px;
+      line-height: 1.5;
+      text-align: center;
+      margin-top: 11px;
+    }
+
+    /* =========================================================
+       TOAST
+       ========================================================= */
+
+    .toast {
+      position: fixed;
+      z-index: 200;
+      left: 50%;
+      bottom: 25px;
+      transform: translate(-50%, 20px);
+      padding: 13px 17px;
+      border-radius: 13px;
+      color: white;
+      background: #18121f;
+      border: 1px solid rgba(168,85,247,.3);
+      box-shadow: 0 15px 50px rgba(0,0,0,.35);
+      opacity: 0;
+      visibility: hidden;
+      transition: .2s ease;
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .toast.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translate(-50%, 0);
+    }
+
+    /* =========================================================
+       RESPONSIVE
+       ========================================================= */
+
+    @media (max-width: 950px) {
+      .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .trust-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .container {
+        width: min(100% - 24px, 1180px);
+      }
+
+      .hero {
+        padding: 75px 0 65px;
+      }
+
+      .hero h1 {
+        letter-spacing: -2.5px;
+      }
+
+      .hero p {
+        font-size: 15px;
+      }
+
+      .products-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .product-card {
+        min-height: 320px;
+      }
+
+      .cart-drawer {
+        padding: 18px;
+      }
+    }
   </style>
-
 </head>
-
 
 <body>
 
-
-  <!-- ========================================================
+  <!-- =========================================================
        HEADER
-       ======================================================== -->
+       ========================================================= -->
 
   <header>
+    <div class="container nav">
 
-    <div class="logo">
-      MEMBERS<span>SHOP</span>
-    </div>
+      <a href="#" class="brand">
+        <div class="brand-logo">⚡</div>
 
-
-    <div class="header-right">
-
-      <div class="status">
-
-        <span class="status-dot"></span>
-
-        Boutique en ligne
-
-      </div>
-
+        <div>
+          <div class="brand-text">MEMBERS SHOP</div>
+          <span class="brand-subtitle">Boutique en ligne</span>
+        </div>
+      </a>
 
       <button
         id="openCart"
         class="cart-button"
         type="button"
       >
-
-        🛒
-
-        <span>
-          Panier
-        </span>
-
-        <span id="cartCount">
-          0
-        </span>
-
+        🛒 Panier
+        <span
+          id="cartCount"
+          class="cart-count"
+        >0</span>
       </button>
 
     </div>
-
   </header>
 
-
-  <!-- ========================================================
+  <!-- =========================================================
        HERO
-       ======================================================== -->
+       ========================================================= -->
 
   <main>
 
     <section class="hero">
+      <div class="container">
 
-      <div class="hero-badge">
-        ⚡ MEMBERS SHOP
+        <div class="hero-badge">
+          ⚡ MEMBERS SHOP
+        </div>
+
+        <h1>
+          Tes <span>MEMBERS</span>
+          en quelques clics.
+        </h1>
+
+        <p>
+          Sélectionne ton pack, choisis la quantité,
+          renseigne ton pseudo Discord et ton serveur,
+          puis passe ta commande.
+        </p>
+
+        <div class="hero-actions">
+
+          <button
+            id="scrollProducts"
+            class="primary-btn"
+            type="button"
+          >
+            Voir les packs
+          </button>
+
+          <button
+            id="heroCartButton"
+            class="secondary-btn"
+            type="button"
+          >
+            🛒 Ouvrir le panier
+          </button>
+
+        </div>
+
       </div>
+    </section>
 
+    <!-- =======================================================
+         TRUST
+         ======================================================= -->
 
-      <h1>
-        Tes <span>MEMBERS</span>
-        en quelques clics.
-      </h1>
+    <section class="container">
 
+      <div class="trust-grid">
 
-      <p>
-        Sélectionne ton pack, choisis la quantité,
-        renseigne ton pseudo Discord et ton serveur,
-        puis passe ta commande.
-      </p>
+        <div class="trust-card">
+          <div class="trust-icon">💳</div>
+          <h3>Paiement PayPal</h3>
+          <p>
+            Le paiement est effectué via PayPal
+            après validation de la commande.
+          </p>
+        </div>
 
+        <div class="trust-card">
+          <div class="trust-icon">🎮</div>
+          <h3>Informations Discord</h3>
+          <p>
+            Ton pseudo et ton serveur sont associés
+            à la commande.
+          </p>
+        </div>
 
-      <div class="hero-actions">
-
-        <button
-          id="scrollProducts"
-          class="hero-button"
-          type="button"
-        >
-          Voir les packs
-        </button>
-
-        <button
-          class="hero-secondary"
-          type="button"
-          onclick="document.getElementById('productsSection').scrollIntoView({behavior:'smooth'})"
-        >
-          Découvrir
-        </button>
+        <div class="trust-card">
+          <div class="trust-icon">🔔</div>
+          <h3>Commande enregistrée</h3>
+          <p>
+            Les informations de la commande sont
+            envoyées à Discord via le webhook configuré.
+          </p>
+        </div>
 
       </div>
 
     </section>
 
-
-    <!-- ======================================================
-         PRODUITS
-         ====================================================== -->
+    <!-- =======================================================
+         PRODUCTS
+         ======================================================= -->
 
     <section
       id="productsSection"
-      class="products-section"
+      class="container"
     >
 
-      <div class="section-heading">
+      <div class="section-head">
 
-        <div class="section-small">
+        <div class="section-kicker">
           MEMBERS SHOP
         </div>
 
-
-        <h2>
-          Nos packs
-        </h2>
-
+        <h2>Nos packs</h2>
 
         <p>
           Choisis le pack qui correspond à ta commande.
@@ -950,47 +928,48 @@
 
       </div>
 
-
-      <div id="productsGrid"></div>
+      <div
+        id="productsGrid"
+        class="products-grid"
+      ></div>
 
     </section>
 
   </main>
 
-
-  <!-- ========================================================
+  <!-- =========================================================
        OVERLAY
-       ======================================================== -->
+       ========================================================= -->
 
-  <div id="overlay"></div>
+  <div
+    id="overlay"
+    class="overlay"
+  ></div>
 
+  <!-- =========================================================
+       QUANTITY DRAWER
+       ========================================================= -->
 
-  <!-- ========================================================
-       DRAWER QUANTITÉ
-       ======================================================== -->
-
-  <aside
+  <section
     id="quantityDrawer"
-    class="drawer"
+    class="drawer quantity-drawer"
+    aria-label="Choix de quantité"
   >
 
-    <div class="drawer-header">
+    <div class="drawer-head">
 
-      <h2>
-        Quantité
-      </h2>
-
+      <h2>Quantité</h2>
 
       <button
         id="closeQuantity"
-        class="close-button"
+        class="close-btn"
         type="button"
+        aria-label="Fermer"
       >
         ×
       </button>
 
     </div>
-
 
     <div class="quantity-product">
 
@@ -998,33 +977,30 @@
         MEMBERS
       </h3>
 
-
       <p id="quantityProductPrice">
         5,49 € / unité
       </p>
 
     </div>
 
-
-    <div class="quantity-selector">
+    <div class="quantity-controls">
 
       <button
         id="minusButton"
-        class="quantity-button"
         type="button"
       >
         −
       </button>
 
-
-      <span id="quantityValue">
+      <div
+        id="quantityValue"
+        class="quantity-value"
+      >
         1
-      </span>
-
+      </div>
 
       <button
         id="plusButton"
-        class="quantity-button"
         type="button"
       >
         +
@@ -1032,146 +1008,92 @@
 
     </div>
 
-
     <div class="summary">
 
       <div class="summary-row">
-
-        <span>
-          Quantité
-        </span>
-
-        <strong id="summaryQuantity">
-          1
-        </strong>
-
+        <span>Quantité</span>
+        <strong id="summaryQuantity">1</strong>
       </div>
 
-
       <div class="summary-row">
-
-        <span>
-          MEMBERS
-        </span>
-
-        <strong id="summaryMembers">
-          1 000
-        </strong>
-
+        <span>MEMBERS</span>
+        <strong id="summaryMembers">1 000</strong>
       </div>
 
-
       <div class="summary-row">
-
-        <span>
-          Total
-        </span>
-
-        <strong id="summaryPrice">
-          5,49 €
-        </strong>
-
+        <span>Total</span>
+        <strong id="summaryPrice">5,49 €</strong>
       </div>
 
     </div>
-
 
     <button
       id="addCartButton"
       class="primary-btn"
       type="button"
+      style="width:100%;"
     >
       🛒 Ajouter au panier
     </button>
 
-  </aside>
+  </section>
 
-
-  <!-- ========================================================
-       DRAWER PANIER
-       ======================================================== -->
+  <!-- =========================================================
+       CART DRAWER
+       ========================================================= -->
 
   <aside
     id="cartDrawer"
-    class="drawer"
+    class="drawer cart-drawer"
+    aria-label="Panier"
   >
 
-    <div class="drawer-header">
+    <div class="drawer-head">
 
-      <h2>
-        Ton panier
-      </h2>
-
+      <h2>Ton panier</h2>
 
       <button
         id="closeCart"
-        class="close-button"
+        class="close-btn"
         type="button"
+        aria-label="Fermer"
       >
         ×
       </button>
 
     </div>
 
-
     <div id="cartContent"></div>
 
   </aside>
 
-
-  <!-- ========================================================
+  <!-- =========================================================
        TOAST
-       ======================================================== -->
+       ========================================================= -->
 
-  <div id="toast"></div>
+  <div
+    id="toast"
+    class="toast"
+    role="status"
+    aria-live="polite"
+  ></div>
 
-
-  <!-- ========================================================
-       FOOTER
-       ======================================================== -->
-
-  <footer>
-
-    © 2026 MEMBERS SHOP
-    • Boutique en ligne
-
-  </footer>
-
-
-  <!-- ========================================================
-       WEBHOOK DISCORD
-       ========================================================
+  <!-- =========================================================
+       WEBHOOK
+       =========================================================
 
        IMPORTANT :
-       Mets ton NOUVEAU webhook ici.
-
-       Ne partage jamais cette URL publiquement.
-
-       APP.JS utilise directement WEBHOOK_URL.
-       ======================================================== -->
+       Mets ici ton NOUVEAU webhook Discord.
+       Ne mets jamais un mot de passe Discord ici.
+  -->
 
   <script>
-
-    const WEBHOOK_URL =
-      "https://discord.com/api/webhooks/1554159540147196074/7-OTjKnXep7B7zzlGuQTtcyHdH4bFeyGgEPfr0wnvlK1YH8U30kNKt60H26jrcDcrx3e";
-
-
-    const WEBHOOK_BOT_MESSAGE =
-      "🛒 Nouvelle commande reçue sur MEMBERS SHOP !";
-
+    window.WEBHOOK_URL = "https://discord.com/api/webhooks/1554377017170853888/Yt7Tsz3BS1yIyHNOIjNB8s2mxXiXKpfYyF79lwUdOuPhPQJ6VOwdoEjadxKjscpksP1T";
   </script>
 
-
-  <!-- ========================================================
-       APP.JS
-       ======================================================== -->
-
-  <script
-    src="./APP.JS"
-  ></script>
-
+  <!-- APP.JS DOIT ÊTRE DANS LE MÊME DOSSIER -->
+  <script src="./APP.JS"></script>
 
 </body>
-
 </html>
 ```
