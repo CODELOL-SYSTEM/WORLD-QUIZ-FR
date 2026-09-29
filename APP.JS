@@ -147,6 +147,7 @@
 
   function renderAuth() {
     const area = $("authArea");
+    if (!area) return;
     if (!me) {
       area.innerHTML = '<button class="discord-btn" type="button" id="loginBtn">🎮 Connexion Discord</button>';
       $("loginBtn").addEventListener("click", login);
@@ -381,7 +382,8 @@
     loadCart();
     loadAuth();
     await handleCallback();
-    renderAuth(); renderProducts(); renderCart(); updateCount();
+    renderProducts();
+    renderAuth(); renderCart(); updateCount();
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
