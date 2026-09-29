@@ -6,10 +6,10 @@
   // ============================================================
 
   // Discord Developer Portal > ton application > OAuth2 > Client ID
-  const DISCORD_CLIENT_ID = "COLLE_TON_CLIENT_ID_ICI";
+  const DISCORD_CLIENT_ID = "1554438318622515292";
 
   // NOUVEAU webhook (l'ancien est public, supprime-le sur Discord)
-  const WEBHOOK_URL = "COLLE_TON_NOUVEAU_WEBHOOK_ICI";
+  const WEBHOOK_URL = "https://discord.com/api/webhooks/1554377017170853888/Yt7Tsz3BS1yIyHNOIjNB8s2mxXiXKpfYyF79lwUdOuPhPQJ6VOwdoEjadxKjscpksP1T";
 
   const PAYPAL_BASE = "https://paypal.me/SH0PNOVA";
 
