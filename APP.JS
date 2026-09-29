@@ -7,9 +7,11 @@
   // CONFIGURATION
   // ============================================================
 
-  const PAYPAL_BASE = "https://paypal.me/SH0PNOVA";
+  const PAYPAL_BASE =
+    "https://paypal.me/SH0PNOVA";
 
-  const STORAGE_KEY = "members_shop_cart";
+  const STORAGE_KEY =
+    "members_shop_cart";
 
 
   // ============================================================
@@ -108,6 +110,46 @@
 
 
   // ============================================================
+  // ID COMMANDE
+  // ============================================================
+
+  function generateOrderId(){
+
+    const now =
+      new Date();
+
+    const date =
+      now
+        .toISOString()
+        .replace(
+          /[-:TZ.]/g,
+          ""
+        )
+        .slice(
+          0,
+          14
+        );
+
+    const random =
+      Math.random()
+        .toString(36)
+        .substring(
+          2,
+          8
+        )
+        .toUpperCase();
+
+    return (
+      "MS-" +
+      date +
+      "-" +
+      random
+    );
+
+  }
+
+
+  // ============================================================
   // STORAGE
   // ============================================================
 
@@ -123,7 +165,7 @@
     }catch(error){
 
       console.error(
-        "Impossible de sauvegarder le panier :",
+        "Erreur sauvegarde panier :",
         error
       );
 
@@ -141,6 +183,7 @@
           STORAGE_KEY
         );
 
+
       if(!saved){
 
         cart = [];
@@ -149,21 +192,29 @@
 
       }
 
+
       const parsed =
-        JSON.parse(saved);
+        JSON.parse(
+          saved
+        );
+
 
       if(Array.isArray(parsed)){
 
-        cart = parsed.filter(item => {
+        cart =
+          parsed.filter(
+            item => {
 
-          return (
-            item &&
-            typeof item.id === "string" &&
-            typeof item.quantity === "number" &&
-            item.quantity > 0
+              return (
+                item &&
+                typeof item.id === "string" &&
+                typeof item.quantity === "number" &&
+                Number.isFinite(item.quantity) &&
+                item.quantity > 0
+              );
+
+            }
           );
-
-        });
 
       }else{
 
@@ -174,7 +225,7 @@
     }catch(error){
 
       console.error(
-        "Impossible de charger le panier :",
+        "Erreur chargement panier :",
         error
       );
 
@@ -204,6 +255,7 @@
     const grid =
       $("productsGrid");
 
+
     if(!grid){
 
       console.error(
@@ -214,80 +266,107 @@
 
     }
 
+
     grid.innerHTML = "";
 
 
-    PRODUCTS.forEach(product => {
+    PRODUCTS.forEach(
+      product => {
 
-      const card =
-        document.createElement(
-          "article"
+        const card =
+          document.createElement(
+            "article"
+          );
+
+
+        card.className =
+          "product-card";
+
+
+        card.innerHTML = `
+
+          <div>
+
+            <div class="product-icon">
+              ${product.icon}
+            </div>
+
+
+            <h3>
+              ${escapeHTML(
+                product.name
+              )}
+            </h3>
+
+
+            <p>
+              ${escapeHTML(
+                product.description
+              )}
+            </p>
+
+
+            <div class="product-members">
+              👥 ${formatNumber(
+                product.members
+              )} MEMBERS
+            </div>
+
+          </div>
+
+
+          <div class="product-bottom">
+
+            <div class="price">
+              ${formatPrice(
+                product.price
+              )}
+            </div>
+
+
+            <button
+              class="choose-btn"
+              type="button"
+              data-product-id="${escapeAttribute(
+                product.id
+              )}"
+            >
+              Choisir
+            </button>
+
+          </div>
+
+        `;
+
+
+        grid.appendChild(
+          card
         );
 
-      card.className =
-        "product-card";
-
-
-      card.innerHTML = `
-
-        <div>
-
-          <div class="product-icon">
-            ${product.icon}
-          </div>
-
-          <h3>
-            ${escapeHTML(product.name)}
-          </h3>
-
-          <p>
-            ${escapeHTML(product.description)}
-          </p>
-
-        </div>
-
-
-        <div class="product-bottom">
-
-          <div class="price">
-            ${formatPrice(product.price)}
-          </div>
-
-
-          <button
-            class="choose-btn"
-            data-product-id="${escapeAttribute(product.id)}"
-            type="button"
-          >
-            Choisir
-          </button>
-
-        </div>
-
-      `;
-
-
-      grid.appendChild(card);
-
-    });
+      }
+    );
 
 
     grid
-      .querySelectorAll(".choose-btn")
-      .forEach(button => {
+      .querySelectorAll(
+        ".choose-btn"
+      )
+      .forEach(
+        button => {
 
-        button.addEventListener(
-          "click",
-          function(){
+          button.addEventListener(
+            "click",
+            function(){
 
-            openQuantity(
-              this.dataset.productId
-            );
+              openQuantity(
+                this.dataset.productId
+              );
 
-          }
-        );
+            }
+          );
 
-      });
+        }
+      );
 
   }
 
@@ -354,6 +433,7 @@
     const overlay =
       $("overlay");
 
+
     if(overlay){
 
       overlay.classList.add(
@@ -370,6 +450,7 @@
     const overlay =
       $("overlay");
 
+
     if(overlay){
 
       overlay.classList.remove(
@@ -382,13 +463,18 @@
 
 
   // ============================================================
-  // DRAWER QUANTITÉ
+  // QUANTITÉ
   // ============================================================
 
-  function openQuantity(productId){
+  function openQuantity(
+    productId
+  ){
 
     const product =
-      getProduct(productId);
+      getProduct(
+        productId
+      );
+
 
     if(!product){
 
@@ -425,7 +511,9 @@
     if(price){
 
       price.textContent =
-        `${formatPrice(product.price)} / unité`;
+        `${formatPrice(
+          product.price
+        )} / unité`;
 
     }
 
@@ -452,6 +540,7 @@
     const drawer =
       $("quantityDrawer");
 
+
     if(drawer){
 
       drawer.classList.remove(
@@ -463,6 +552,7 @@
 
     const cartDrawer =
       $("cartDrawer");
+
 
     if(
       !cartDrawer ||
@@ -599,7 +689,9 @@
   }
 
 
-  function removeFromCart(productId){
+  function removeFromCart(
+    productId
+  ){
 
     cart =
       cart.filter(
@@ -663,8 +755,12 @@
   function getCartQuantity(){
 
     return cart.reduce(
-      (total,item) =>
-        total + item.quantity,
+      (
+        total,
+        item
+      ) =>
+        total +
+        item.quantity,
       0
     );
 
@@ -674,7 +770,10 @@
   function getCartMembers(){
 
     return cart.reduce(
-      (total,item) => {
+      (
+        total,
+        item
+      ) => {
 
         const product =
           getProduct(
@@ -705,7 +804,10 @@
   function getCartTotal(){
 
     return cart.reduce(
-      (total,item) => {
+      (
+        total,
+        item
+      ) => {
 
         const product =
           getProduct(
@@ -750,7 +852,7 @@
 
 
   // ============================================================
-  // AFFICHAGE PANIER
+  // PANIER
   // ============================================================
 
   function renderCart(){
@@ -774,16 +876,26 @@
 
           <div
             style="
-              font-size:42px;
+              font-size:44px;
               margin-bottom:15px;
             "
           >
             🛒
           </div>
 
-          <div>
+
+          <strong>
             Ton panier est vide.
-          </div>
+          </strong>
+
+
+          <p
+            style="
+              margin-top:8px;
+            "
+          >
+            Ajoute un pack pour commencer.
+          </p>
 
         </div>
 
@@ -797,122 +909,112 @@
     let html = "";
 
 
-    cart.forEach(item => {
+    cart.forEach(
+      item => {
 
-      const product =
-        getProduct(
-          item.id
-        );
-
-
-      if(!product){
-
-        return;
-
-      }
+        const product =
+          getProduct(
+            item.id
+          );
 
 
-      const total =
-        product.price *
-        item.quantity;
+        if(!product){
+
+          return;
+
+        }
 
 
-      html += `
-
-        <div class="cart-item">
-
-          <div>
-
-            <h3>
-              ${escapeHTML(
-                product.name
-              )}
-            </h3>
+        const total =
+          product.price *
+          item.quantity;
 
 
-            <p>
+        html += `
 
-              ${formatNumber(
-                product.members
-              )}
-
-              MEMBERS ×
-
-              ${item.quantity}
-
-            </p>
-
-
-            <p>
-
-              ${formatPrice(
-                product.price
-              )}
-
-              / unité
-
-            </p>
-
-          </div>
-
-
-          <div class="cart-item-right">
-
-            <strong>
-
-              ${formatPrice(
-                total
-              )}
-
-            </strong>
-
+          <div class="cart-item">
 
             <div>
 
-              <button
-                class="remove-item"
-                data-action="minus"
-                data-id="${escapeAttribute(
-                  product.id
-                )}"
-                type="button"
-              >
-                −
-              </button>
+              <h3>
+                ${escapeHTML(
+                  product.name
+                )}
+              </h3>
 
 
-              <span
-                style="
-                  margin:0 8px;
-                "
-              >
+              <p>
+                ${formatNumber(
+                  product.members
+                )}
+                MEMBERS ×
                 ${item.quantity}
-              </span>
+              </p>
 
 
-              <button
-                class="remove-item"
-                data-action="plus"
-                data-id="${escapeAttribute(
-                  product.id
-                )}"
-                type="button"
-              >
-                +
-              </button>
+              <p>
+                ${formatPrice(
+                  product.price
+                )}
+                / unité
+              </p>
 
             </div>
 
 
-            <div>
+            <div class="cart-item-right">
+
+              <strong>
+                ${formatPrice(
+                  total
+                )}
+              </strong>
+
+
+              <div>
+
+                <button
+                  class="remove-item"
+                  type="button"
+                  data-action="minus"
+                  data-id="${escapeAttribute(
+                    product.id
+                  )}"
+                >
+                  −
+                </button>
+
+
+                <span
+                  style="
+                    margin:0 8px;
+                  "
+                >
+                  ${item.quantity}
+                </span>
+
+
+                <button
+                  class="remove-item"
+                  type="button"
+                  data-action="plus"
+                  data-id="${escapeAttribute(
+                    product.id
+                  )}"
+                >
+                  +
+                </button>
+
+              </div>
+
 
               <button
                 class="remove-item"
+                type="button"
                 data-action="remove"
                 data-id="${escapeAttribute(
                   product.id
                 )}"
-                type="button"
               >
                 Supprimer
               </button>
@@ -921,11 +1023,10 @@
 
           </div>
 
-        </div>
+        `;
 
-      `;
-
-    });
+      }
+    );
 
 
     html += `
@@ -945,18 +1046,12 @@
       </div>
 
 
-      <div
-        style="
-          margin-top:10px;
-          color:#9b93a5;
-          font-size:13px;
-        "
-      >
+      <div class="members-total">
 
+        👥
         ${formatNumber(
           getCartMembers()
         )}
-
         MEMBERS au total
 
       </div>
@@ -967,6 +1062,14 @@
         <h3>
           🎮 Informations Discord
         </h3>
+
+
+        <p class="discord-description">
+
+          Renseigne les informations qui permettront
+          d'identifier ta commande sur Discord.
+
+        </p>
 
 
         <div class="field">
@@ -982,7 +1085,7 @@
             id="discordUsername"
             type="text"
             maxlength="100"
-            placeholder="Ton pseudo Discord"
+            placeholder="Ex : Alex"
             autocomplete="off"
           >
 
@@ -1002,7 +1105,7 @@
             id="discordServer"
             type="text"
             maxlength="150"
-            placeholder="Nom de ton serveur Discord"
+            placeholder="Ex : Mon serveur"
             autocomplete="off"
           >
 
@@ -1027,64 +1130,66 @@
 
 
     // ==========================================================
-    // ACTIONS PANIER
+    // ACTIONS
     // ==========================================================
 
     content
       .querySelectorAll(
         "[data-action]"
       )
-      .forEach(button => {
+      .forEach(
+        button => {
 
-        button.addEventListener(
-          "click",
-          function(){
+          button.addEventListener(
+            "click",
+            function(){
 
-            const action =
-              this.dataset.action;
+              const action =
+                this.dataset.action;
 
-            const id =
-              this.dataset.id;
+              const id =
+                this.dataset.id;
 
 
-            if(
-              action === "minus"
-            ){
+              if(
+                action === "minus"
+              ){
 
-              changeCartQuantity(
-                id,
-                -1
-              );
+                changeCartQuantity(
+                  id,
+                  -1
+                );
+
+              }
+
+
+              if(
+                action === "plus"
+              ){
+
+                changeCartQuantity(
+                  id,
+                  1
+                );
+
+              }
+
+
+              if(
+                action === "remove"
+              ){
+
+                removeFromCart(
+                  id
+                );
+
+              }
 
             }
+          );
 
-
-            if(
-              action === "plus"
-            ){
-
-              changeCartQuantity(
-                id,
-                1
-              );
-
-            }
-
-
-            if(
-              action === "remove"
-            ){
-
-              removeFromCart(
-                id
-              );
-
-            }
-
-          }
-        );
-
-      });
+        }
+      );
 
 
     const checkoutButton =
@@ -1171,25 +1276,6 @@
     discordServer
   ){
 
-    /*
-      WEBHOOK_URL est défini dans index.html.
-
-      Exemple dans index.html :
-
-      const WEBHOOK_URL =
-        "https://discord.com/api/webhooks/1554159540147196074/7-OTjKnXep7B7zzlGuQTtcyHdH4bFeyGgEPfr0wnvlK1YH8U30kNKt60H26jrcDcrx3e";
-
-      Le webhook reçoit :
-      - pseudo Discord
-      - serveur Discord
-      - produits
-      - quantité
-      - MEMBERS
-      - prix
-      - total
-    */
-
-
     const webhook =
       typeof WEBHOOK_URL !== "undefined"
         ? String(
@@ -1205,17 +1291,13 @@
     ){
 
       console.error(
-        "WEBHOOK_URL n'est pas configuré dans index.html."
+        "WEBHOOK_URL non configuré."
       );
 
       return false;
 
     }
 
-
-    // ==========================================================
-    // NETTOYAGE DES INFORMATIONS
-    // ==========================================================
 
     const username =
       String(
@@ -1231,10 +1313,6 @@
 
     if(!username){
 
-      console.error(
-        "Pseudo Discord manquant."
-      );
-
       return false;
 
     }
@@ -1242,13 +1320,25 @@
 
     if(!server){
 
-      console.error(
-        "Serveur Discord manquant."
-      );
-
       return false;
 
     }
+
+
+    // ==========================================================
+    // COMMANDE
+    // ==========================================================
+
+    const orderId =
+      generateOrderId();
+
+
+    const totalMembers =
+      getCartMembers();
+
+
+    const totalPrice =
+      getCartTotal();
 
 
     // ==========================================================
@@ -1257,62 +1347,77 @@
 
     const productsText =
       cart
-        .map(item => {
+        .map(
+          item => {
 
-          const product =
-            getProduct(
-              item.id
-            );
+            const product =
+              getProduct(
+                item.id
+              );
 
 
-          if(!product){
+            if(!product){
 
-            return "";
+              return "";
+
+            }
+
+
+            const members =
+              product.members *
+              item.quantity;
+
+
+            const total =
+              product.price *
+              item.quantity;
+
+
+            return [
+
+              `**${product.name}**`,
+
+              `Quantité : ${item.quantity}`,
+
+              `MEMBERS : ${formatNumber(
+                members
+              )}`,
+
+              `Prix : ${formatPrice(
+                total
+              )}`
+
+            ].join("\n");
 
           }
-
-
-          const members =
-            product.members *
-            item.quantity;
-
-
-          const total =
-            product.price *
-            item.quantity;
-
-
-          return [
-
-            `**${product.name}**`,
-
-            `Quantité : ${item.quantity}`,
-
-            `MEMBERS : ${formatNumber(
-              members
-            )}`,
-
-            `Prix : ${formatPrice(
-              total
-            )}`
-
-          ].join("\n");
-
-        })
+        )
         .filter(Boolean)
         .join("\n\n");
 
 
     // ==========================================================
-    // MESSAGE PRINCIPAL DU WEBHOOK
-    // ==========================================================
-    //
-    // IMPORTANT :
-    // Le pseudo + serveur sont maintenant directement
-    // dans "content", donc visibles même sans ouvrir l'embed.
+    // DATE
     // ==========================================================
 
-    const message =
+    const orderDate =
+      new Date();
+
+
+    const formattedDate =
+      orderDate.toLocaleString(
+        "fr-FR",
+        {
+          dateStyle:"short",
+          timeStyle:"medium"
+        }
+      );
+
+
+    // ==========================================================
+    // MESSAGE PRINCIPAL
+    // ==========================================================
+
+    const baseMessage =
       typeof WEBHOOK_BOT_MESSAGE !==
       "undefined"
 
@@ -1325,78 +1430,76 @@
 
     const contentMessage = [
 
-      message,
+      baseMessage,
 
       "",
 
-      `👤 **Pseudo Discord :** ${username}`,
+      `👤 **Utilisateur :** ${username}`,
 
-      `🏠 **Serveur Discord :** ${server}`,
+      `🏠 **Serveur :** ${server}`,
 
-      "",
+      `🆔 **Commande :** ${orderId}`,
 
-      `📦 **Total MEMBERS :** ${formatNumber(
-        getCartMembers()
+      `💰 **Prix :** ${formatPrice(
+        totalPrice
       )}`,
 
-      `💰 **Total :** ${formatPrice(
-        getCartTotal()
+      `👥 **MEMBERS :** ${formatNumber(
+        totalMembers
       )}`
 
     ].join("\n");
 
 
     // ==========================================================
-    // PAYLOAD DISCORD
+    // PAYLOAD
     // ==========================================================
 
     const payload = {
+
+      username:
+        "MEMBERS SHOP",
 
       content:
         contentMessage,
 
 
-      allowed_mentions: {
-
-        parse: []
-
+      allowed_mentions:{
+        parse:[]
       },
 
 
-      embeds: [
+      embeds:[
 
         {
 
           title:
-            "🛒 NOUVELLE COMMANDE • MEMBERS SHOP",
+            "🛒 NOUVELLE COMMANDE",
 
 
           description:
-            "Une nouvelle commande a été initiée.",
+            "Une nouvelle commande vient d'être créée sur MEMBERS SHOP.",
 
 
           color:
             10129263,
 
 
-          fields: [
+          fields:[
 
             {
-
               name:
-                "👤 Pseudo Discord",
+                "👤 Utilisateur",
 
               value:
                 username,
 
               inline:
                 true
-
             },
 
 
             {
-
               name:
                 "🏠 Serveur Discord",
 
@@ -1405,12 +1508,22 @@
 
               inline:
                 true
-
             },
 
 
             {
+              name:
+                "🆔 ID commande",
 
+              value:
+                orderId,
+
+              inline:
+                true
+            },
+
+
+            {
               name:
                 "📦 Produits",
 
@@ -1420,44 +1533,38 @@
 
               inline:
                 false
-
             },
 
 
             {
-
               name:
-                "👥 Total MEMBERS",
+                "👥 Nombre de MEMBERS",
 
               value:
                 formatNumber(
-                  getCartMembers()
+                  totalMembers
                 ),
 
               inline:
                 true
-
             },
 
 
             {
-
               name:
-                "💰 Total",
+                "💰 Prix total",
 
               value:
                 formatPrice(
-                  getCartTotal()
+                  totalPrice
                 ),
 
               inline:
                 true
-
             },
 
 
             {
-
               name:
                 "💳 Paiement",
 
@@ -1466,12 +1573,10 @@
 
               inline:
                 true
-
             },
 
 
             {
-
               name:
                 "📌 Statut",
 
@@ -1480,22 +1585,31 @@
 
               inline:
                 true
+            },
 
+
+            {
+              name:
+                "🕐 Date",
+
+              value:
+                formattedDate,
+
+              inline:
+                false
             }
 
           ],
 
 
-          footer: {
-
+          footer:{
             text:
-              "MEMBERS SHOP • Notification automatique"
-
+              "MEMBERS SHOP • Commande automatique"
           },
 
 
           timestamp:
-            new Date().toISOString()
+            orderDate.toISOString()
 
         }
 
@@ -1505,25 +1619,13 @@
 
 
     // ==========================================================
-    // ENVOI WEBHOOK
+    // ENVOI
     // ==========================================================
 
     try{
 
       console.log(
-        "Envoi de la commande Discord..."
-      );
-
-
-      console.log(
-        "Pseudo Discord :",
-        username
-      );
-
-
-      console.log(
-        "Serveur Discord :",
-        server
+        "Envoi webhook..."
       );
 
 
@@ -1531,22 +1633,17 @@
         await fetch(
           webhook,
           {
+            method:"POST",
 
-            method:
-              "POST",
-
-            headers: {
-
+            headers:{
               "Content-Type":
                 "application/json"
-
             },
 
             body:
               JSON.stringify(
                 payload
               )
-
           }
         );
 
@@ -1554,14 +1651,15 @@
       if(!response.ok){
 
         const errorText =
-          await response.text()
+          await response
+            .text()
             .catch(
               () => ""
             );
 
 
         console.error(
-          "Erreur webhook Discord :",
+          "Discord webhook error:",
           response.status,
           errorText
         );
@@ -1573,7 +1671,7 @@
 
 
       console.log(
-        "Commande envoyée au webhook Discord."
+        "Commande envoyée."
       );
 
 
@@ -1582,7 +1680,7 @@
     }catch(error){
 
       console.error(
-        "Impossible d'envoyer le webhook Discord :",
+        "Erreur réseau webhook :",
         error
       );
 
@@ -1595,7 +1693,7 @@
 
 
   // ============================================================
-  // CHECKOUT PAYPAL
+  // CHECKOUT
   // ============================================================
 
   async function checkout(){
@@ -1611,17 +1709,9 @@
     }
 
 
-    // ==========================================================
-    // RÉCUPÉRATION PSEUDO
-    // ==========================================================
-
     const usernameInput =
       $("discordUsername");
 
-
-    // ==========================================================
-    // RÉCUPÉRATION SERVEUR
-    // ==========================================================
 
     const serverInput =
       $("discordServer");
@@ -1643,10 +1733,6 @@
         : "";
 
 
-    // ==========================================================
-    // VÉRIFICATION PSEUDO
-    // ==========================================================
-
     if(!discordUsername){
 
       showToast(
@@ -1665,10 +1751,6 @@
 
     }
 
-
-    // ==========================================================
-    // VÉRIFICATION SERVEUR
-    // ==========================================================
 
     if(!discordServer){
 
@@ -1689,10 +1771,6 @@
     }
 
 
-    // ==========================================================
-    // TOTAL
-    // ==========================================================
-
     const total =
       getCartTotal();
 
@@ -1703,7 +1781,7 @@
     ){
 
       showToast(
-        "Montant de commande invalide."
+        "Montant invalide."
       );
 
       return;
@@ -1717,14 +1795,29 @@
       ) / 100;
 
 
-    // ==========================================================
-    // ENVOI DISCORD AVANT PAYPAL
-    // ==========================================================
+    const button =
+      $("checkoutButton");
+
+
+    if(button){
+
+      button.disabled =
+        true;
+
+      button.textContent =
+        "⏳ Envoi de la commande...";
+
+    }
+
 
     showToast(
       "Envoi de la commande..."
     );
 
+
+    // ==========================================================
+    // WEBHOOK
+    // ==========================================================
 
     const webhookSent =
       await sendDiscordOrder(
@@ -1735,9 +1828,21 @@
 
     if(!webhookSent){
 
+      if(button){
+
+        button.disabled =
+          false;
+
+        button.textContent =
+          "💳 Commander avec PayPal";
+
+      }
+
+
       showToast(
-        "Erreur : la commande n'a pas pu être envoyée."
+        "Erreur lors de l'envoi Discord."
       );
+
 
       return;
 
@@ -1754,8 +1859,20 @@
       rounded.toFixed(2);
 
 
-    window.location.href =
-      paypalUrl;
+    showToast(
+      "Commande enregistrée. Redirection PayPal..."
+    );
+
+
+    setTimeout(
+      function(){
+
+        window.location.href =
+          paypalUrl;
+
+      },
+      500
+    );
 
   }
 
@@ -1764,7 +1881,9 @@
   // TOAST
   // ============================================================
 
-  function showToast(message){
+  function showToast(
+    message
+  ){
 
     const toast =
       $("toast");
@@ -1793,14 +1912,14 @@
 
     toastTimer =
       setTimeout(
-        () => {
+        function(){
 
           toast.classList.remove(
             "active"
           );
 
         },
-        2800
+        3000
       );
 
   }
@@ -1957,8 +2076,7 @@
           if(section){
 
             section.scrollIntoView({
-              behavior:
-                "smooth"
+              behavior:"smooth"
             });
 
           }
@@ -2008,7 +2126,7 @@
 
 
     console.log(
-      "MEMBERS SHOP chargé correctement."
+      "MEMBERS SHOP PRO chargé."
     );
 
   }
